@@ -4,7 +4,8 @@ import { ActorSnapshot } from './objects/actor-snapshot.model';
 export interface SceneSnapshot {
     playerId: number;
     turn: number;
-    idIncrementor: number;
+    width: number;
+    height: number;
     actors: ActorSnapshot[];
     tiles: TileSnapshot[][];
 }

@@ -35,7 +35,7 @@ export class Tile {
             x: this.x,
             y: this.y,
             nativeId: this.nativeId
-        }
+        };
     }
 
     constructor(parent: Scene, tile: TileNative, x: number, y: number) {

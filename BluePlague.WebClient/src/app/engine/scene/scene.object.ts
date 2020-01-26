@@ -27,6 +27,9 @@ export class Scene {
     private actors: Actor[];
     private tiles: Tile[][];
 
+    readonly width: number;
+    readonly height: number;
+
     get playerId() {
         return this.player.id;
     }
@@ -35,7 +38,8 @@ export class Scene {
         return {
             playerId: this.playerId,
             turn: this.turn,
-            idIncrementor: this.idIncrementor,
+            width: this.width,
+            height: this.height,
             actors: this.actors.map(x => x.snapshot),
             tiles: this.tiles.map(x => x.map(y => y.snapshot))
         } as SceneSnapshot;
