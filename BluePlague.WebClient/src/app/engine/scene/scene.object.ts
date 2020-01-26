@@ -50,6 +50,7 @@ export class Scene {
     get savedData(): SceneSavedData {
         return {
             turn: this.turn,
+            idIncrementor: this.idIncrementor,
             changedActors: this.changedActors.map(x => x.savedData),
             deletedActors: this.deletedActors,
             changedTiles: this.changedTiles.map(x => x.savedData)
@@ -96,6 +97,15 @@ export class Scene {
                 }
             }
             this.createActor(actor.native, actor.x, actor.y);
+        }
+        if (savedData) {
+            for (const actor of savedData.changedActors) {
+                if (!this.actors.find(x => x.id === actor.id)) {
+                    const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y);
+                    newActor.id = actor.id;
+                }
+            }
+            this.idIncrementor = savedData.idIncrementor;
         }
     }
 

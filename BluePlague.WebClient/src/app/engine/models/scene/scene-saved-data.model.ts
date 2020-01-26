@@ -3,6 +3,7 @@ import { TileSavedData } from './tile-saved-data.model';
 
 export interface SceneSavedData {
     turn: number;
+    idIncrementor: number;
     changedActors: ActorSavedData[];
     deletedActors: number[];
     changedTiles: TileSavedData[];
