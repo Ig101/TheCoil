@@ -184,6 +184,18 @@ export class Scene {
         }
     }
 
+    parseAllPlayerActions(x: number, y: number): { [action: number]: EnginePlayerAction[]; } {
+        const dictionary: { [action: number]: EnginePlayerAction[]; } = {};
+        for (const action of this.player.allowedActions) {
+            dictionary[action] = this.parsePlayerAction({
+                type: action,
+                x,
+                y
+            } as EnginePlayerAction);
+        }
+        return dictionary;
+    }
+
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
         let timeShift = 0;
         switch (action.type) {

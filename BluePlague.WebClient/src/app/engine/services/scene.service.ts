@@ -24,7 +24,7 @@ export class SceneService {
     this.actionsSubject.subscribe(this.doAction);
   }
 
-  subscribe(next: (value: EngineActionResponse[]) => void): Subscription {
+  subscribe(next: (value: EngineActionResponse[]) => void) {
     return this.resoponseSubject.subscribe(next);
   }
 
@@ -40,8 +40,12 @@ export class SceneService {
     return this.scene.savedData;
   }
 
-  validateAndGetActions(action: EnginePlayerAction): EnginePlayerAction[] {
+  validateAndGetActions(action: EnginePlayerAction) {
     return this.scene.parsePlayerAction(action);
+  }
+
+  validateAndGetAllActions(x: number, y: number) {
+    return this.scene.parseAllPlayerActions(x, y);
   }
 
   sendActions(actions: EnginePlayerAction[]) {

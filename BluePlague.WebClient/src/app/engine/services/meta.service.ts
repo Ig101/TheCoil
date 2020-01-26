@@ -90,6 +90,8 @@ export class MetaService {
           this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
           this.startSynchronizationTimer();
           return this.sceneService.getSceneSnapshot();
+        } else {
+          return null;
         }
       }));
   }
