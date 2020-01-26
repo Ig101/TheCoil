@@ -7,6 +7,7 @@ import { SceneInitialization } from '../models/scene/scene-initialization.model'
 import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { Actor } from '../scene/objects/actor.object';
 import { EngineActionResponse } from '../models/engine-action-response.model';
+import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 
 @Injectable()
 export class SceneService {
@@ -20,8 +21,8 @@ export class SceneService {
     this.actionsSubject.subscribe(this.doAction);
   }
 
-  subscribe(observer: PartialObserver<EngineActionResponse[]>): Subscription {
-    return this.resoponseSubject.subscribe(observer);
+  subscribe(next: (value: EngineActionResponse[]) => void): Subscription {
+    return this.resoponseSubject.subscribe(next);
   }
 
   setupNewScene(scene: SceneInitialization) {
@@ -30,6 +31,10 @@ export class SceneService {
 
   getSceneSnapshot(): SceneSnapshot {
     return this.scene.snapshot;
+  }
+
+  getSceneSavedData(): SceneSavedData {
+    return this.scene.savedData;
   }
 
   validateAndGetActions(action: EnginePlayerAction): EnginePlayerAction[] {

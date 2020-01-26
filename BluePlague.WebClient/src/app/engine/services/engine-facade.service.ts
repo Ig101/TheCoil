@@ -11,8 +11,6 @@ import { EngineSnapshot } from '../models/engine-snapshot.model';
 @Injectable()
 export class EngineFacadeService {
 
-  private currectActionsBanch: EnginePlayerAction[];
-
   constructor(
     private readonly metaService: MetaService,
     private readonly sceneService: SceneService,

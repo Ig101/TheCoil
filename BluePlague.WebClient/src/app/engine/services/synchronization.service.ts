@@ -33,10 +33,10 @@ export class SynchronizationService {
       result: {
         meta: {
           difficulty: 0,
-          dungeon: 'hub',
+          dungeon: 'world',
           depth: 0,
           seed: 0,
-          roomType: RoomTypeEnum.Hub
+          roomType: RoomTypeEnum.World
         } as MetaInformation
       } as EngineSnapshot
     } as ExternalResponse<EngineSnapshot>);

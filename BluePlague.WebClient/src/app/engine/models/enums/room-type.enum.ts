@@ -1,3 +1,3 @@
 export enum RoomTypeEnum {
-    Hub
+    World
 }
