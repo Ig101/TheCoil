@@ -8,6 +8,8 @@ import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
+import { NativeService } from '../services/native.service';
+import { ActorNative } from '../models/natives/actor-native.model';
 
 export class Scene {
 
@@ -54,8 +56,56 @@ export class Scene {
         } as SceneSavedData;
     }
 
-    constructor(initialization: SceneInitialization) {
-        throw new Error('Method not implemented.');
+    constructor(
+        initialization: SceneInitialization,
+        savedData: SceneSavedData,
+        private nativeService: NativeService
+    ) {
+        this.turn = initialization.turn;
+        this.width = initialization.width;
+        this.height = initialization.height;
+        this.tiles = new Array(this.width);
+        for (let x = 0; x < this.width; x++) {
+            this.tiles[x] = new Array(this.height);
+        }
+        for (const tile of initialization.tiles) {
+            if (savedData) {
+                const savedTile = savedData.changedTiles.find(x => x.x === tile.x && x.y === tile.y);
+                if (savedTile) {
+                    this.tiles[tile.x][tile.y] = new Tile(this,
+                        this.nativeService.getTile(savedTile.nativeId), tile.x, tile.y);
+                    continue;
+                }
+            }
+            this.tiles[tile.x][tile.y] = new Tile(this,
+                tile.native, tile.x, tile.y);
+        }
+        for (const actor of initialization.actors) {
+            if (savedData) {
+                if (savedData.deletedActors.includes(this.idIncrementor)) {
+                    this.idIncrementor++;
+                    continue;
+                }
+                const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
+                if (savedActor) {
+                    const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y);
+                    newActor.durability = savedActor.durability;
+                    newActor.energy = savedActor.energy;
+                    newActor.remainedTurnTime = savedActor.remainedTurnTime;
+                    continue;
+                }
+            }
+            this.createActor(actor.native, actor.x, actor.y);
+        }
+    }
+
+    // Creation
+    createActor(native: ActorNative, x: number, y: number): Actor {
+        const id = this.idIncrementor;
+        this.idIncrementor++;
+        const actor = new Actor(this, id, native, x, y);
+        this.actors.push(actor);
+        return actor;
     }
 
     // ChangesRegistration

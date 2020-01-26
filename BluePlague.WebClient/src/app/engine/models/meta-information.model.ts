@@ -10,4 +10,6 @@ export interface MetaInformation {
     // Codes extra info of room
     name: string;
     seed: number;
+    // Time code
+    turn: number;
 }

@@ -55,7 +55,7 @@ export class NativeService {
 
   // temporary
   private loadNativesFromNetworkMock() {
-
+    throw new Error('Method not implemented.');
   }
 
   private loadInternalNatives() {

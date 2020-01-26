@@ -34,6 +34,7 @@ export class RandomService {
 
   // from 0 to 1
   nextDouble(): number {
-    throw new Error('Method not implemented.');
+    // TODO self determined with seed and position
+    return Math.random();
   }
 }

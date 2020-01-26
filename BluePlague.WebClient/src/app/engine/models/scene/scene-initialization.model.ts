@@ -5,6 +5,8 @@ export interface SceneInitialization {
     turn: number;
     playerActor: ActorInitialization;
     actors: ActorInitialization[];
-    tiles: TileInitialization[][];
+    tiles: TileInitialization[];
+    width: number;
+    height: number;
 }
 

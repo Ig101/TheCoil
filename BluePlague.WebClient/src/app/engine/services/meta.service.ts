@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
 import { RandomService } from 'src/app/shared/services/random.service';
 import { NativeService } from './native.service';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
+import { createSceneGenerationFactory } from '../scene-generation/scene-generation-factory.helper';
+import { TileInitialization } from '../models/scene/tile-initialization.model';
 
 @Injectable()
 export class MetaService {
@@ -42,8 +44,26 @@ export class MetaService {
     });
   }
 
-  private initializeScene(response: SceneSavedData): SceneInitialization {
-    throw new Error('Method not implemented.');
+  private initializeScene(): SceneInitialization {
+    this.randomService.setupNewSeed(this.metaInformation.seed);
+    const factory = createSceneGenerationFactory(this.metaInformation.roomType,
+      this.nativeService.getRoomSpawnsList(this.metaInformation.roomType, this.metaInformation.difficulty),
+      this.randomService);
+    const initialScene = factory.generate();
+    initialScene.turn = this.metaInformation.turn;
+    initialScene.tiles.length = initialScene.width;
+    for (let x = 0; x < initialScene.width; x++) {
+      for (let y = 0; y < initialScene.height; y++) {
+        if (!initialScene.tiles.find(tile => tile.x === x && tile.y === y)) {
+          initialScene.tiles.push({
+            x,
+            y,
+            native: this.nativeService.getTile(`default${this.metaInformation.roomType}`)
+          } as TileInitialization);
+        }
+      }
+    }
+    return initialScene;
   }
 
   private synchronization() {
@@ -66,8 +86,8 @@ export class MetaService {
       .pipe(map(response => {
         if (response.success) {
           this.metaInformationInternal = response.result.meta;
-          const sceneInitialization = this.initializeScene(response.result.scene);
-          this.sceneService.setupNewScene(sceneInitialization);
+          const sceneInitialization = this.initializeScene();
+          this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
           this.startSynchronizationTimer();
           return this.sceneService.getSceneSnapshot();
         }

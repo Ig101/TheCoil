@@ -8,6 +8,7 @@ import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { Actor } from '../scene/objects/actor.object';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
+import { NativeService } from './native.service';
 
 @Injectable()
 export class SceneService {
@@ -17,7 +18,9 @@ export class SceneService {
   private resoponseSubject = new Subject<EngineActionResponse[]>();
   private actionsSubject = new Subject<EnginePlayerAction[]>();
 
-  constructor() {
+  constructor(
+    private nativeService: NativeService
+  ) {
     this.actionsSubject.subscribe(this.doAction);
   }
 
@@ -25,8 +28,8 @@ export class SceneService {
     return this.resoponseSubject.subscribe(next);
   }
 
-  setupNewScene(scene: SceneInitialization) {
-    this.scene = new Scene(scene);
+  setupNewScene(scene: SceneInitialization, sceneSavedData: SceneSavedData) {
+    this.scene = new Scene(scene, sceneSavedData, this.nativeService);
   }
 
   getSceneSnapshot(): SceneSnapshot {
@@ -46,12 +49,10 @@ export class SceneService {
   }
 
   private doAction(actions: EnginePlayerAction[]) {
-    console.log(1);
     while (actions.length > 0) {
       const action = actions.shift();
       const changes = this.scene.playerAct(action);
       this.resoponseSubject.next(changes);
     }
-    console.log(2);
   }
 }

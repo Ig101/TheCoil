@@ -19,6 +19,7 @@ export class SynchronizationService {
 
   sendSynchronizationInfo(scene: SceneSavedData, meta: MetaInformation,
                           actions: EnginePlayerAction[]): Observable<ExternalResponse<EngineSnapshot>> {
+    meta.turn = scene.turn;
     return of({
       success: true,
       result: {
