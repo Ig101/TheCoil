@@ -16,6 +16,7 @@ export class Tile {
     readonly x: number;
     readonly y: number;
     sprite: Sprite; // native
+    backgroundColor: {r: number, g: number, b: number, a: number}; // native
     readonly nativeId: string;
     readonly tags: Tag<Tile>[]; // native
     readonly passable: boolean; // native
@@ -25,6 +26,7 @@ export class Tile {
             x: this.x,
             y: this.y,
             sprite: this.sprite.snapshot,
+            backgroundColor: this.backgroundColor,
             tags: this.tags,
             passable: this.passable
         } as TileSnapshot;
@@ -46,6 +48,7 @@ export class Tile {
         this.nativeId = tile.id;
         this.passable = tile.passable;
         this.tags = tile.tags;
+        this.backgroundColor = tile.backgroundColor;
         this.objects = [];
     }
 

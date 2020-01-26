@@ -7,6 +7,7 @@ export interface TileSnapshot {
     x: number;
     y: number;
     sprite: SpriteSnapshot;
+    backgroundColor: {r: number, g: number, b: number, a: number};
     tags: Tag<Tile>[];
     passable: boolean;
 }
