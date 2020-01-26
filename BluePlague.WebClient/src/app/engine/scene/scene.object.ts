@@ -73,8 +73,10 @@ export class Scene {
             if (savedData) {
                 const savedTile = savedData.changedTiles.find(x => x.x === tile.x && x.y === tile.y);
                 if (savedTile) {
-                    this.tiles[tile.x][tile.y] = new Tile(this,
+                    const newTile = new Tile(this,
                         this.nativeService.getTile(savedTile.nativeId), tile.x, tile.y);
+                    this.tiles[tile.x][tile.y] = newTile;
+                    this.changedTiles.push(newTile);
                     continue;
                 }
             }
@@ -90,6 +92,7 @@ export class Scene {
                 const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
                 if (savedActor) {
                     const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y);
+                    this.changedActors.push(newActor);
                     newActor.durability = savedActor.durability;
                     newActor.energy = savedActor.energy;
                     newActor.remainedTurnTime = savedActor.remainedTurnTime;
@@ -102,9 +105,11 @@ export class Scene {
             for (const actor of savedData.changedActors) {
                 if (!this.actors.find(x => x.id === actor.id)) {
                     const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y);
+                    this.changedActors.push(newActor);
                     newActor.id = actor.id;
                 }
             }
+            this.deletedActors = savedData.deletedActors;
             this.idIncrementor = savedData.idIncrementor;
         }
     }
@@ -214,7 +219,7 @@ export class Scene {
                 x: action.x,
                 y: action.y
             } as EngineAction,
-            changes: this.getSessionChages()
+            changes: this.getSessionChanges()
         } as EngineActionResponse;
         this.turn += timeShift;
         const reactions = this.actionReaction(action, timeShift);
@@ -237,7 +242,7 @@ export class Scene {
                         x: actor.x,
                         y: actor.y
                     } as EngineAction,
-                    changes: this.getSessionChages()
+                    changes: this.getSessionChanges()
                 } as EngineActionResponse);
                 this.actors.splice(i, 1);
                 i--;
@@ -264,7 +269,7 @@ export class Scene {
                         x: actor.x,
                         y: actor.y
                     } as EngineAction,
-                    changes: this.getSessionChages()
+                    changes: this.getSessionChanges()
                 } as EngineActionResponse);
             }
         }
@@ -272,7 +277,7 @@ export class Scene {
         return responses;
     }
 
-    private getSessionChages(): SceneChanges {
+    private getSessionChanges(): SceneChanges {
         const result = {
             turn: this.turn,
             changedActors: this.sessionChangedActors.map(x => x.snapshot),
