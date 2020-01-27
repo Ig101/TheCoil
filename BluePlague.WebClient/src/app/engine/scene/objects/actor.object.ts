@@ -179,7 +179,7 @@ export class Actor extends GameObject {
         return true;
     }
 
-    act(action: EnginePlayerAction): ActionResult[] {
+    act(action: EnginePlayerAction): {timeShift: number, actions: ActionResult[]} {
         // TODO Spells and another with strength and outcoming
         const actions = this.reactOnOutgoingAction(action);
         if (actions.length === 0) {
@@ -189,13 +189,17 @@ export class Actor extends GameObject {
                 message: ['default-nothing-happens']
             } as ActionResult);
         }
+        const timeShift = actions.reduce((sum, o) => sum + o.time, 0);
         const reactionTile = this.parent.getTile(action.x, action.y);
-        actions.push(...reactionTile.react(action.type, this));
+        actions.push(...reactionTile.react(action.type, this, timeShift));
         for (const object of reactionTile.objects) {
             if (object !== this) {
-                actions.push(...object.react(action.type, this));
+                actions.push(...object.react(action.type, this, timeShift));
             }
         }
-        return actions;
+        return {
+            timeShift,
+            actions
+        };
     }
 }

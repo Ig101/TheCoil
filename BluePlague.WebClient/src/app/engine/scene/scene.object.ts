@@ -195,7 +195,7 @@ export class Scene {
 
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
         const playerActions = this.player.act(action);
-        const timeShift = playerActions.reduce((sum, o) => sum + o.time, 0);
+        const timeShift = playerActions.timeShift;
         const response = {
             action: {
                 actorId: this.player.id,
@@ -205,7 +205,7 @@ export class Scene {
                 y: action.y
             } as EngineAction,
             changes: this.getSessionChanges(),
-            results: playerActions
+            results: playerActions.actions
         } as EngineActionResponse;
         if (timeShift === 0) {
             return [response];
@@ -227,7 +227,7 @@ export class Scene {
                     y: actor.y
                 } as EnginePlayerAction);
                 this.registerActorDeath(actor);
-                results.unshift({
+                results.actions.unshift({
                     time: 0,
                     message: ['default-death']
                 } as ActionResult);
@@ -240,7 +240,7 @@ export class Scene {
                         y: actor.y
                     } as EngineAction,
                     changes: this.getSessionChanges(),
-                    results
+                    results: results.actions
                 } as EngineActionResponse);
                 this.actors.splice(i, 1);
                 i--;

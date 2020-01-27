@@ -31,7 +31,7 @@ export abstract class GameObject implements IReactiveObject {
 
     abstract get tags(): Tag<unknown>[];
 
-    react(action: EngineActionTypeEnum, initiator: Actor, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
+    react(action: EngineActionTypeEnum, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
@@ -47,7 +47,7 @@ export abstract class GameObject implements IReactiveObject {
             if (chosenReaction) {
                 result.push({
                     time: 0,
-                    message: chosenReaction.action(this.parent, this, initiator, tag.weight, tagStrength)
+                    message: chosenReaction.action(this.parent, this, initiator, time, tag.weight, tagStrength)
                 });
             }
         }
