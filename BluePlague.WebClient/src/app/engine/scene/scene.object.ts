@@ -10,6 +10,7 @@ import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
+import { ActionResult } from './models/action-result.model';
 
 export class Scene {
 
@@ -193,7 +194,8 @@ export class Scene {
     }
 
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
-        const timeShift = this.player.act(action);
+        const playerActions = this.player.act(action);
+        const timeShift = playerActions.reduce((sum, o) => sum + o.time, 0);
         const response = {
             action: {
                 actorId: this.player.id,
@@ -202,8 +204,12 @@ export class Scene {
                 x: action.x,
                 y: action.y
             } as EngineAction,
-            changes: this.getSessionChanges()
+            changes: this.getSessionChanges(),
+            results: playerActions
         } as EngineActionResponse;
+        if (timeShift === 0) {
+            return [response];
+        }
         this.turn += timeShift;
         const reactions = this.actionReaction(action, timeShift);
         return [response, ...reactions];
@@ -215,12 +221,16 @@ export class Scene {
         for (let i = 0; i < this.actors.length; i++) {
             const actor = this.actors[i];
             if (actor.dead) {
-                actor.act({
+                const results = actor.act({
                     type: EngineActionTypeEnum.Die,
                     x: actor.x,
                     y: actor.y
                 } as EnginePlayerAction);
                 this.registerActorDeath(actor);
+                results.unshift({
+                    time: 0,
+                    message: ['default-death']
+                } as ActionResult);
                 deaths.push({
                     action: {
                         actorId: actor.id,
@@ -229,7 +239,8 @@ export class Scene {
                         x: actor.x,
                         y: actor.y
                     } as EngineAction,
-                    changes: this.getSessionChanges()
+                    changes: this.getSessionChanges(),
+                    results
                 } as EngineActionResponse);
                 this.actors.splice(i, 1);
                 i--;
@@ -247,11 +258,14 @@ export class Scene {
         for (const actor of this.actors) {
             actor.update(time);
             if (actor !== this.player) {
-                actor.act({
-                    type: EngineActionTypeEnum.Wait,
-                    x: actor.x,
-                    y: actor.y
-                } as EnginePlayerAction);
+                const results = [];
+                while (actor.remainedTurnTime <= 0) {
+                    results.push(actor.act({
+                        type: EngineActionTypeEnum.Wait,
+                        x: actor.x,
+                        y: actor.y
+                    } as EnginePlayerAction));
+                }
                 responses.push({
                     action: {
                         actorId: actor.id,
@@ -260,7 +274,8 @@ export class Scene {
                         x: actor.x,
                         y: actor.y
                     } as EngineAction,
-                    changes: this.getSessionChanges()
+                    changes: this.getSessionChanges(),
+                    results
                 } as EngineActionResponse);
             }
         }

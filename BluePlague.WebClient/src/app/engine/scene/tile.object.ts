@@ -9,6 +9,7 @@ import { TileSnapshot } from '../models/scene/tile-snapshot.model';
 import { TileSavedData } from '../models/scene/tile-saved-data.model';
 import { ImpactTag } from './models/impact-tag.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
+import { ActionResult } from './models/action-result.model';
 
 export class Tile implements IReactiveObject {
 
@@ -54,7 +55,8 @@ export class Tile implements IReactiveObject {
         this.objects = [];
     }
 
-    react(action: EngineActionTypeEnum, initiator: Actor, impactTags?: ImpactTag[], strength?: number) {
+    react(action: EngineActionTypeEnum, initiator: Actor, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
+        const result = [];
         const tags = this.tags;
         for (const tag of tags) {
             let tagStrength = strength;
@@ -67,8 +69,12 @@ export class Tile implements IReactiveObject {
             }
             const chosenReaction = tag.targetActionReactions[action];
             if (chosenReaction) {
-                chosenReaction(this.parent, this, initiator, tag.weight, tagStrength);
+                result.push({
+                    time: 0,
+                    message: chosenReaction.action(this.parent, this, initiator, tag.weight, tagStrength)
+                });
             }
         }
+        return result;
     }
 }

@@ -9,6 +9,7 @@ import { ActorSavedData } from '../../models/scene/objects/actor-saved-data.mode
 import { SpriteSnapshot } from '../../models/scene/abstract/sprite-snapshot.model';
 import { EnginePlayerAction } from '../../models/engine-player-action.model';
 import { ImpactTag } from '../models/impact-tag.model';
+import { ActionResult } from '../models/action-result.model';
 
 export class Actor extends GameObject {
     readonly nativeId: string;
@@ -137,8 +138,8 @@ export class Actor extends GameObject {
         this.remainedTurnTime -= time;
     }
 
-    reactOnOutgoingAction(action: EnginePlayerAction, impactTags?: ImpactTag[], strength?: number): number {
-        let time = 0;
+    reactOnOutgoingAction(action: EnginePlayerAction, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
+        const result = [];
         const tags = this.calculatedTags;
         for (const tag of tags) {
             let tagStrength = strength;
@@ -151,10 +152,12 @@ export class Actor extends GameObject {
             }
             const chosenReaction = tag.selfActionReactions[action.type];
             if (chosenReaction) {
-                time += chosenReaction.action(this.parent, this, action.x, action.y, tag.weight, tagStrength);
+                const reaction = chosenReaction.action(this.parent, this, action.x, action.y, tag.weight, tagStrength);
+                this.remainedTurnTime += reaction.time;
+                result.push(reaction);
             }
         }
-        return time;
+        return result;
     }
 
     validateAction(action: EnginePlayerAction, impactTags?: ImpactTag[]): boolean {
@@ -162,7 +165,6 @@ export class Actor extends GameObject {
             return false;
         }
         const tags = this.calculatedTags;
-        let valid = false;
         for (const tag of tags) {
             if (tag.interactionTag) {
                 if (!impactTags || !impactTags.find(x => x.name === tag.interactionTag)) {
@@ -170,67 +172,32 @@ export class Actor extends GameObject {
                 }
             }
             const chosenReaction = tag.selfActionReactions[action.type];
-            if (chosenReaction) {
-                valid = chosenReaction.validator(this.parent, this, action.x, action.y);
-                if (!valid) {
+            if (chosenReaction && chosenReaction.validator) {
+                if (!chosenReaction.validator(this.parent, this, action.x, action.y)) {
                     return false;
                 }
             }
         }
-        return valid;
-    }
-
-    act(action: EnginePlayerAction): number {
-        // TODO Spells and another with strength and outcoming
-        const time = this.reactOnOutgoingAction(action);
-        const reactionTile = this.parent.getTile(action.x, action.y);
-        reactionTile.react(action.type, this);
-        for (const object of reactionTile.objects) {
-            object.react(action.type, this);
-        }
-        return time;
-    }
-
-  /*  checkMoveActionAvailability(xShift: number, yShift: number): boolean {
-        if (this.remainedTurnTime > 0 || xShift > 1 || yShift > 1 || xShift < -1 || yShift < -1) {
-            return false;
-        }
-        const tile = this.parent.getTile(this.x + xShift, this.y + yShift);
-        if (!tile.passable || tile.objects.filter(x => (x instanceof Actor && !x.passable)).length > 0) {
-            return false;
-        }
         return true;
     }
 
-    moveAction(xShift: number, yShift: number): number {
-        const timeShift = this.calculatedSpeedModification;
-        this.remainedTurnTime += timeShift;
-        const tile = this.parent.getTile(this.x + xShift, this.y + yShift);
-        this.changePositionToTile(tile);
-        this.tile.react(EngineActionTypeEnum.Move, null, null);
-        this.reactOnSelf(EngineActionTypeEnum.Move, null, null);
-        return timeShift;
-    }
-
-    waitAction(): number {
-        let timeShift = 0;
-        if (this.parent.playerId === this.id) {
-            timeShift = this.calculatedSpeedModification;
+    act(action: EnginePlayerAction): ActionResult[] {
+        // TODO Spells and another with strength and outcoming
+        const actions = this.reactOnOutgoingAction(action);
+        if (actions.length === 0) {
             this.remainedTurnTime += this.calculatedSpeedModification;
-        } else {
-            while (this.remainedTurnTime < 0) {
-                this.remainedTurnTime += this.calculatedSpeedModification;
-                timeShift += this.calculatedSpeedModification;
+            actions.push({
+                time: this.calculatedSpeedModification,
+                message: ['default-nothing-happens']
+            } as ActionResult);
+        }
+        const reactionTile = this.parent.getTile(action.x, action.y);
+        actions.push(...reactionTile.react(action.type, this));
+        for (const object of reactionTile.objects) {
+            if (object !== this) {
+                actions.push(...object.react(action.type, this));
             }
         }
-        this.tile.react(EngineActionTypeEnum.Wait, null, null);
-        this.reactOnSelf(EngineActionTypeEnum.Wait, null, null);
-        return timeShift;
+        return actions;
     }
-
-    dieAction(): number {
-        this.tile.react(EngineActionTypeEnum.Die, null, null);
-        this.reactOnSelf(EngineActionTypeEnum.Die, null, null);
-        return 0;
-    }*/
 }

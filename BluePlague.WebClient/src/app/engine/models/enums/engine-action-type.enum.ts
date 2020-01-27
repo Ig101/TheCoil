@@ -1,5 +1,5 @@
 export enum EngineActionTypeEnum {
-    Die,
+    Die, // System action, no use in allowed
     Move,
     Wait
 }
