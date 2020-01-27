@@ -11,6 +11,10 @@ import { LevelLinksNative } from '../models/natives/level-links-native.model';
 import { RoomSpawnNative } from '../models/natives/room-spawn-native.model';
 import { TileNative } from '../models/natives/tile-native.model';
 import { SpriteNative } from '../models/natives/sprite-native.model';
+import { ActionTag } from '../scene/models/action-tag.model';
+import { getActionTagsRegistry } from '../tag-actions/action-tags-registry';
+import { getActorTagsRegistry } from '../tag-actions/actor-tags-registry';
+import { getTileTagsRegistry } from '../tag-actions/tile-tags-registry';
 
 @Injectable()
 export class NativeService {
@@ -21,6 +25,7 @@ export class NativeService {
   private tiles: { [id: string]: TileNative; };
   private sprites: { [id: string]: SpriteNative; };
   // Internal
+  private actionTags: { [tag: string]: ActionTag; };
   private actorTags: { [tag: string]: Tag<Actor>; };
   private tileTags: { [tag: string]: Tag<Tile>; };
 
@@ -59,6 +64,8 @@ export class NativeService {
   }
 
   private loadInternalNatives() {
-    throw new Error('Method not implemented.');
+    this.actionTags = getActionTagsRegistry();
+    this.actorTags = getActorTagsRegistry();
+    this.tileTags = getTileTagsRegistry();
   }
 }
