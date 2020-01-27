@@ -3,6 +3,9 @@ import { Tag } from './tag.model';
 import { Scene } from '../scene.object';
 import { OutgoingActionReaction } from './outgoing-action-reaction.model';
 
-export interface ActorTag extends Tag<Actor> {
-    selfActionReactions: { [id: number]: OutgoingActionReaction };
+export interface ActionTag {
+    name: string;
+    interactionTag?: string; // is null, any tag is suitable
+    weight?: number;
+    reactions: { [id: number]: OutgoingActionReaction };
 }

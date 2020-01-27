@@ -3,13 +3,14 @@ import { EngineActionTypeEnum } from '../../models/enums/engine-action-type.enum
 import { Scene } from '../scene.object';
 import { ActorNative } from '../../models/natives/actor-native.model';
 import { Tile } from '../tile.object';
-import { ActorTag } from '../models/actor-tag.model';
+import { ActionTag } from '../models/action-tag.model';
 import { ActorSnapshot } from '../../models/scene/objects/actor-snapshot.model';
 import { ActorSavedData } from '../../models/scene/objects/actor-saved-data.model';
 import { SpriteSnapshot } from '../../models/scene/abstract/sprite-snapshot.model';
 import { EnginePlayerAction } from '../../models/engine-player-action.model';
 import { ImpactTag } from '../models/impact-tag.model';
 import { ActionResult } from '../models/action-result.model';
+import { Tag } from '../models/tag.model';
 
 export class Actor extends GameObject {
     readonly nativeId: string;
@@ -17,7 +18,8 @@ export class Actor extends GameObject {
     readonly speedModificator: number; // native
     readonly maxDurability: number; // native
     readonly maxEnergy: number; // native
-    readonly tags: ActorTag[]; // native
+    readonly tags: Tag<Actor>[]; // native
+    readonly actionTags: ActionTag[];
 
     readonly passable: boolean; // native
     dead: boolean; // notSync
@@ -25,6 +27,13 @@ export class Actor extends GameObject {
     durability: number;
     energy: number;
     remainedTurnTime: number;
+
+    calculatedSpeedModification: number;
+    calculatedMaxDurability: number;
+    calculatedMaxEnergy: number;
+    calculatedTags: Tag<Actor>[];
+    calculatedActionTags: ActionTag[];
+    calculatedAllowedActions: EngineActionTypeEnum[];
 
     get snapshot(): ActorSnapshot {
         return {
@@ -36,6 +45,7 @@ export class Actor extends GameObject {
             speedModificator: this.calculatedSpeedModification,
             maxDurability: this.calculatedMaxDurability,
             maxEnergy: this.calculatedMaxEnergy,
+            actionsTags: this.calculatedActionTags,
             tags: this.calculatedTags,
             passable: this.passable,
             durability: this.durability,
@@ -56,27 +66,6 @@ export class Actor extends GameObject {
         } as ActorSavedData;
     }
 
-
-    get calculatedSpeedModification() {
-        return this.speedModificator;
-    }
-
-    get calculatedMaxDurability() {
-        return this.maxDurability;
-    }
-
-    get calculatedMaxEnergy() {
-        return this.maxEnergy;
-    }
-
-    get calculatedTags() {
-        return this.tags;
-    }
-
-    get calculatedAllowedActions() {
-        return this.allowedActions;
-    }
-
     constructor(parent: Scene, id: number, native: ActorNative, x: number, y: number) {
         super(parent, id, native.sprite, x, y);
         this.nativeId = native.id;
@@ -87,9 +76,18 @@ export class Actor extends GameObject {
         this.maxEnergy = native.maxEnergy;
         this.energy = this.maxEnergy;
         this.tags = native.tags;
+        this.actionTags = native.actionTags;
         this.passable = native.passable;
         this.dead = false;
         this.remainedTurnTime = 0;
+
+        this.calculatedActionTags = this.actionTags;
+        this.calculatedAllowedActions = this.calculatedAllowedActions;
+        this.calculatedMaxDurability = this.calculatedMaxDurability;
+        this.calculatedMaxEnergy = this.calculatedMaxEnergy;
+        this.calculatedSpeedModification = this.calculatedSpeedModification;
+        this.calculatedTags = this.calculatedTags;
+
         this.tile = parent.getTile(x, y);
         this.tile.objects.push(this);
     }
@@ -140,7 +138,7 @@ export class Actor extends GameObject {
 
     reactOnOutgoingAction(action: EnginePlayerAction, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
         const result = [];
-        const tags = this.calculatedTags;
+        const tags = this.calculatedActionTags;
         for (const tag of tags) {
             let tagStrength = strength;
             if (tag.interactionTag) {
@@ -150,7 +148,7 @@ export class Actor extends GameObject {
                 }
                 tagStrength = impactTag.strength;
             }
-            const chosenReaction = tag.selfActionReactions[action.type];
+            const chosenReaction = tag.reactions[action.type];
             if (chosenReaction) {
                 const reaction = chosenReaction.action(this.parent, this, action.x, action.y, tag.weight, tagStrength);
                 this.remainedTurnTime += reaction.time;
@@ -164,14 +162,14 @@ export class Actor extends GameObject {
         if (!this.allowedActions.includes(action.type)) {
             return false;
         }
-        const tags = this.calculatedTags;
+        const tags = this.calculatedActionTags;
         for (const tag of tags) {
             if (tag.interactionTag) {
                 if (!impactTags || !impactTags.find(x => x.name === tag.interactionTag)) {
                     continue;
                 }
             }
-            const chosenReaction = tag.selfActionReactions[action.type];
+            const chosenReaction = tag.reactions[action.type];
             if (chosenReaction && chosenReaction.validator) {
                 if (!chosenReaction.validator(this.parent, this, action.x, action.y)) {
                     return false;

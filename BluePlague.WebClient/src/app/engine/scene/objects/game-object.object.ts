@@ -43,7 +43,7 @@ export abstract class GameObject implements IReactiveObject {
                 }
                 tagStrength = impactTag.strength;
             }
-            const chosenReaction = tag.targetActionReactions[action];
+            const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 result.push({
                     time: 0,

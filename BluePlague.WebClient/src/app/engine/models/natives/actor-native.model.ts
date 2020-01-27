@@ -1,6 +1,8 @@
 import { SpriteNative } from './sprite-native.model';
 import { EngineActionTypeEnum } from '../enums/engine-action-type.enum';
-import { ActorTag } from '../../scene/models/actor-tag.model';
+import { ActionTag } from '../../scene/models/action-tag.model';
+import { Actor } from '../../scene/objects/actor.object';
+import { Tag } from '../../scene/models/tag.model';
 
 export interface ActorNative {
     id: string;
@@ -9,6 +11,7 @@ export interface ActorNative {
     speedModificator: number;
     maxDurability: number;
     maxEnergy: number;
-    tags: ActorTag[];
+    tags: Tag<Actor>[];
+    actionTags: ActionTag[];
     passable: boolean;
 }

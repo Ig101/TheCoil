@@ -67,7 +67,7 @@ export class Tile implements IReactiveObject {
                 }
                 tagStrength = impactTag.strength;
             }
-            const chosenReaction = tag.targetActionReactions[action];
+            const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 result.push({
                     time: 0,
