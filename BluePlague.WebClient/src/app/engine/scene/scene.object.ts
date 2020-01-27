@@ -172,20 +172,11 @@ export class Scene {
             return null;
         }
         switch (action.type) {
-            case EngineActionTypeEnum.Move:
-                const xShift = action.x - this.player.x;
-                const yShift = action.y - this.player.y;
-                if (xShift === 0 && yShift === 0) {
-                    action.type = EngineActionTypeEnum.Wait;
+            default:
+                const availability = this.player.validateAction(action);
+                if (availability) {
                     return [action];
                 }
-                // TODO A* in future
-                if (!this.player.checkMoveActionAvailability(xShift, yShift)) {
-                    return null;
-                }
-                return [action];
-            default:
-                return [action];
         }
     }
 
@@ -202,15 +193,7 @@ export class Scene {
     }
 
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
-        let timeShift = 0;
-        switch (action.type) {
-            case EngineActionTypeEnum.Move:
-                timeShift = this.player.moveAction(action.x - this.player.x, action.y - this.player.y);
-                break;
-            case EngineActionTypeEnum.Wait:
-                timeShift = this.player.waitAction();
-                break;
-        }
+        const timeShift = this.player.act(action);
         const response = {
             action: {
                 actorId: this.player.id,
@@ -232,7 +215,11 @@ export class Scene {
         for (let i = 0; i < this.actors.length; i++) {
             const actor = this.actors[i];
             if (actor.dead) {
-                actor.dieAction();
+                actor.act({
+                    type: EngineActionTypeEnum.Die,
+                    x: actor.x,
+                    y: actor.y
+                } as EnginePlayerAction);
                 this.registerActorDeath(actor);
                 deaths.push({
                     action: {
@@ -260,7 +247,11 @@ export class Scene {
         for (const actor of this.actors) {
             actor.update(time);
             if (actor !== this.player) {
-                actor.waitAction();
+                actor.act({
+                    type: EngineActionTypeEnum.Wait,
+                    x: actor.x,
+                    y: actor.y
+                } as EnginePlayerAction);
                 responses.push({
                     action: {
                         actorId: actor.id,

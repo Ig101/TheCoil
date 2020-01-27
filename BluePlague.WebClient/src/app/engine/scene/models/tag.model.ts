@@ -3,7 +3,7 @@ import { Actor } from '../objects/actor.object';
 
 export interface Tag<T> {
     name: string;
-    interactionTags?: string[]; // is null, any tag is suitable
+    interactionTag?: string; // is null, any tag is suitable
     weight?: number;
-    targetActionReactions: { [id: number]: (scene: Scene, object: T, weight?: number, strength?: number) => never; };
+    targetActionReactions: { [id: number]: (scene: Scene, object: T, initiator: Actor, weight?: number, strength?: number) => void; };
 }

@@ -7,8 +7,10 @@ import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { GameObject } from './objects/game-object.object';
 import { TileSnapshot } from '../models/scene/tile-snapshot.model';
 import { TileSavedData } from '../models/scene/tile-saved-data.model';
+import { ImpactTag } from './models/impact-tag.model';
+import { IReactiveObject } from './interfaces/reactive-object.interface';
 
-export class Tile {
+export class Tile implements IReactiveObject {
 
     parent: Scene;
     objects: GameObject[];
@@ -52,13 +54,20 @@ export class Tile {
         this.objects = [];
     }
 
-    react(action: EngineActionTypeEnum, impactTags?: string[], strength?: number) {
-        const filteredTags = this.tags
-            .filter(x => (!x.interactionTags || (impactTags && impactTags.find(tag => x.interactionTags.includes(tag)))));
-        for (const tag of filteredTags) {
+    react(action: EngineActionTypeEnum, initiator: Actor, impactTags?: ImpactTag[], strength?: number) {
+        const tags = this.tags;
+        for (const tag of tags) {
+            let tagStrength = strength;
+            if (tag.interactionTag) {
+                const impactTag = impactTags.find(x => x.name === tag.interactionTag);
+                if (!impactTag) {
+                    continue;
+                }
+                tagStrength = impactTag.strength;
+            }
             const chosenReaction = tag.targetActionReactions[action];
             if (chosenReaction) {
-                chosenReaction(this.parent, this, tag.weight, strength);
+                chosenReaction(this.parent, this, initiator, tag.weight, tagStrength);
             }
         }
     }

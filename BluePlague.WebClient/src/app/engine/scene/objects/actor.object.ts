@@ -7,9 +7,10 @@ import { ActorTag } from '../models/actor-tag.model';
 import { ActorSnapshot } from '../../models/scene/objects/actor-snapshot.model';
 import { ActorSavedData } from '../../models/scene/objects/actor-saved-data.model';
 import { SpriteSnapshot } from '../../models/scene/abstract/sprite-snapshot.model';
+import { EnginePlayerAction } from '../../models/engine-player-action.model';
+import { ImpactTag } from '../models/impact-tag.model';
 
 export class Actor extends GameObject {
-
     readonly nativeId: string;
     readonly allowedActions: EngineActionTypeEnum[]; // native
     readonly speedModificator: number; // native
@@ -136,29 +137,61 @@ export class Actor extends GameObject {
         this.remainedTurnTime -= time;
     }
 
-    reactOnTarget(action: EngineActionTypeEnum, impactTags?: string[], strength?: number) {
-        const filteredTags = this.calculatedTags
-            .filter(x => (!x.interactionTags || (impactTags && impactTags.find(tag => x.interactionTags.includes(tag)))));
-        for (const tag of filteredTags) {
-            const chosenReaction = tag.targetActionReactions[action];
+    reactOnOutgoingAction(action: EnginePlayerAction, impactTags?: ImpactTag[], strength?: number): number {
+        let time = 0;
+        const tags = this.calculatedTags;
+        for (const tag of tags) {
+            let tagStrength = strength;
+            if (tag.interactionTag) {
+                const impactTag = impactTags.find(x => x.name === tag.interactionTag);
+                if (!impactTag) {
+                    continue;
+                }
+                tagStrength = impactTag.strength;
+            }
+            const chosenReaction = tag.selfActionReactions[action.type];
             if (chosenReaction) {
-                chosenReaction(this.parent, this, tag.weight, strength);
+                time += chosenReaction.action(this.parent, this, action.x, action.y, tag.weight, tagStrength);
             }
         }
+        return time;
     }
 
-    reactOnSelf(action: EngineActionTypeEnum, impactTags?: string[], strength?: number) {
-        const filteredTags = this.calculatedTags
-            .filter(x => (!x.interactionTags || (impactTags && impactTags.find(tag => x.interactionTags.includes(tag)))));
-        for (const tag of filteredTags) {
-            const chosenReaction = tag.selfActionReactions[action];
+    validateAction(action: EnginePlayerAction, impactTags?: ImpactTag[]): boolean {
+        if (!this.allowedActions.includes(action.type)) {
+            return false;
+        }
+        const tags = this.calculatedTags;
+        let valid = false;
+        for (const tag of tags) {
+            if (tag.interactionTag) {
+                if (!impactTags || !impactTags.find(x => x.name === tag.interactionTag)) {
+                    continue;
+                }
+            }
+            const chosenReaction = tag.selfActionReactions[action.type];
             if (chosenReaction) {
-                chosenReaction(this.parent, this, tag.weight, strength);
+                valid = chosenReaction.validator(this.parent, this, action.x, action.y);
+                if (!valid) {
+                    return false;
+                }
             }
         }
+        return valid;
     }
 
-    checkMoveActionAvailability(xShift: number, yShift: number): boolean {
+    act(action: EnginePlayerAction): number {
+        // TODO Spells and another with strength and outcoming
+        const time = this.reactOnOutgoingAction(action);
+        const reactionTile = this.parent.getTile(action.x, action.y);
+        reactionTile.react(action.type, this);
+        for (const object of reactionTile.objects) {
+            object.react(action.type, this);
+        }
+        return time;
+    }
+
+  /*  checkMoveActionAvailability(xShift: number, yShift: number): boolean {
         if (this.remainedTurnTime > 0 || xShift > 1 || yShift > 1 || xShift < -1 || yShift < -1) {
             return false;
         }
@@ -199,5 +232,5 @@ export class Actor extends GameObject {
         this.tile.react(EngineActionTypeEnum.Die, null, null);
         this.reactOnSelf(EngineActionTypeEnum.Die, null, null);
         return 0;
-    }
+    }*/
 }
