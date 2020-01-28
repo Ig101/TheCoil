@@ -4,7 +4,6 @@ import { Scene } from '../scene/scene.object';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
 import { SceneInitialization } from '../models/scene/scene-initialization.model';
-import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { Actor } from '../scene/objects/actor.object';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';

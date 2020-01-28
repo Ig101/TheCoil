@@ -3,13 +3,11 @@ import { Tag } from './models/tag.model';
 import { Sprite } from './abstract/sprite.object';
 import { TileNative } from '../models/natives/tile-native.model';
 import { Actor } from './objects/actor.object';
-import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { GameObject } from './objects/game-object.object';
 import { TileSnapshot } from '../models/scene/tile-snapshot.model';
 import { TileSavedData } from '../models/scene/tile-saved-data.model';
 import { ImpactTag } from './models/impact-tag.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
-import { ActionResult } from './models/action-result.model';
 
 export class Tile implements IReactiveObject {
 
@@ -55,13 +53,13 @@ export class Tile implements IReactiveObject {
         this.objects = [];
     }
 
-    react(action: EngineActionTypeEnum, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
+    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): string[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
             let tagStrength = strength;
-            if (tag.interactionTag) {
-                const impactTag = impactTags.find(x => x.name === tag.interactionTag);
+            if (tag.impactTag) {
+                const impactTag = impactTags.find(x => x.name === tag.impactTag);
                 if (!impactTag) {
                     continue;
                 }
@@ -71,7 +69,7 @@ export class Tile implements IReactiveObject {
             if (chosenReaction) {
                 result.push({
                     time: 0,
-                    message: chosenReaction.action(this.parent, this, initiator, time, tag.weight, tagStrength)
+                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, tagStrength)
                 });
             }
         }

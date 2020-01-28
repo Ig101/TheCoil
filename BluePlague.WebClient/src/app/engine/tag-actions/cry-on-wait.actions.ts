@@ -1,11 +1,24 @@
 import { Scene } from '../scene/scene.object';
-import { ActionResult } from '../scene/models/action-result.model';
 import { Actor } from '../scene/objects/actor.object';
+import { ReactionResult } from '../scene/models/reaction-result.model';
+import { ActorTag } from '../scene/models/actor-tag.model';
 
-export function cryOnWaitWaitOutgoing(scene: Scene, object: Actor, x: number, y: number,
-                                      weight: number, strength?: number): ActionResult {
+function cryOnWaitWaitOutgoing(scene: Scene, object: Actor, x: number, y: number,
+                               weight?: number, strength?: number): ReactionResult  {
   return {
     time: 0,
-    message: ['cry-on-wait']
-  } as ActionResult;
+    message: [object.name, 'cry-on-wait']
+  };
+}
+
+export function registerCryOnWaitTag(): ActorTag {
+  return {
+    name: 'cryOnWait',
+    reactions: { },
+    outgoingReactions: {
+      wait: {
+        reaction: cryOnWaitWaitOutgoing
+      }
+    }
+  };
 }

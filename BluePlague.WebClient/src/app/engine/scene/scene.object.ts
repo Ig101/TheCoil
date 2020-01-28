@@ -4,14 +4,12 @@ import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { Actor } from './objects/actor.object';
 import { SceneChanges } from '../models/scene/scene-changes.model';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
-import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
-import { ActionResult } from './models/action-result.model';
-
+import { DefaultActionEnum } from '../models/enums/default-action.enum';
 export class Scene {
 
     private changedActors: Actor[] = [];
@@ -169,9 +167,6 @@ export class Scene {
 
     // if null, action is restricted
     parsePlayerAction(action: EnginePlayerAction): EnginePlayerAction[] {
-        if (!this.player.calculatedAllowedActions.includes(action.type)) {
-            return null;
-        }
         switch (action.type) {
             default:
                 const availability = this.player.validateAction(action);
@@ -183,9 +178,9 @@ export class Scene {
 
     parseAllPlayerActions(x: number, y: number): { [action: number]: EnginePlayerAction[]; } {
         const dictionary: { [action: number]: EnginePlayerAction[]; } = {};
-        for (const action of this.player.allowedActions) {
-            dictionary[action] = this.parsePlayerAction({
-                type: action,
+        for (const action of Object.values(this.player.actions)) {
+            dictionary[action.name] = this.parsePlayerAction({
+                type: action.name,
                 x,
                 y
             } as EnginePlayerAction);
@@ -205,7 +200,7 @@ export class Scene {
                 y: action.y
             } as EngineAction,
             changes: this.getSessionChanges(),
-            results: playerActions.actions
+            results: playerActions.reactionResults
         } as EngineActionResponse;
         if (timeShift === 0) {
             return [response];
@@ -222,25 +217,21 @@ export class Scene {
             const actor = this.actors[i];
             if (actor.dead) {
                 const results = actor.act({
-                    type: EngineActionTypeEnum.Die,
+                    type: DefaultActionEnum.Die,
                     x: actor.x,
                     y: actor.y
                 } as EnginePlayerAction);
                 this.registerActorDeath(actor);
-                results.actions.unshift({
-                    time: 0,
-                    message: ['default-death']
-                } as ActionResult);
                 deaths.push({
                     action: {
                         actorId: actor.id,
-                        type: EngineActionTypeEnum.Die,
+                        type: DefaultActionEnum.Die,
                         extraIdentifier: undefined,
                         x: actor.x,
                         y: actor.y
                     } as EngineAction,
                     changes: this.getSessionChanges(),
-                    results: results.actions
+                    results: results.reactionResults
                 } as EngineActionResponse);
                 this.actors.splice(i, 1);
                 i--;
@@ -261,7 +252,7 @@ export class Scene {
                 const results = [];
                 while (actor.remainedTurnTime <= 0) {
                     results.push(actor.act({
-                        type: EngineActionTypeEnum.Wait,
+                        type: 'wait',
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction));
@@ -269,7 +260,7 @@ export class Scene {
                 responses.push({
                     action: {
                         actorId: actor.id,
-                        type: EngineActionTypeEnum.Wait,
+                        type: 'wait',
                         extraIdentifier: undefined,
                         x: actor.x,
                         y: actor.y

@@ -3,7 +3,6 @@ import { MetaService } from './meta.service';
 import { SceneService } from './scene.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
-import { EngineActionTypeEnum } from '../models/enums/engine-action-type.enum';
 import { SynchronizationService } from './synchronization.service';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { EngineSnapshot } from '../models/engine-snapshot.model';

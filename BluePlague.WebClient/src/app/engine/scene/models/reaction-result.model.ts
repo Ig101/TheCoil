@@ -1,4 +1,4 @@
-export interface ActionResult {
+export interface ReactionResult {
   time: number;
   message?: string[];
 }

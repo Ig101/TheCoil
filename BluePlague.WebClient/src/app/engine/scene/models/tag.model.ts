@@ -1,10 +1,10 @@
 import { Scene } from '../scene.object';
 import { Actor } from '../objects/actor.object';
 import { IncomingActionReaction } from './incoming-action-reaction.model';
+import { IReactiveObject } from '../interfaces/reactive-object.interface';
 
 export interface Tag<T> {
     name: string;
-    interactionTag?: string; // is null, any tag is suitable
-    weight?: number;
-    reactions: { [id: number]: IncomingActionReaction<T> };
+    impactTag?: string; // is null, any tag is suitable
+    reactions: { [group: string]: IncomingActionReaction<T> };
 }

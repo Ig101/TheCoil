@@ -1,14 +1,12 @@
 import { Scene } from '../scene.object';
 import { Sprite } from '../abstract/sprite.object';
 import { SpriteNative } from '../../models/natives/sprite-native.model';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Tile } from '../tile.object';
-import { EngineActionTypeEnum } from '../../models/enums/engine-action-type.enum';
 import { Actor } from './actor.object';
 import { ImpactTag } from '../models/impact-tag.model';
 import { Tag } from '../models/tag.model';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
-import { ActionResult } from '../models/action-result.model';
+import { ReactionResult } from '../models/reaction-result.model';
 
 export abstract class GameObject implements IReactiveObject {
 
@@ -19,9 +17,11 @@ export abstract class GameObject implements IReactiveObject {
     id: number;
     x: number;
     y: number;
+    name: string;
     sprite: Sprite; // native
 
-    constructor(parent: Scene, id: number, sprite: SpriteNative, x: number, y: number) {
+    constructor(parent: Scene, id: number, sprite: SpriteNative, x: number, y: number, name: string) {
+        this.name = name;
         this.x = x;
         this.y = y;
         this.id = id;
@@ -31,13 +31,13 @@ export abstract class GameObject implements IReactiveObject {
 
     abstract get tags(): Tag<unknown>[];
 
-    react(action: EngineActionTypeEnum, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): ActionResult[] {
+    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): string[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
             let tagStrength = strength;
-            if (tag.interactionTag) {
-                const impactTag = impactTags.find(x => x.name === tag.interactionTag);
+            if (tag.impactTag) {
+                const impactTag = impactTags.find(x => x.name === tag.impactTag);
                 if (!impactTag) {
                     continue;
                 }
@@ -47,7 +47,7 @@ export abstract class GameObject implements IReactiveObject {
             if (chosenReaction) {
                 result.push({
                     time: 0,
-                    message: chosenReaction.action(this.parent, this, initiator, time, tag.weight, tagStrength)
+                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, tagStrength)
                 });
             }
         }
