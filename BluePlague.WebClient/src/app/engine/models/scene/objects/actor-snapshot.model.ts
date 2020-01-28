@@ -6,6 +6,7 @@ import { ActorAction } from 'src/app/engine/scene/models/actor-action.model';
 
 export interface ActorSnapshot extends GameObjectSnapshot {
     speedModificator: number;
+    weight: number;
     maxDurability: number;
     maxEnergy: number;
     passable: boolean;

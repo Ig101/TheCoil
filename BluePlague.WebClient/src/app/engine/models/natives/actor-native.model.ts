@@ -9,6 +9,7 @@ export interface ActorNative {
     name: string;
     sprite: SpriteNative;
     speedModificator: number;
+    weight: number;
     maxDurability: number;
     maxEnergy: number;
     tags: ActionTag<Actor>[];

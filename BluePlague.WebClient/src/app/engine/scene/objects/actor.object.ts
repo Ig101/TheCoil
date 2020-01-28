@@ -16,6 +16,7 @@ import { IActiveObject } from '../interfaces/active-object.interface';
 export class Actor extends GameObject implements IActiveObject {
     readonly nativeId: string;
     readonly speedModificator: number; // native
+    readonly weight: number; // native
     readonly maxDurability: number; // native
     readonly maxEnergy: number; // native
     readonly tags: ActionTag<Actor>[]; // native
@@ -30,6 +31,7 @@ export class Actor extends GameObject implements IActiveObject {
 
     calculatedSpeedModification: number;
     calculatedMaxDurability: number;
+    calculatedWeight: number;
     calculatedMaxEnergy: number;
     calculatedTags: ActionTag<Actor>[];
     calculatedActions: { [name: string]: ActorAction; };
@@ -39,6 +41,7 @@ export class Actor extends GameObject implements IActiveObject {
             id: this.id,
             x: this.x,
             y: this.y,
+            weight: this.calculatedWeight,
             sprite: this.sprite.snapshot,
             speedModificator: this.calculatedSpeedModification,
             maxDurability: this.calculatedMaxDurability,
@@ -69,6 +72,7 @@ export class Actor extends GameObject implements IActiveObject {
         this.nativeId = native.id;
         this.speedModificator = native.speedModificator;
         this.maxDurability = native.maxDurability;
+        this.weight = native.weight;
         this.durability = this.maxDurability;
         this.maxEnergy = native.maxEnergy;
         this.energy = this.maxEnergy;
@@ -78,6 +82,7 @@ export class Actor extends GameObject implements IActiveObject {
         this.dead = false;
         this.remainedTurnTime = 0;
 
+        this.calculatedWeight = this.weight;
         this.calculatedActions = this.actions;
         this.calculatedMaxDurability = this.calculatedMaxDurability;
         this.calculatedMaxEnergy = this.calculatedMaxEnergy;
