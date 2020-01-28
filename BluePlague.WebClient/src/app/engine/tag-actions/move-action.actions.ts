@@ -10,8 +10,8 @@ function moveAction(scene: Scene, object: Actor, x: number, y: number, externalI
   object.changePositionToTile(tile);
   return {
     time: timeShift,
-    message: null,
-    reachedObjects: [tile, ...tile.objects]
+    reachedObjects: [tile, ...tile.objects],
+    reactions: []
   } as ActorActionResult;
 }
 

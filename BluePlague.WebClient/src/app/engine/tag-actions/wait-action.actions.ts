@@ -7,7 +7,7 @@ function waitAction(scene: Scene, object: Actor, x: number, y: number, externalI
   const timeShift = object.calculatedSpeedModification;
   return {
     time: timeShift,
-    message: null,
+    reactions: [],
     reachedObjects: [object.tile, ...object.tile.objects]
   };
 }

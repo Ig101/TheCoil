@@ -252,7 +252,7 @@ export class Scene {
                 const results = [];
                 while (actor.remainedTurnTime <= 0) {
                     results.push(actor.act({
-                        type: 'wait',
+                        type: DefaultActionEnum.Wait,
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction));
@@ -260,7 +260,7 @@ export class Scene {
                 responses.push({
                     action: {
                         actorId: actor.id,
-                        type: 'wait',
+                        type: DefaultActionEnum.Wait,
                         extraIdentifier: undefined,
                         x: actor.x,
                         y: actor.y
