@@ -53,11 +53,11 @@ export class Tile implements IReactiveObject {
         this.objects = [];
     }
 
-    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[], strength?: number): string[] {
+    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[]): string[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
-            let tagStrength = strength;
+            let tagStrength = 1;
             if (tag.impactTag) {
                 const impactTag = impactTags.find(x => x.name === tag.impactTag);
                 if (!impactTag) {

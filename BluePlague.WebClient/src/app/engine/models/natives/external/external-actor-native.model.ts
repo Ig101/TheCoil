@@ -5,7 +5,7 @@ export interface ExternalActorNative {
   speedModificator: number;
   maxDurability: number;
   maxEnergy: number;
-  tags: string[];
+  tags: { name: string, weight?: number }[];
   actions: string[];
   passable: boolean;
 }

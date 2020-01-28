@@ -159,13 +159,21 @@ export class Actor extends GameObject {
         const actionInfo = this.doAction(action);
         const actionResult = actionInfo.result;
         const reactionResults = this.reactOnOutgoingAction(actionInfo.group, action.x, action.y,
-            actionResult.impactTags, actionResult.strength);
+            actionResult.impactTags);
         const timeShift = reactionResults.reduce((sum, o) => sum + o.time, 0) + actionResult.time;
+        if (actionResult.impactTags) {
+            for (const impactTag of actionResult.impactTags) {
+                reactionResults.push({
+                    time: 0,
+                    message: impactTag.react(this.parent, this, action.x, action.y, impactTag.strength)
+                });
+            }
+        }
         for (const object of actionResult.reachedObjects) {
             if (object !== this) {
                 reactionResults.push({
                     time: 0,
-                    message: object.react(actionInfo.group, this, timeShift, actionResult.impactTags, actionResult.strength)
+                    message: object.react(actionInfo.group, this, timeShift, actionResult.impactTags)
                 });
             }
         }
@@ -176,11 +184,11 @@ export class Actor extends GameObject {
         };
     }
 
-    private reactOnOutgoingAction(action: string, x: number, y: number, impactTags?: ImpactTag[], strength?: number): ReactionResult[] {
+    private reactOnOutgoingAction(action: string, x: number, y: number, impactTags?: ImpactTag[]): ReactionResult[] {
         const result = [];
         const tags = this.calculatedTags;
         for (const tag of tags) {
-            let tagStrength = strength;
+            let tagStrength = 1;
             if (tag.impactTag) {
                 const impactTag = impactTags.find(it => it.name === tag.impactTag);
                 if (!impactTag) {

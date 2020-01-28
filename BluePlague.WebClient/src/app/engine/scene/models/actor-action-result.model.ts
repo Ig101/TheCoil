@@ -5,7 +5,6 @@ import { ImpactTag } from './impact-tag.model';
 export interface ActorActionResult {
   time: number;
   message: string[];
-  strength?: number;
   impactTags?: ImpactTag[];
   reachedObjects: IReactiveObject[];
 }
