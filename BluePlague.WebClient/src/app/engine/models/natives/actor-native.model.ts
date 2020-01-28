@@ -13,6 +13,6 @@ export interface ActorNative {
     maxDurability: number;
     maxEnergy: number;
     tags: ActionTag<Actor>[];
-    actions: { [name: string]: ActorAction; };
+    actions: ActorAction[];
     passable: boolean;
 }

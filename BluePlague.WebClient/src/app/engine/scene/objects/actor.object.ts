@@ -20,7 +20,7 @@ export class Actor extends GameObject implements IActiveObject {
     readonly maxDurability: number; // native
     readonly maxEnergy: number; // native
     readonly tags: ActionTag<Actor>[]; // native
-    readonly actions: { [name: string]: ActorAction; }; // native
+    readonly actions: ActorAction[]; // native
 
     readonly passable: boolean; // native
     dead: boolean; // notSync
@@ -34,7 +34,7 @@ export class Actor extends GameObject implements IActiveObject {
     calculatedWeight: number;
     calculatedMaxEnergy: number;
     calculatedTags: ActionTag<Actor>[];
-    calculatedActions: { [name: string]: ActorAction; };
+    calculatedActions: ActorAction[];
 
     get snapshot(): ActorSnapshot {
         return {
@@ -137,8 +137,10 @@ export class Actor extends GameObject implements IActiveObject {
         this.remainedTurnTime -= time;
     }
 
-    validateAction(action: EnginePlayerAction): boolean {
-        const chosenAction = this.actions[action.type];
+    validateAction(action: EnginePlayerAction, searchByGroup: boolean): boolean {
+        const chosenAction = searchByGroup ?
+        this.calculatedActions.find(x => x.group === action.type) :
+        this.calculatedActions.find(x => x.name === action.type);
         if (!chosenAction ||
             (chosenAction.validator && !chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier))) {
             return false;
@@ -155,8 +157,8 @@ export class Actor extends GameObject implements IActiveObject {
         return true;
     }
 
-    act(action: EnginePlayerAction): ActorActionResult {
-        const actionInfo = this.doAction(action);
+    act(action: EnginePlayerAction, searchByGroup: boolean): ActorActionResult {
+        const actionInfo = this.doAction(action, searchByGroup);
         const actionResult = actionInfo.result;
         const reactionResults = this.reactOnOutgoingAction(actionInfo.group, action.x, action.y);
         const timeShift = reactionResults.reduce((sum, o) => sum + o.time, 0) + actionResult.time;
@@ -185,8 +187,10 @@ export class Actor extends GameObject implements IActiveObject {
         return result;
     }
 
-    private doAction(action: EnginePlayerAction): {group: string, result: ActorActionResult} {
-        const chosenAction = this.actions[action.type];
+    private doAction(action: EnginePlayerAction, searchByGroup: boolean): {group: string, result: ActorActionResult} {
+        const chosenAction = searchByGroup ?
+            this.calculatedActions.find(x => x.group === action.type) :
+            this.calculatedActions.find(x => x.name === action.type);
         if (!chosenAction) {
             return undefined;
         }

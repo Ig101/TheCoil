@@ -169,7 +169,7 @@ export class Scene {
     parsePlayerAction(action: EnginePlayerAction): EnginePlayerAction[] {
         switch (action.type) {
             default:
-                const availability = this.player.validateAction(action);
+                const availability = this.player.validateAction(action, false);
                 if (availability) {
                     return [action];
                 }
@@ -178,7 +178,7 @@ export class Scene {
 
     parseAllPlayerActions(x: number, y: number): { [action: number]: EnginePlayerAction[]; } {
         const dictionary: { [action: number]: EnginePlayerAction[]; } = {};
-        for (const action of Object.values(this.player.actions)) {
+        for (const action of this.player.calculatedActions) {
             dictionary[action.name] = this.parsePlayerAction({
                 type: action.name,
                 x,
@@ -189,7 +189,7 @@ export class Scene {
     }
 
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
-        const playerActions = this.player.act(action);
+        const playerActions = this.player.act(action, false);
         const timeShift = playerActions.time;
         const response = {
             action: {
@@ -220,7 +220,7 @@ export class Scene {
                     type: DefaultActionEnum.Die,
                     x: actor.x,
                     y: actor.y
-                } as EnginePlayerAction);
+                } as EnginePlayerAction, false);
                 this.registerActorDeath(actor);
                 deaths.push({
                     action: {
@@ -255,7 +255,7 @@ export class Scene {
                         type: DefaultActionEnum.Wait,
                         x: actor.x,
                         y: actor.y
-                    } as EnginePlayerAction));
+                    } as EnginePlayerAction, false));
                 }
                 responses.push({
                     action: {
