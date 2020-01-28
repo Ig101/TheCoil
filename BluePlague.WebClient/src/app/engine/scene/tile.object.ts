@@ -6,7 +6,6 @@ import { Actor } from './objects/actor.object';
 import { GameObject } from './objects/game-object.object';
 import { TileSnapshot } from '../models/scene/tile-snapshot.model';
 import { TileSavedData } from '../models/scene/tile-saved-data.model';
-import { ImpactTag } from './models/impact-tag.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
 
 export class Tile implements IReactiveObject {
@@ -53,23 +52,15 @@ export class Tile implements IReactiveObject {
         this.objects = [];
     }
 
-    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[]): string[] {
+    react(action: string, initiator: Actor, time: number, strength?: number): string[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
-            let tagStrength = 1;
-            if (tag.impactTag) {
-                const impactTag = impactTags.find(x => x.name === tag.impactTag);
-                if (!impactTag) {
-                    continue;
-                }
-                tagStrength = impactTag.strength;
-            }
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 result.push({
                     time: 0,
-                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, tagStrength)
+                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength)
                 });
             }
         }

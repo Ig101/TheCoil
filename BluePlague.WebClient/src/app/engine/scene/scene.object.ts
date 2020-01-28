@@ -190,7 +190,7 @@ export class Scene {
 
     playerAct(action: EnginePlayerAction): EngineActionResponse[] {
         const playerActions = this.player.act(action);
-        const timeShift = playerActions.timeShift;
+        const timeShift = playerActions.time;
         const response = {
             action: {
                 actorId: this.player.id,
@@ -200,7 +200,7 @@ export class Scene {
                 y: action.y
             } as EngineAction,
             changes: this.getSessionChanges(),
-            results: playerActions.reactionResults
+            results: playerActions.reactions
         } as EngineActionResponse;
         if (timeShift === 0) {
             return [response];
@@ -231,7 +231,7 @@ export class Scene {
                         y: actor.y
                     } as EngineAction,
                     changes: this.getSessionChanges(),
-                    results: results.reactionResults
+                    results: results.reactions
                 } as EngineActionResponse);
                 this.actors.splice(i, 1);
                 i--;

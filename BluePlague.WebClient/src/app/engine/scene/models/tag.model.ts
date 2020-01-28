@@ -5,6 +5,5 @@ import { IReactiveObject } from '../interfaces/reactive-object.interface';
 
 export interface Tag<T> {
     name: string;
-    impactTag?: string; // is null, any tag is suitable
     reactions: { [group: string]: IncomingActionReaction<T> };
 }

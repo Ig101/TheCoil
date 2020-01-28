@@ -11,7 +11,7 @@ import { LevelLinksNative } from '../models/natives/level-links-native.model';
 import { RoomSpawnNative } from '../models/natives/room-spawn-native.model';
 import { TileNative } from '../models/natives/tile-native.model';
 import { SpriteNative } from '../models/natives/sprite-native.model';
-import { ActorTag } from '../scene/models/actor-tag.model';
+import { ActionTag } from '../scene/models/action-tag.model';
 import { getActionsRegistry } from '../tag-actions/actions-registry';
 import { getActorTagsRegistry } from '../tag-actions/actor-tags-registry';
 import { getTileTagsRegistry } from '../tag-actions/tile-tags-registry';
@@ -27,7 +27,7 @@ export class NativeService {
   private sprites: { [id: string]: SpriteNative; };
   // Internal
   private actions: { [tag: string]: ActorAction; };
-  private actorTags: { [tag: string]: ActorTag; };
+  private actorTags: { [tag: string]: ActionTag<Actor>; };
   private tileTags: { [tag: string]: Tag<Tile>; };
 
   constructor(

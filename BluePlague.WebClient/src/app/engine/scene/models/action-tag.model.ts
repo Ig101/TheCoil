@@ -3,6 +3,6 @@ import { Tag } from './tag.model';
 import { Scene } from '../scene.object';
 import { OutgoingActionReaction } from './outgoing-action-reaction.model';
 
-export interface ActorTag extends Tag<Actor> {
-    outgoingReactions: { [group: string]: OutgoingActionReaction };
+export interface ActionTag<T> extends Tag<T> {
+    outgoingReactions: { [group: string]: OutgoingActionReaction<T> };
 }

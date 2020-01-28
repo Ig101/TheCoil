@@ -2,8 +2,8 @@ import { Scene } from '../scene.object';
 import { Actor } from '../objects/actor.object';
 import { ReactionResult } from './reaction-result.model';
 
-export interface OutgoingActionReaction {
+export interface OutgoingActionReaction<T> {
   weight?: number;
-  validator?: (scene: Scene, actor: Actor, x: number, y: number) => boolean;
-  reaction: (scene: Scene, object: Actor, x: number, y: number, weight?: number, strength?: number) => ReactionResult;
+  validator?: (scene: Scene, object: T, x: number, y: number) => boolean;
+  reaction: (scene: Scene, object: T, x: number, y: number, weight?: number, strength?: number) => ReactionResult;
 }

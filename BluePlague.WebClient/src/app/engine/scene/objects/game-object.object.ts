@@ -3,7 +3,6 @@ import { Sprite } from '../abstract/sprite.object';
 import { SpriteNative } from '../../models/natives/sprite-native.model';
 import { Tile } from '../tile.object';
 import { Actor } from './actor.object';
-import { ImpactTag } from '../models/impact-tag.model';
 import { Tag } from '../models/tag.model';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
 import { ReactionResult } from '../models/reaction-result.model';
@@ -31,23 +30,15 @@ export abstract class GameObject implements IReactiveObject {
 
     abstract get tags(): Tag<unknown>[];
 
-    react(action: string, initiator: Actor, time: number, impactTags?: ImpactTag[]): string[] {
+    react(action: string, initiator: Actor, time: number, strength?: number): string[] {
         const result = [];
         const tags = this.tags;
         for (const tag of tags) {
-            let tagStrength = 1;
-            if (tag.impactTag) {
-                const impactTag = impactTags.find(x => x.name === tag.impactTag);
-                if (!impactTag) {
-                    continue;
-                }
-                tagStrength = impactTag.strength;
-            }
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 result.push({
                     time: 0,
-                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, tagStrength)
+                    message: chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength)
                 });
             }
         }

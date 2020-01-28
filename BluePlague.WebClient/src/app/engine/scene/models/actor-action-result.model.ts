@@ -1,10 +1,9 @@
 import { Tile } from '../tile.object';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
-import { ImpactTag } from './impact-tag.model';
-
+import { ReactionResult } from './reaction-result.model';
 export interface ActorActionResult {
   time: number;
-  message: string[];
-  impactTags?: ImpactTag[];
+  strength?: number;
   reachedObjects: IReactiveObject[];
+  reactions: ReactionResult[];
 }
