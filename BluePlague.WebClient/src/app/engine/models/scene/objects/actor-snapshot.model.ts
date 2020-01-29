@@ -11,7 +11,7 @@ export interface ActorSnapshot extends GameObjectSnapshot {
     maxEnergy: number;
     passable: boolean;
     tags: ActionTag<Actor>[];
-    actions: { [name: string]: ActorAction; };
+    actions: ActorAction[];
     durability: number;
     energy: number;
     remainedTurnTime: number;
