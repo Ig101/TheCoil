@@ -16,6 +16,7 @@ import { ReactionResult } from './models/reaction-result.model';
 export class Scene {
 
     private resoponseSubject = new Subject<EngineActionResponse>();
+    private unsubscribeSubject = new Subject();
 
     private changedActors: Actor[] = [];
     private deletedActors: number[] = [];
@@ -120,12 +121,17 @@ export class Scene {
         }
     }
 
-    subscribe(next: (value: EngineActionResponse) => void) {
+    subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
+        if (unsubscription) {
+            this.unsubscribeSubject.subscribe(unsubscription);
+        }
         return this.resoponseSubject.subscribe(next);
     }
 
     unsubscribe() {
-        return this.unsubscribe();
+        this.unsubscribeSubject.next();
+        this.unsubscribeSubject.unsubscribe();
+        this.resoponseSubject.unsubscribe();
     }
 
     // Creation

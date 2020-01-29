@@ -32,17 +32,7 @@ export class MetaService {
     private readonly synchronizationService: SynchronizationService,
     private readonly nativeService: NativeService,
     private readonly randomService: RandomService
-  ) {
-    this.sceneService.subscribe(actions => {
-      const playerAction = actions[0].action;
-      this.currentActionsBanch.push({
-        type: playerAction.type,
-        extraIdentifier: playerAction.extraIdentifier,
-        x: playerAction.x,
-        y: playerAction.y
-      } as EnginePlayerAction);
-    });
-  }
+  ) { }
 
   private initializeScene(): SceneInitialization {
     this.randomService.setupNewSeed(this.metaInformation.seed);
@@ -88,6 +78,15 @@ export class MetaService {
           this.metaInformationInternal = response.result.meta;
           const sceneInitialization = this.initializeScene();
           this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
+          this.sceneService.subscribe(actions => {
+            const playerAction = actions[0].action;
+            this.currentActionsBanch.push({
+              type: playerAction.type,
+              extraIdentifier: playerAction.extraIdentifier,
+              x: playerAction.x,
+              y: playerAction.y
+            } as EnginePlayerAction);
+          });
           this.startSynchronizationTimer();
           return this.sceneService.getSceneSnapshot();
         } else {

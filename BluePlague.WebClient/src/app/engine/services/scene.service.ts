@@ -18,8 +18,8 @@ export class SceneService {
     private nativeService: NativeService
   ) { }
 
-  subscribe(next: (value: EngineActionResponse) => void) {
-    return this.scene.subscribe(next);
+  subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
+    return this.scene.subscribe(next, unsubscription);
   }
 
   setupNewScene(scene: SceneInitialization, sceneSavedData: SceneSavedData) {
