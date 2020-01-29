@@ -8,7 +8,7 @@ function waitAction(scene: Scene, object: Actor, x: number, y: number, externalI
   return {
     time: timeShift,
     reactions: [],
-    reachedObjects: [object.tile, ...object.tile.objects]
+    reachedObjects: [object.tile, ...object.tile.objects.filter(o => o !== object)]
   };
 }
 

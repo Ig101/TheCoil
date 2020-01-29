@@ -12,6 +12,7 @@ import { ActorAction } from '../models/actor-action.model';
 import { ReactionResult } from '../models/reaction-result.model';
 import { ActorActionResult } from '../models/actor-action-result.model';
 import { IActiveObject } from '../interfaces/active-object.interface';
+import { ActionValidationResult } from '../models/action-validation-result.model';
 
 export class Actor extends GameObject implements IActiveObject {
     readonly nativeId: string;
@@ -23,7 +24,6 @@ export class Actor extends GameObject implements IActiveObject {
     readonly actions: { [name: string]: ActorAction; }; // native
 
     readonly passable: boolean; // native
-    dead: boolean; // notSync
 
     durability: number;
     energy: number;
@@ -79,7 +79,6 @@ export class Actor extends GameObject implements IActiveObject {
         this.tags = native.tags;
         this.actions = native.actions;
         this.passable = native.passable;
-        this.dead = false;
         this.remainedTurnTime = 0;
 
         this.calculatedWeight = this.weight;
@@ -117,7 +116,7 @@ export class Actor extends GameObject implements IActiveObject {
         if (this.durability > this.calculatedMaxDurability) {
             this.durability = this.calculatedMaxDurability;
         } else if (this.durability <= 0) {
-            this.dead = true;
+            this.parent.pushDead(this);
         }
         this.parent.registedActorChange(this);
     }
@@ -137,22 +136,32 @@ export class Actor extends GameObject implements IActiveObject {
         this.remainedTurnTime -= time;
     }
 
-    validateAction(action: EnginePlayerAction): boolean {
+    validateAction(action: EnginePlayerAction): ActionValidationResult {
         const chosenAction = this.actions[action.type];
-        if (!chosenAction ||
-            (chosenAction.validator && !chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier))) {
-            return false;
+        if (!chosenAction) {
+            return {
+                success: false
+            };
+        }
+        let validationResult: ActionValidationResult;
+        if (chosenAction.validator) {
+            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier);
+        } else {
+            validationResult = {
+                success: true
+            };
         }
         const tags = this.calculatedTags;
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action.type];
             if (chosenReaction && chosenReaction.validator) {
                 if (!chosenReaction.validator(this.parent, this, action.x, action.y)) {
-                    return false;
+                    validationResult.success = false;
+                    return validationResult;
                 }
             }
         }
-        return true;
+        return validationResult;
     }
 
     act(action: EnginePlayerAction): ActorActionResult {

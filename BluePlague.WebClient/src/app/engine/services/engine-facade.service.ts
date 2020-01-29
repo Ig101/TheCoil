@@ -32,7 +32,7 @@ export class EngineFacadeService {
     this.sceneService.sendActions(actions);
   }
 
-  subscribeOnActionsResult(next: (value: EngineActionResponse[]) => void) {
+  subscribeOnActionsResult(next: (value: EngineActionResponse) => void) {
     this.sceneService.subscribe(next);
   }
 }

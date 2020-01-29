@@ -10,7 +10,12 @@ import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
 import { DefaultActionEnum } from '../models/enums/default-action.enum';
+import { ActionParsingResult } from './models/action-parsing-result.model';
+import { Subject } from 'rxjs';
+import { ReactionResult } from './models/reaction-result.model';
 export class Scene {
+
+    private resoponseSubject = new Subject<EngineActionResponse>();
 
     private changedActors: Actor[] = [];
     private deletedActors: number[] = [];
@@ -19,6 +24,8 @@ export class Scene {
     private sessionChangedActors: Actor[] = [];
     private sessionDeletedActors: number[] = [];
     private sessionChangedTiles: Tile[] = [];
+
+    private corpsesPool: Actor[] = [];
 
     private player: Actor;
     private turn: number;
@@ -113,6 +120,14 @@ export class Scene {
         }
     }
 
+    subscribe(next: (value: EngineActionResponse) => void) {
+        return this.resoponseSubject.subscribe(next);
+    }
+
+    unsubscribe() {
+        return this.unsubscribe();
+    }
+
     // Creation
     createActor(native: ActorNative, x: number, y: number): Actor {
         const id = this.idIncrementor;
@@ -123,6 +138,10 @@ export class Scene {
     }
 
     // ChangesRegistration
+    pushDead(actor: Actor) {
+        this.corpsesPool.push(actor);
+    }
+
     registedActorChange(actor: Actor) {
         if (!this.changedActors.includes(actor)) {
             this.changedActors.push(actor);
@@ -139,9 +158,10 @@ export class Scene {
         if (!this.sessionDeletedActors.includes(actor.id)) {
             this.sessionDeletedActors.push(actor.id);
         }
+        this.actors.remove(actor);
     }
 
-    registedTileChange(tile: Tile) {
+    registerTileChange(tile: Tile) {
         if (!this.changedTiles.includes(tile)) {
             this.changedTiles.push(tile);
         }
@@ -166,18 +186,20 @@ export class Scene {
     // Actions
 
     // if null, action is restricted
-    parsePlayerAction(action: EnginePlayerAction): EnginePlayerAction[] {
+    parsePlayerAction(action: EnginePlayerAction): ActionParsingResult {
         switch (action.type) {
             default:
                 const availability = this.player.validateAction(action);
-                if (availability) {
-                    return [action];
-                }
+                return {
+                    success: availability.success,
+                    extraValues: availability.extraValues,
+                    actions: [action]
+                };
         }
     }
 
-    parseAllPlayerActions(x: number, y: number): { [action: number]: EnginePlayerAction[]; } {
-        const dictionary: { [action: number]: EnginePlayerAction[]; } = {};
+    parseAllPlayerActions(x: number, y: number): { [action: number]: ActionParsingResult; } {
+        const dictionary: { [action: number]: ActionParsingResult; } = {};
         for (const action of Object.values(this.player.actions)) {
             dictionary[action.name] = this.parsePlayerAction({
                 type: action.name,
@@ -188,90 +210,72 @@ export class Scene {
         return dictionary;
     }
 
-    playerAct(action: EnginePlayerAction): EngineActionResponse[] {
+    playerAct(action: EnginePlayerAction) {
         const playerActions = this.player.act(action);
         const timeShift = playerActions.time;
-        const response = {
-            action: {
-                actorId: this.player.id,
-                type: action.type,
-                extraIdentifier: action.extraIdentifier,
-                x: action.x,
-                y: action.y
-            } as EngineAction,
-            changes: this.getSessionChanges(),
-            results: playerActions.reactions
-        } as EngineActionResponse;
+        this.finishAction(this.player.id, playerActions.reactions, action.type, action.x, action.y, action.extraIdentifier);
         if (timeShift === 0) {
-            return [response];
+            return;
         }
         this.turn += timeShift;
-        const reactions = this.actionReaction(action, timeShift);
-        return [response, ...reactions];
+        this.actionReaction(action, timeShift);
     }
 
-    private gatherCorpses(): EngineActionResponse[] {
-        const deaths: EngineActionResponse[] = [];
-        // tslint:disable-next-line: prefer-for-of
-        for (let i = 0; i < this.actors.length; i++) {
-            const actor = this.actors[i];
-            if (actor.dead) {
-                const results = actor.act({
+    private finishAction(actorId: number, reactions: ReactionResult[], type: string, x: number, y: number, extraIdentifier?: number) {
+        this.resoponseSubject.next({
+            action: {
+                actorId,
+                type,
+                extraIdentifier,
+                x,
+                y
+            } as EngineAction,
+            changes: this.getSessionChanges(),
+            results: reactions
+        });
+        for (const corpse of this.corpsesPool) {
+            const result = corpse.act({
+                type: DefaultActionEnum.Die,
+                x: corpse.x,
+                y: corpse.y
+            } as EnginePlayerAction);
+            this.registerActorDeath(corpse);
+            this.resoponseSubject.next({
+                action: {
+                    actorId: corpse.id,
                     type: DefaultActionEnum.Die,
-                    x: actor.x,
-                    y: actor.y
-                } as EnginePlayerAction);
-                this.registerActorDeath(actor);
-                deaths.push({
-                    action: {
-                        actorId: actor.id,
-                        type: DefaultActionEnum.Die,
-                        extraIdentifier: undefined,
-                        x: actor.x,
-                        y: actor.y
-                    } as EngineAction,
-                    changes: this.getSessionChanges(),
-                    results: results.reactions
-                } as EngineActionResponse);
-                this.actors.splice(i, 1);
-                i--;
-            }
+                    extraIdentifier: undefined,
+                    x: corpse.x,
+                    y: corpse.y
+                } as EngineAction,
+                changes: this.getSessionChanges(),
+                results: result.reactions
+            } as EngineActionResponse);
         }
-        return deaths;
+        this.corpsesPool.length = 0;
     }
 
-    private actionReaction(action: EnginePlayerAction, time: number): EngineActionResponse[] {
-        const responses: EngineActionResponse[] = [];
-        if (time <= 0) {
-            return [];
-        }
+    private getActorsForAction() {
+        return this.actors.sort((a, b) => (a.calculatedSpeedModification + a.remainedTurnTime) -
+            (b.calculatedSpeedModification + b.remainedTurnTime));
+    }
+
+    private actionReaction(action: EnginePlayerAction, time: number) {
         // TODO AI
-        for (const actor of this.actors) {
+        const sortedActors = this.getActorsForAction();
+        for (const actor of sortedActors) {
             actor.update(time);
             if (actor !== this.player) {
-                const results = [];
                 while (actor.remainedTurnTime <= 0) {
-                    results.push(actor.act({
+                    const result = actor.act({
                         type: DefaultActionEnum.Wait,
                         x: actor.x,
                         y: actor.y
-                    } as EnginePlayerAction));
+                    } as EnginePlayerAction);
+                    this.finishAction(actor.id, result.reactions, DefaultActionEnum.Wait, actor.x, actor.y);
                 }
-                responses.push({
-                    action: {
-                        actorId: actor.id,
-                        type: DefaultActionEnum.Wait,
-                        extraIdentifier: undefined,
-                        x: actor.x,
-                        y: actor.y
-                    } as EngineAction,
-                    changes: this.getSessionChanges(),
-                    results
-                } as EngineActionResponse);
             }
         }
-        responses.push(...this.gatherCorpses());
-        return responses;
     }
 
     private getSessionChanges(): SceneChanges {
