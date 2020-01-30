@@ -4,6 +4,7 @@ import { Actor } from '../scene/objects/actor.object';
 import { ActorActionResult } from '../scene/models/actor-action-result.model';
 import { ActorAction } from '../scene/models/actor-action.model';
 import { ActionValidationResult } from '../scene/models/action-validation-result.model';
+import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
 
 function moveAction(scene: Scene, object: Actor, x: number, y: number, externalIdentifier?: number): ActorActionResult {
   const timeShift = object.calculatedSpeedModification;
@@ -12,7 +13,10 @@ function moveAction(scene: Scene, object: Actor, x: number, y: number, externalI
   return {
     time: timeShift,
     reachedObjects: [tile, ...tile.objects.filter(o => o !== object)],
-    reactions: []
+    reaction: {
+      level: ReactionMessageLevelEnum.Trace,
+      message: [object.name, ' moved.']
+    }
   } as ActorActionResult;
 }
 

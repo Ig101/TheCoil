@@ -236,9 +236,7 @@ export class Scene {
     }
 
     playerAct(action: EnginePlayerAction, unsettledActors: UnsettledActorSavedData[]) {
-        const playerActions = this.player.act(action);
-        const timeShift = playerActions.time;
-        this.finishAction(this.player.id, playerActions.reactions, action.type, action.x, action.y, action.extraIdentifier);
+        const timeShift = this.player.act(action);
         if (timeShift === 0) {
             return;
         }
@@ -247,36 +245,20 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    private finishAction(actorId: number, reactions: ReactionResult[], type: string, x: number, y: number, extraIdentifier?: number) {
+    finishAction(reaction: ReactionResult, type: string, actorId?: number) {
         this.resoponseSubject.next({
-            action: {
-                actorId,
-                type,
-                extraIdentifier,
-                x,
-                y
-            } as EngineAction,
+            actorId,
+            type,
             changes: this.getSessionChanges(),
-            results: reactions
+            result: reaction
         });
         for (const corpse of this.corpsesPool) {
-            const result = corpse.act({
+            corpse.act({
                 type: DefaultActionEnum.Die,
                 x: corpse.x,
                 y: corpse.y
             } as EnginePlayerAction);
             this.registerActorDeath(corpse);
-            this.resoponseSubject.next({
-                action: {
-                    actorId: corpse.id,
-                    type: DefaultActionEnum.Die,
-                    extraIdentifier: undefined,
-                    x: corpse.x,
-                    y: corpse.y
-                } as EngineAction,
-                changes: this.getSessionChanges(),
-                results: result.reactions
-            } as EngineActionResponse);
         }
         this.corpsesPool.length = 0;
     }
@@ -293,12 +275,11 @@ export class Scene {
             actor.update(time);
             if (actor !== this.player) {
                 while (actor.remainedTurnTime <= 0) {
-                    const result = actor.act({
+                    actor.act({
                         type: DefaultActionEnum.Wait,
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction);
-                    this.finishAction(actor.id, result.reactions, DefaultActionEnum.Wait, actor.x, actor.y);
                 }
             }
         }

@@ -3,7 +3,8 @@ import { EngineAction } from './engine-action.model';
 import { ReactionResult } from '../scene/models/reaction-result.model';
 
 export interface EngineActionResponse {
-    action: EngineAction;
+    actorId?: number;
+    type: string;
     changes: SceneChanges;
-    results: ReactionResult[];
+    result: ReactionResult;
 }

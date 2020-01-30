@@ -13,6 +13,7 @@ import { ReactionResult } from '../models/reaction-result.model';
 import { ActorActionResult } from '../models/actor-action-result.model';
 import { IActiveObject } from '../interfaces/active-object.interface';
 import { ActionValidationResult } from '../models/action-validation-result.model';
+import { IReactiveObject } from '../interfaces/reactive-object.interface';
 
 export class Actor extends GameObject implements IActiveObject {
     readonly nativeId: string;
@@ -24,6 +25,7 @@ export class Actor extends GameObject implements IActiveObject {
     readonly actions: ActorAction[]; // native
 
     readonly passable: boolean; // native
+    dead = false;
 
     durability: number;
     energy: number;
@@ -117,6 +119,8 @@ export class Actor extends GameObject implements IActiveObject {
         if (this.durability > this.calculatedMaxDurability) {
             this.durability = this.calculatedMaxDurability;
         } else if (this.durability <= 0) {
+            this.dead = true;
+            this.tile.objects.remove(this);
             this.parent.pushDead(this);
         }
         this.parent.registerActorChange(this);
@@ -165,31 +169,23 @@ export class Actor extends GameObject implements IActiveObject {
         return validationResult;
     }
 
-    act(action: EnginePlayerAction): ActorActionResult {
+    act(action: EnginePlayerAction): number {
         const actionInfo = this.doAction(action);
-        const actionResult = actionInfo.result;
-        const reactionResults = this.reactOnOutgoingAction(actionInfo.group, action.x, action.y);
-        const timeShift = reactionResults.reduce((sum, o) => sum + o.time, 0) + actionResult.time;
-        for (const object of actionResult.reachedObjects) {
-            reactionResults.push(...object.react(actionInfo.group, this, timeShift, actionResult.strength));
-        }
-        actionResult.reactions.concat(reactionResults);
-        actionResult.time += timeShift;
-        return actionResult;
+        this.remainedTurnTime += actionInfo.result.time;
+        this.doReactiveAction(actionInfo.group, actionInfo.result.reaction,
+                              actionInfo.result.reachedObjects, actionInfo.result.time, actionInfo.result.strength);
+        return actionInfo.result.time;
     }
 
-    private reactOnOutgoingAction(action: string, x: number, y: number, strength?: number): ReactionResult[] {
-        const result: ReactionResult[] = [];
+
+    reactOnOutgoingAction(action: string, strength?: number) {
         const tags = this.calculatedTags;
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action];
             if (chosenReaction) {
-                const reaction = chosenReaction.reaction(this.parent, this, x, y, chosenReaction.weight, strength);
-                this.remainedTurnTime += reaction.map(a => a.time).reduce((a, b) => a + b, 0);
-                result.push(...reaction);
+                chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
             }
         }
-        return result;
     }
 
     private doAction(action: EnginePlayerAction): {group: string, result: ActorActionResult} {
@@ -198,7 +194,6 @@ export class Actor extends GameObject implements IActiveObject {
             return undefined;
         }
         const result = chosenAction.action(this.parent, this, action.x, action.y, action.extraIdentifier);
-        this.remainedTurnTime += result.time;
         return { group: chosenAction.group, result };
     }
 }

@@ -5,5 +5,5 @@ export interface ActorActionResult {
   time: number;
   strength?: number;
   reachedObjects: IReactiveObject[];
-  reactions: ReactionResult[];
+  reaction: ReactionResult;
 }
