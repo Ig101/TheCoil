@@ -57,6 +57,7 @@ export class Actor extends GameObject implements IActiveObject {
 
     get savedData(): ActorSavedData {
         return {
+            player: this.parent.playerId === this.id,
             id: this.id,
             x: this.x,
             y: this.y,
@@ -99,7 +100,7 @@ export class Actor extends GameObject implements IActiveObject {
         this.tile.objects.remove(this);
         this.tile = this.parent.getTile(x, y);
         this.tile.objects.push(this);
-        this.parent.registedActorChange(this);
+        this.parent.registerActorChange(this);
     }
 
     changePositionToTile(tile: Tile) {
@@ -108,7 +109,7 @@ export class Actor extends GameObject implements IActiveObject {
         this.tile.objects.remove(this);
         this.tile = tile;
         this.tile.objects.push(this);
-        this.parent.registedActorChange(this);
+        this.parent.registerActorChange(this);
     }
 
     changeDurability(amount: number) {
@@ -118,7 +119,7 @@ export class Actor extends GameObject implements IActiveObject {
         } else if (this.durability <= 0) {
             this.parent.pushDead(this);
         }
-        this.parent.registedActorChange(this);
+        this.parent.registerActorChange(this);
     }
 
     changeEnergy(amount: number) {
@@ -128,7 +129,7 @@ export class Actor extends GameObject implements IActiveObject {
         } else if (this.energy < 0) {
             this.energy = 0;
         }
-        this.parent.registedActorChange(this);
+        this.parent.registerActorChange(this);
     }
 
     // Actions

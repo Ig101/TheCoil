@@ -16,12 +16,14 @@ import { ReactionResult } from './models/reaction-result.model';
 import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
 export class Scene {
 
+    private global = false;
     private resoponseSubject = new Subject<EngineActionResponse>();
     private unsubscribeSubject = new Subject();
 
     private changedActors: Actor[] = [];
     private deletedActors: number[] = [];
     private changedTiles: Tile[] = [];
+    private unsettledActors: UnsettledActorSavedData[] = [];
 
     private sessionChangedActors: Actor[] = [];
     private sessionDeletedActors: number[] = [];
@@ -46,6 +48,7 @@ export class Scene {
 
     get snapshot(): SceneSnapshot {
         return {
+            global: this.global,
             playerId: this.playerId,
             turn: this.turn,
             width: this.width,
@@ -62,7 +65,7 @@ export class Scene {
             changedActors: this.changedActors.map(x => x.savedData),
             deletedActors: this.deletedActors,
             changedTiles: this.changedTiles.map(x => x.savedData),
-            unsettledActors: []
+            unsettledActors: this.unsettledActors
         } as SceneSavedData;
     }
 
@@ -71,6 +74,7 @@ export class Scene {
         savedData: SceneSavedData,
         private nativeService: NativeService
     ) {
+        this.global = initialization.global;
         this.turn = initialization.turn;
         this.width = initialization.width;
         this.height = initialization.height;
@@ -97,18 +101,18 @@ export class Scene {
             }
             const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
             if (savedActor) {
-                const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y);
+                const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y, false);
                 this.changedActors.push(newActor);
                 newActor.durability = savedActor.durability;
                 newActor.energy = savedActor.energy;
                 newActor.remainedTurnTime = savedActor.remainedTurnTime;
                 continue;
             }
-            this.createActor(actor.native, actor.x, actor.y);
+            this.createActor(actor.native, actor.x, actor.y, false);
         }
         for (const actor of savedData.changedActors) {
             if (!this.actors.find(x => x.id === actor.id)) {
-                const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y);
+                const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, false);
                 this.changedActors.push(newActor);
                 newActor.id = actor.id;
                 if (actor.player) {
@@ -137,17 +141,23 @@ export class Scene {
     }
 
     // Creation
-    createActor(native: ActorNative, x: number, y: number): Actor {
+    createActor(native: ActorNative, x: number, y: number, newActor: boolean = true): Actor {
         const id = this.idIncrementor;
         this.idIncrementor++;
         const actor = new Actor(this, id, native, x, y);
         this.actors.push(actor);
+        if (newActor) {
+            this.registerActorChange(actor);
+        }
         return actor;
     }
 
     // ChangesRegistration
     pushUnsettledActors(actors: UnsettledActorSavedData[]) {
         for (const actor of actors) {
+            if (!this.global || actor.player) {
+
+            }
             // TODO SetupUnsettledActors
         }
     }
@@ -156,7 +166,7 @@ export class Scene {
         this.corpsesPool.push(actor);
     }
 
-    registedActorChange(actor: Actor) {
+    registerActorChange(actor: Actor) {
         if (!this.changedActors.includes(actor)) {
             this.changedActors.push(actor);
         }

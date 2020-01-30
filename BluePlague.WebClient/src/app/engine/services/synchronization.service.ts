@@ -42,7 +42,9 @@ export class SynchronizationService {
         } as MetaInformation,
         scene: {
           turn: 0,
-          changedActors: [],
+          changedActors: [{
+
+          }],
           deletedActors: [],
           changedTiles: [],
           unsettledActors: []
