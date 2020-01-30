@@ -5,5 +5,5 @@ import { ReactionResult } from './reaction-result.model';
 export interface OutgoingActionReaction<T> {
   weight?: number;
   validator?: (scene: Scene, object: T, x: number, y: number) => boolean;
-  reaction: (scene: Scene, object: T, x: number, y: number, weight?: number, strength?: number) => ReactionResult;
+  reaction: (scene: Scene, object: T, x: number, y: number, weight?: number, strength?: number) => ReactionResult[];
 }

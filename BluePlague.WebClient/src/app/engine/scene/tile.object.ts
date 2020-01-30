@@ -60,12 +60,12 @@ export class Tile implements IReactiveObject {
     }
 
     react(action: string, initiator: Actor, time: number, strength?: number): ReactionResult[] {
-        const result = [];
+        const result: ReactionResult[] = [];
         const tags = this.tags;
         for (const tag of tags) {
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
-                result.push(chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength));
+                result.push(...chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength));
             }
         }
         return result;

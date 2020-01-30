@@ -179,14 +179,14 @@ export class Actor extends GameObject implements IActiveObject {
     }
 
     private reactOnOutgoingAction(action: string, x: number, y: number, strength?: number): ReactionResult[] {
-        const result = [];
+        const result: ReactionResult[] = [];
         const tags = this.calculatedTags;
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action];
             if (chosenReaction) {
                 const reaction = chosenReaction.reaction(this.parent, this, x, y, chosenReaction.weight, strength);
-                this.remainedTurnTime += reaction.time;
-                result.push(reaction);
+                this.remainedTurnTime += reaction.map(a => a.time).reduce((a, b) => a + b, 0);
+                result.push(...reaction);
             }
         }
         return result;
