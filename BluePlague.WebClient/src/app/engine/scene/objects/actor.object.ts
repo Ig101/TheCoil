@@ -136,7 +136,7 @@ export class Actor extends GameObject implements IActiveObject {
         this.remainedTurnTime -= time;
     }
 
-    validateAction(action: EnginePlayerAction): ActionValidationResult {
+    validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResult {
         const chosenAction = this.actions[action.type];
         if (!chosenAction) {
             return {
@@ -170,10 +170,7 @@ export class Actor extends GameObject implements IActiveObject {
         const reactionResults = this.reactOnOutgoingAction(actionInfo.group, action.x, action.y);
         const timeShift = reactionResults.reduce((sum, o) => sum + o.time, 0) + actionResult.time;
         for (const object of actionResult.reachedObjects) {
-            reactionResults.push({
-                time: 0,
-                message: object.react(actionInfo.group, this, timeShift, actionResult.strength)
-            });
+            reactionResults.push(...object.react(actionInfo.group, this, timeShift, actionResult.strength));
         }
         actionResult.reactions.concat(reactionResults);
         actionResult.time += timeShift;

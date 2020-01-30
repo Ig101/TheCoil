@@ -23,7 +23,8 @@ export class SynchronizationService {
     return of({
       success: true,
       result: {
-        meta
+        meta,
+        scene
       } as EngineSnapshot
     } as ExternalResponse<EngineSnapshot>);
   }
@@ -38,7 +39,14 @@ export class SynchronizationService {
           depth: 0,
           seed: 0,
           roomType: RoomTypeEnum.World
-        } as MetaInformation
+        } as MetaInformation,
+        scene: {
+          turn: 0,
+          changedActors: [],
+          deletedActors: [],
+          changedTiles: [],
+          unsettledActors: []
+        } as SceneSavedData
       } as EngineSnapshot
     } as ExternalResponse<EngineSnapshot>);
   }

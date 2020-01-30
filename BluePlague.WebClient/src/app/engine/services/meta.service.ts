@@ -36,9 +36,7 @@ export class MetaService {
 
   private initializeScene(): SceneInitialization {
     this.randomService.setupNewSeed(this.metaInformation.seed);
-    const factory = createSceneGenerationFactory(this.metaInformation.roomType,
-      this.nativeService.getRoomSpawnsList(this.metaInformation.roomType, this.metaInformation.difficulty),
-      this.randomService);
+    const factory = createSceneGenerationFactory(this.metaInformation.roomType, this.randomService);
     const initialScene = factory.generate();
     initialScene.turn = this.metaInformation.turn;
     initialScene.tiles.length = initialScene.width;
@@ -64,6 +62,7 @@ export class MetaService {
       .subscribe(result => {
         if (result.success) {
           this.lastActionsBanch.length = 0;
+          this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
         } else {
           // TODO ExitGame
         }

@@ -4,5 +4,5 @@ import { ActionValidationResult } from '../models/action-validation-result.model
 
 export interface IActiveObject {
   act(action: EnginePlayerAction): ActorActionResult;
-  validateAction(action: EnginePlayerAction): ActionValidationResult;
+  validateAction(action: EnginePlayerAction, deep?: boolean): ActionValidationResult;
 }

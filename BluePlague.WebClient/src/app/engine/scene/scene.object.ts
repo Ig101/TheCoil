@@ -13,6 +13,7 @@ import { DefaultActionEnum } from '../models/enums/default-action.enum';
 import { ActionParsingResult } from './models/action-parsing-result.model';
 import { Subject } from 'rxjs';
 import { ReactionResult } from './models/reaction-result.model';
+import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
 export class Scene {
 
     private resoponseSubject = new Subject<EngineActionResponse>();
@@ -60,7 +61,8 @@ export class Scene {
             idIncrementor: this.idIncrementor,
             changedActors: this.changedActors.map(x => x.savedData),
             deletedActors: this.deletedActors,
-            changedTiles: this.changedTiles.map(x => x.savedData)
+            changedTiles: this.changedTiles.map(x => x.savedData),
+            unsettledActors: []
         } as SceneSavedData;
     }
 
@@ -77,48 +79,48 @@ export class Scene {
             this.tiles[x] = new Array(this.height);
         }
         for (const tile of initialization.tiles) {
-            if (savedData) {
-                const savedTile = savedData.changedTiles.find(x => x.x === tile.x && x.y === tile.y);
-                if (savedTile) {
-                    const newTile = new Tile(this,
-                        this.nativeService.getTile(savedTile.nativeId), tile.x, tile.y);
-                    this.tiles[tile.x][tile.y] = newTile;
-                    this.changedTiles.push(newTile);
-                    continue;
-                }
+            const savedTile = savedData.changedTiles.find(x => x.x === tile.x && x.y === tile.y);
+            if (savedTile) {
+                const newTile = new Tile(this,
+                    this.nativeService.getTile(savedTile.nativeId), tile.x, tile.y);
+                this.tiles[tile.x][tile.y] = newTile;
+                this.changedTiles.push(newTile);
+                continue;
             }
             this.tiles[tile.x][tile.y] = new Tile(this,
                 tile.native, tile.x, tile.y);
         }
         for (const actor of initialization.actors) {
-            if (savedData) {
-                if (savedData.deletedActors.includes(this.idIncrementor)) {
-                    this.idIncrementor++;
-                    continue;
-                }
-                const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
-                if (savedActor) {
-                    const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y);
-                    this.changedActors.push(newActor);
-                    newActor.durability = savedActor.durability;
-                    newActor.energy = savedActor.energy;
-                    newActor.remainedTurnTime = savedActor.remainedTurnTime;
-                    continue;
-                }
+            if (savedData.deletedActors.includes(this.idIncrementor)) {
+                this.idIncrementor++;
+                continue;
+            }
+            const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
+            if (savedActor) {
+                const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y);
+                this.changedActors.push(newActor);
+                newActor.durability = savedActor.durability;
+                newActor.energy = savedActor.energy;
+                newActor.remainedTurnTime = savedActor.remainedTurnTime;
+                continue;
             }
             this.createActor(actor.native, actor.x, actor.y);
         }
-        if (savedData) {
-            for (const actor of savedData.changedActors) {
-                if (!this.actors.find(x => x.id === actor.id)) {
-                    const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y);
-                    this.changedActors.push(newActor);
-                    newActor.id = actor.id;
+        for (const actor of savedData.changedActors) {
+            if (!this.actors.find(x => x.id === actor.id)) {
+                const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y);
+                this.changedActors.push(newActor);
+                newActor.id = actor.id;
+                if (actor.player) {
+                    this.player = newActor;
                 }
             }
-            this.deletedActors = savedData.deletedActors;
+        }
+        this.deletedActors = savedData.deletedActors;
+        if (savedData.idIncrementor) {
             this.idIncrementor = savedData.idIncrementor;
         }
+        this.pushUnsettledActors(savedData.unsettledActors);
     }
 
     subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
@@ -144,6 +146,12 @@ export class Scene {
     }
 
     // ChangesRegistration
+    pushUnsettledActors(actors: UnsettledActorSavedData[]) {
+        for (const actor of actors) {
+            // TODO SetupUnsettledActors
+        }
+    }
+
     pushDead(actor: Actor) {
         this.corpsesPool.push(actor);
     }
@@ -192,31 +200,32 @@ export class Scene {
     // Actions
 
     // if null, action is restricted
-    parsePlayerAction(action: EnginePlayerAction): ActionParsingResult {
+    parsePlayerAction(action: EnginePlayerAction, deep: boolean = true): ActionParsingResult {
         switch (action.type) {
             default:
-                const availability = this.player.validateAction(action);
+                const availability = this.player.validateAction(action, deep);
                 return {
                     success: availability.success,
                     extraValues: availability.extraValues,
+                    warning: availability.warning,
                     actions: [action]
                 };
         }
     }
 
-    parseAllPlayerActions(x: number, y: number): { [action: number]: ActionParsingResult; } {
-        const dictionary: { [action: number]: ActionParsingResult; } = {};
+    parseAllPlayerActions(x: number, y: number): { [action: string]: ActionParsingResult; } {
+        const dictionary: { [action: string]: ActionParsingResult; } = {};
         for (const action of Object.values(this.player.actions)) {
             dictionary[action.name] = this.parsePlayerAction({
                 type: action.name,
                 x,
                 y
-            } as EnginePlayerAction);
+            }, false);
         }
         return dictionary;
     }
 
-    playerAct(action: EnginePlayerAction) {
+    playerAct(action: EnginePlayerAction, unsettledActors: UnsettledActorSavedData[]) {
         const playerActions = this.player.act(action);
         const timeShift = playerActions.time;
         this.finishAction(this.player.id, playerActions.reactions, action.type, action.x, action.y, action.extraIdentifier);
@@ -225,6 +234,7 @@ export class Scene {
         }
         this.turn += timeShift;
         this.actionReaction(action, timeShift);
+        this.pushUnsettledActors(unsettledActors);
     }
 
     private finishAction(actorId: number, reactions: ReactionResult[], type: string, x: number, y: number, extraIdentifier?: number) {

@@ -8,11 +8,13 @@ import { Actor } from '../scene/objects/actor.object';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { NativeService } from './native.service';
+import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
 
 @Injectable()
 export class SceneService {
 
   private scene: Scene;
+  private unsettledActors: UnsettledActorSavedData[] = [];
 
   constructor(
     private nativeService: NativeService
@@ -29,6 +31,12 @@ export class SceneService {
     this.scene = new Scene(scene, sceneSavedData, this.nativeService);
   }
 
+  pushUnsettledActors(unsettledActors: UnsettledActorSavedData[]) {
+    if (unsettledActors.length > 0) {
+      this.unsettledActors.push(...unsettledActors);
+    }
+  }
+
   getSceneSnapshot(): SceneSnapshot {
     return this.scene.snapshot;
   }
@@ -38,7 +46,7 @@ export class SceneService {
   }
 
   validateAndGetActions(action: EnginePlayerAction) {
-    return this.scene.parsePlayerAction(action);
+    return this.scene.parsePlayerAction(action, true);
   }
 
   validateAndGetAllActions(x: number, y: number) {
@@ -48,7 +56,8 @@ export class SceneService {
   sendActions(actions: EnginePlayerAction[]) {
     while (actions.length > 0) {
       const action = actions.shift();
-      this.scene.playerAct(action);
+      this.scene.playerAct(action, this.unsettledActors);
+      this.unsettledActors = [];
     }
   }
 }

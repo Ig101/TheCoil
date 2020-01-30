@@ -4,11 +4,10 @@ import { RoomSpawnNative } from '../models/natives/room-spawn-native.model';
 import { WorldSceneGenerationFactory } from './world-scene-generation.factory';
 import { RandomService } from 'src/app/shared/services/random.service';
 
-export function createSceneGenerationFactory(type: RoomTypeEnum, enemiesList: RoomSpawnNative[],
-                                             randomService: RandomService): ISceneGenerationFactory {
+export function createSceneGenerationFactory(type: RoomTypeEnum, randomService: RandomService): ISceneGenerationFactory {
     switch (type) {
         case RoomTypeEnum.World:
-            return new WorldSceneGenerationFactory(enemiesList, randomService);
+            return new WorldSceneGenerationFactory(randomService);
         default:
             return null;
     }

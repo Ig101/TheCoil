@@ -6,7 +6,6 @@ import { RandomService } from 'src/app/shared/services/random.service';
 export class WorldSceneGenerationFactory implements ISceneGenerationFactory {
 
     constructor(
-        private enemiesList: RoomSpawnNative[],
         private randomService: RandomService
         ) {
     }
