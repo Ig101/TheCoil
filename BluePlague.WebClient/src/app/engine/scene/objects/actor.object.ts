@@ -197,6 +197,9 @@ export class Actor extends GameObject implements IActiveObject {
         }
         const result = chosenAction.action(this.parent, this, action.x, action.y, action.extraIdentifier);
         this.parent.finishAction(result.reaction, action.type, this.x, this.y, this.id);
+        if (chosenAction.group === 'move') {
+            result.time *= this.parent.moveSpeedModifier;
+        }
         return { group: chosenAction.group, result };
     }
 }

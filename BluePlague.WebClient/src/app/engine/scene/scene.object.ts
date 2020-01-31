@@ -17,6 +17,7 @@ import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level
 export class Scene {
 
     private global = false;
+    private scale = 1;
     private resoponseSubject = new Subject<EngineActionResponse>();
     private unsubscribeSubject = new Subject();
 
@@ -44,6 +45,10 @@ export class Scene {
 
     get playerId() {
         return this.player.id;
+    }
+
+    get moveSpeedModifier() {
+        return this.scale;
     }
 
     get snapshot(): SceneSnapshot {
@@ -75,6 +80,7 @@ export class Scene {
         private nativeService: NativeService
     ) {
         this.global = initialization.global;
+        this.scale = initialization.scale;
         this.turn = initialization.turn;
         this.width = initialization.width;
         this.height = initialization.height;

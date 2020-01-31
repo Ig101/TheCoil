@@ -2,5 +2,6 @@ export enum ReactionMessageLevelEnum {
   Trace,
   Information,
   Attention,
-  Warning
+  Warning,
+  Note
 }
