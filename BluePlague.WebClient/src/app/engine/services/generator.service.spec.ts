@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RandomService } from './random.service';
+import { GeneratorService } from './generator.service';
 
-describe('RandomService', () => {
+describe('GeneratorService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: RandomService = TestBed.get(RandomService);
+    const service: GeneratorService = TestBed.get(GeneratorService);
     expect(service).toBeTruthy();
   });
 });

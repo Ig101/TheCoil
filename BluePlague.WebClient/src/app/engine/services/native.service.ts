@@ -14,6 +14,7 @@ import { getActionsRegistry } from '../tag-actions/actions-registry';
 import { getActorTagsRegistry } from '../tag-actions/actor-tags-registry';
 import { getTileTagsRegistry } from '../tag-actions/tile-tags-registry';
 import { ActorAction } from '../scene/models/actor-action.model';
+import { SceneInitialization } from '../models/scene/scene-initialization.model';
 
 @Injectable()
 export class NativeService {

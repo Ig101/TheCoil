@@ -12,8 +12,7 @@ import { LoadingService } from './services/loading.service';
   ],
   providers: [
     WebCommunicationService,
-    LoadingService,
-    RandomSource
+    LoadingService
   ],
   exports: [
     WebCommunicationService

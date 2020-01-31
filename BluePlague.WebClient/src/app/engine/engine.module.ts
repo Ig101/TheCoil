@@ -6,6 +6,7 @@ import { SceneService } from './services/scene.service';
 import { SharedModule } from '../shared/shared.module';
 import { SynchronizationService } from './services/synchronization.service';
 import { NativeService } from './services/native.service';
+import { GeneratorService } from './services/generator.service';
 
 
 
@@ -23,7 +24,8 @@ import { NativeService } from './services/native.service';
     MetaService,
     SceneService,
     SynchronizationService,
-    NativeService
+    NativeService,
+    GeneratorService
   ]
 })
 export class EngineModule { }

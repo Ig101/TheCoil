@@ -2,16 +2,15 @@ import { Injectable } from '@angular/core';
 import { SceneService } from './scene.service';
 import { SynchronizationService } from './synchronization.service';
 import { MetaInformation } from '../models/meta-information.model';
-import { map } from 'rxjs/operators';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { SceneInitialization } from '../models/scene/scene-initialization.model';
-import { Observable } from 'rxjs';
-import { RandomService } from 'src/app/shared/services/random.service';
+import { Observable, of } from 'rxjs';
 import { NativeService } from './native.service';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
-import { createSceneGenerationFactory } from '../scene-generation/scene-generation-factory.helper';
 import { TileInitialization } from '../models/scene/tile-initialization.model';
+import { GeneratorService } from './generator.service';
 
 @Injectable()
 export class MetaService {
@@ -31,27 +30,27 @@ export class MetaService {
     private readonly sceneService: SceneService,
     private readonly synchronizationService: SynchronizationService,
     private readonly nativeService: NativeService,
-    private readonly randomService: RandomService
+    private readonly generatorService: GeneratorService
   ) { }
 
-  private initializeScene(): SceneInitialization {
-    this.randomService.setupNewSeed(this.metaInformation.seed);
-    const factory = createSceneGenerationFactory(this.metaInformation.roomType, this.randomService);
-    const initialScene = factory.generate();
-    initialScene.turn = this.metaInformation.turn;
-    initialScene.tiles.length = initialScene.width;
-    for (let x = 0; x < initialScene.width; x++) {
-      for (let y = 0; y < initialScene.height; y++) {
-        if (!initialScene.tiles.find(tile => tile.x === x && tile.y === y)) {
-          initialScene.tiles.push({
-            x,
-            y,
-            native: this.nativeService.getTile(`default${this.metaInformation.roomType}`)
-          } as TileInitialization);
+  private initializeScene(): Observable<SceneInitialization> {
+    return this.generatorService.generateScene(this.metaInformation.roomType, this.metaInformation.seed)
+      .pipe(map(initialScene => {
+        initialScene.turn = this.metaInformation.turn;
+        initialScene.tiles.length = initialScene.width;
+        for (let x = 0; x < initialScene.width; x++) {
+          for (let y = 0; y < initialScene.height; y++) {
+            if (!initialScene.tiles.find(tile => tile.x === x && tile.y === y)) {
+              initialScene.tiles.push({
+                x,
+                y,
+                native: this.nativeService.getTile(`default${this.metaInformation.roomType}`)
+              } as TileInitialization);
+            }
+          }
         }
-      }
-    }
-    return initialScene;
+        return initialScene;
+      }));
   }
 
   private synchronization() {
@@ -72,24 +71,26 @@ export class MetaService {
 
   loadGame(): Observable<SceneSnapshot> {
     return this.synchronizationService.loadGame()
-      .pipe(map(response => {
+      .pipe(switchMap(response => {
         if (response.success) {
           this.metaInformationInternal = response.result.meta;
-          const sceneInitialization = this.initializeScene();
-          this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
-          this.sceneService.subscribe(actions => {
-            const playerAction = actions[0].action;
-            this.currentActionsBanch.push({
-              type: playerAction.type,
-              extraIdentifier: playerAction.extraIdentifier,
-              x: playerAction.x,
-              y: playerAction.y
-            } as EnginePlayerAction);
-          });
-          this.startSynchronizationTimer();
-          return this.sceneService.getSceneSnapshot();
+          return this.initializeScene()
+            .pipe(map(sceneInitialization => {
+              this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
+              this.sceneService.subscribe(actions => {
+                const playerAction = actions[0].action;
+                this.currentActionsBanch.push({
+                  type: playerAction.type,
+                  extraIdentifier: playerAction.extraIdentifier,
+                  x: playerAction.x,
+                  y: playerAction.y
+                } as EnginePlayerAction);
+              });
+              this.startSynchronizationTimer();
+              return this.sceneService.getSceneSnapshot();
+            }));
         } else {
-          return null;
+          return of(null);
         }
       }));
   }
