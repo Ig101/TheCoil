@@ -9,11 +9,11 @@ import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
-import { DefaultActionEnum } from '../models/enums/default-action.enum';
 import { ActionParsingResult } from './models/action-parsing-result.model';
 import { Subject } from 'rxjs';
 import { ReactionResult } from './models/reaction-result.model';
 import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
+import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
 export class Scene {
 
     private global = false;
@@ -245,19 +245,26 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    finishAction(reaction: ReactionResult, type: string, actorId?: number) {
+    finishAction(reaction: ReactionResult, type: string, x: number, y: number, actorId?: number) {
         this.resoponseSubject.next({
             actorId,
             type,
+            x,
+            y,
             changes: this.getSessionChanges(),
             result: reaction
         });
         for (const corpse of this.corpsesPool) {
-            corpse.act({
-                type: DefaultActionEnum.Die,
-                x: corpse.x,
-                y: corpse.y
-            } as EnginePlayerAction);
+            corpse.doReactiveAction(
+                'die',
+                'die',
+                {
+                    level: ReactionMessageLevelEnum.Information,
+                    message: [corpse.name, ' died.']
+                } as ReactionResult,
+                [ corpse.tile, ...corpse.tile.objects ],
+                0
+            );
             this.registerActorDeath(corpse);
         }
         this.corpsesPool.length = 0;
@@ -276,7 +283,7 @@ export class Scene {
             if (actor !== this.player) {
                 while (actor.remainedTurnTime <= 0) {
                     actor.act({
-                        type: DefaultActionEnum.Wait,
+                        type: 'wait',
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction);

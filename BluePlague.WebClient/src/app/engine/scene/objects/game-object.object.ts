@@ -39,16 +39,17 @@ export abstract class GameObject implements IReactiveObject {
         for (const tag of tags) {
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
-                chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
+                const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
+                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
             }
         }
     }
 
-    doReactiveAction(type: string, reaction: ReactionResult,
+    doReactiveAction(type: string, group: string, reaction: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(reaction, type, this.id);
+        this.parent.finishAction(reaction, type, this.x, this.y, this.id);
         for (const object of reachedObjects) {
-            object.react(type, this, time, strength);
+            object.react(group, this, time, strength);
         }
     }
 

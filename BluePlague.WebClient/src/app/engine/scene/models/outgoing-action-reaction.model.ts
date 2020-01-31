@@ -1,9 +1,11 @@
 import { Scene } from '../scene.object';
 import { Actor } from '../objects/actor.object';
 import { ReactionResult } from './reaction-result.model';
+import { IReactiveObject } from '../interfaces/reactive-object.interface';
 
 export interface OutgoingActionReaction<T> {
   weight?: number;
   validator?: (scene: Scene, object: T, x: number, y: number) => boolean;
-  reaction: (scene: Scene, object: T, weight?: number, strength?: number) => void;
+  reaction: (scene: Scene, object: T, weight?: number, strength?: number) =>
+    { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number };
 }

@@ -20,7 +20,8 @@ function moveAction(scene: Scene, object: Actor, x: number, y: number, externalI
   } as ActorActionResult;
 }
 
-function moveValidation(scene: Scene, actor: Actor, x: number, y: number, externalIdentifier?: number): ActionValidationResult {
+function moveValidation(scene: Scene, actor: Actor, x: number, y: number, deep: boolean,
+                        externalIdentifier?: number): ActionValidationResult {
   if (this.remainedTurnTime > 0 || x - actor.x > 1 || y - actor.y > 1 || x - actor.x < -1 || y - actor.y < -1) {
     return {
       success: false

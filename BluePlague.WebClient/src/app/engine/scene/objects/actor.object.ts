@@ -150,7 +150,7 @@ export class Actor extends GameObject implements IActiveObject {
         }
         let validationResult: ActionValidationResult;
         if (chosenAction.validator) {
-            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier);
+            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier, deep);
         } else {
             validationResult = {
                 success: true
@@ -172,18 +172,20 @@ export class Actor extends GameObject implements IActiveObject {
     act(action: EnginePlayerAction): number {
         const actionInfo = this.doAction(action);
         this.remainedTurnTime += actionInfo.result.time;
-        this.doReactiveAction(actionInfo.group, actionInfo.result.reaction,
+        this.reactOnOutgoingAction(action.type, actionInfo.result.time, actionInfo.result.strength);
+        this.doReactiveAction(action.type, actionInfo.group, actionInfo.result.reaction,
                               actionInfo.result.reachedObjects, actionInfo.result.time, actionInfo.result.strength);
         return actionInfo.result.time;
     }
 
 
-    reactOnOutgoingAction(action: string, strength?: number) {
+    reactOnOutgoingAction(action: string, time: number, strength?: number) {
         const tags = this.calculatedTags;
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action];
             if (chosenReaction) {
-                chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
+                const reaction = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
+                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
             }
         }
     }
@@ -194,6 +196,7 @@ export class Actor extends GameObject implements IActiveObject {
             return undefined;
         }
         const result = chosenAction.action(this.parent, this, action.x, action.y, action.extraIdentifier);
+        this.parent.finishAction(result.reaction, action.type, this.x, this.y, this.id);
         return { group: chosenAction.group, result };
     }
 }

@@ -6,6 +6,6 @@ import { ActionValidationResult } from './action-validation-result.model';
 export interface ActorAction {
   name: string;
   group: string;
-  validator?: (scene: Scene, actor: Actor, x: number, y: number, externalIdentifier?: number) => ActionValidationResult;
+  validator?: (scene: Scene, actor: Actor, x: number, y: number, deep: boolean, externalIdentifier?: number) => ActionValidationResult;
   action: (scene: Scene, object: Actor, x: number, y: number, externalIdentifier?: number) => ActorActionResult;
 }

@@ -4,6 +4,8 @@ import { ReactionResult } from '../scene/models/reaction-result.model';
 
 export interface EngineActionResponse {
     actorId?: number;
+    x: number;
+    y: number;
     type: string;
     changes: SceneChanges;
     result: ReactionResult;
