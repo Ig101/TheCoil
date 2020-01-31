@@ -5,8 +5,6 @@ export interface SceneInitialization {
     global: boolean;
     scale: number;
     turn: number;
-    playerActor: ActorInitialization;
-    actors: ActorInitialization[];
     tiles: TileInitialization[];
     width: number;
     height: number;

@@ -100,30 +100,12 @@ export class Scene {
             this.tiles[tile.x][tile.y] = new Tile(this,
                 tile.native, tile.x, tile.y);
         }
-        for (const actor of initialization.actors) {
-            if (savedData.deletedActors.includes(this.idIncrementor)) {
-                this.idIncrementor++;
-                continue;
-            }
-            const savedActor = savedData.changedActors.find(x => x.id === this.idIncrementor);
-            if (savedActor) {
-                const newActor = this.createActor(this.nativeService.getActor(savedActor.nativeId), savedActor.x, savedActor.y, false);
-                this.changedActors.push(newActor);
-                newActor.durability = savedActor.durability;
-                newActor.energy = savedActor.energy;
-                newActor.remainedTurnTime = savedActor.remainedTurnTime;
-                continue;
-            }
-            this.createActor(actor.native, actor.x, actor.y, false);
-        }
         for (const actor of savedData.changedActors) {
-            if (!this.actors.find(x => x.id === actor.id)) {
-                const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, false);
-                this.changedActors.push(newActor);
-                newActor.id = actor.id;
-                if (actor.player) {
-                    this.player = newActor;
-                }
+            const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, false);
+            this.changedActors.push(newActor);
+            newActor.id = actor.id;
+            if (actor.player) {
+                this.player = newActor;
             }
         }
         this.deletedActors = savedData.deletedActors;
