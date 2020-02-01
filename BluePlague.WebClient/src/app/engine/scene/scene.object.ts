@@ -54,11 +54,10 @@ export class Scene {
     get snapshot(): SceneSnapshot {
         return {
             global: this.global,
-            playerId: this.playerId,
+            player: this.player.snapshot,
             turn: this.turn,
             width: this.width,
             height: this.height,
-            actors: this.actors.map(x => x.snapshot),
             tiles: this.tiles.map(x => x.map(y => y.snapshot))
         } as SceneSnapshot;
     }

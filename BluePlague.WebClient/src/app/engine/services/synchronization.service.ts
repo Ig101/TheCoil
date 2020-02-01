@@ -56,7 +56,7 @@ export class SynchronizationService {
               durability: 100,
               energy: 100,
               remainedTurnTime: 0,
-              x: 5,
+              x: 10,
               y: 5,
               id: 1
             } as ActorSavedData

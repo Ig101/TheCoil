@@ -19,8 +19,8 @@ export class GeneratorService {
       global: false,
       scale: 1,
       tiles: [],
-      width: 10,
-      height: 10
+      width: 21,
+      height: 11
     } as SceneInitialization;
     return of(ini);
   }

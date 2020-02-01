@@ -1,15 +1,19 @@
-import { GameObjectSnapshot } from './game-object-snapshot.model';
 import { ActionTag } from 'src/app/engine/scene/models/action-tag.model';
 import { Tag } from 'src/app/engine/scene/models/tag.model';
 import { Actor } from 'src/app/engine/scene/objects/actor.object';
 import { ActorAction } from 'src/app/engine/scene/models/actor-action.model';
+import { SpriteSnapshot } from '../abstract/sprite-snapshot.model';
 
-export interface ActorSnapshot extends GameObjectSnapshot {
+export interface ActorSnapshot {
+    id: number;
+    x: number;
+    y: number;
+    passable: boolean;
+    sprite: SpriteSnapshot;
     speedModificator: number;
     weight: number;
     maxDurability: number;
     maxEnergy: number;
-    passable: boolean;
     tags: ActionTag<Actor>[];
     actions: ActorAction[];
     durability: number;

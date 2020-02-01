@@ -21,18 +21,18 @@ export class RandomService {
   }
 
   // from -max to max
-  next(start: number = -this.maxValue, end: number = this.maxValue): number {
+  next(fromSeed: boolean = false, start: number = -this.maxValue, end: number = this.maxValue): number {
     if (end > this.maxValue) {
       end = this.maxValue;
     }
     if (start < this.maxValue) {
       start = this.maxValue;
     }
-    return Math.floor(this.nextDouble() * (end - start) + start);
+    return Math.floor(this.nextDouble(fromSeed) * (end - start) + start);
   }
 
   // from 0 to 1
-  nextDouble(): number {
+  nextDouble(fromSeed: boolean = false): number {
     // TODO get from sheets
     return Math.random();
   }

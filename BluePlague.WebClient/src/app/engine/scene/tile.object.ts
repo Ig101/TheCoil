@@ -3,7 +3,6 @@ import { Tag } from './models/tag.model';
 import { Sprite } from './abstract/sprite.object';
 import { TileNative } from '../models/natives/tile-native.model';
 import { Actor } from './objects/actor.object';
-import { GameObject } from './objects/game-object.object';
 import { TileSnapshot } from '../models/scene/tile-snapshot.model';
 import { TileSavedData } from '../models/scene/tile-saved-data.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
@@ -14,7 +13,7 @@ import { AnotherLevelLink } from './models/another-level-link.model';
 export class Tile implements IReactiveObject {
 
     parent: Scene;
-    objects: GameObject[];
+    objects: Actor[];
 
     readonly x: number;
     readonly y: number;
@@ -33,7 +32,8 @@ export class Tile implements IReactiveObject {
             backgroundColor: this.backgroundColor,
             tags: this.tags,
             passable: this.passable,
-            levelLink: this.levelLink
+            levelLink: this.levelLink,
+            objects: this.objects.map(x => x.snapshot)
         } as TileSnapshot;
     }
 

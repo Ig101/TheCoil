@@ -57,11 +57,11 @@ export class NativeService {
     this.sprites = {
       player: {
         character: '@',
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 255, g: 255, b: 255, a: 1}
       },
       grass: {
         character: '-',
-        color: {r: 0.2, g: 0.9, b: 0.2, a: 1}
+        color: {r: 50, g: 180, b: 50, a: 1}
       }
     };
     this.actors = {
@@ -82,7 +82,7 @@ export class NativeService {
       defaultWorld: {
         id: 'defaultWorld',
         sprite: this.sprites.grass,
-        backgroundColor: {r: 0, g: 0.2, b: 0},
+        backgroundColor: {r: 0, g: 20, b: 0},
         tags: [],
         passable: true
       } as TileNative

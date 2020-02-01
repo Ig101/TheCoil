@@ -1,4 +1,3 @@
-import { GameObject } from './game-object.object';
 import { Scene } from '../scene.object';
 import { ActorNative } from '../../models/natives/actor-native.model';
 import { Tile } from '../tile.object';
@@ -14,8 +13,21 @@ import { ActorActionResult } from '../models/actor-action-result.model';
 import { IActiveObject } from '../interfaces/active-object.interface';
 import { ActionValidationResult } from '../models/action-validation-result.model';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
+import { Sprite } from '../abstract/sprite.object';
 
-export class Actor extends GameObject implements IActiveObject {
+export class Actor implements IActiveObject, IReactiveObject {
+
+    tile: Tile;
+
+    parent: Scene;
+
+    id: number;
+    x: number;
+    y: number;
+    name: string;
+    passable: boolean;
+    sprite: Sprite; // native
+
     readonly nativeId: string;
     readonly speedModification: number; // native
     readonly weight: number; // native
@@ -24,7 +36,6 @@ export class Actor extends GameObject implements IActiveObject {
     readonly tags: ActionTag<Actor>[]; // native
     readonly actions: ActorAction[]; // native
 
-    readonly passable: boolean; // native
     dead = false;
 
     durability: number;
@@ -72,7 +83,13 @@ export class Actor extends GameObject implements IActiveObject {
     }
 
     constructor(parent: Scene, id: number, native: ActorNative, x: number, y: number, name?: string) {
-        super(parent, id, native.sprite, x, y, name ? name : native.name);
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.parent = parent;
+        this.passable = native.passable;
+        this.sprite = new Sprite(native.sprite);
         this.nativeId = native.id;
         this.speedModification = native.speedModificator;
         this.maxDurability = native.maxDurability;
@@ -82,7 +99,6 @@ export class Actor extends GameObject implements IActiveObject {
         this.energy = this.maxEnergy;
         this.tags = native.tags;
         this.actions = native.actions;
-        this.passable = native.passable;
         this.remainedTurnTime = 0;
 
         this.calculatedWeight = this.weight;
@@ -202,5 +218,25 @@ export class Actor extends GameObject implements IActiveObject {
             result.time *= this.parent.moveSpeedModifier;
         }
         return { group: chosenAction.group, result };
+    }
+
+    // Reactions
+    react(action: string, initiator: Actor, time: number, strength?: number) {
+        const tags = this.tags;
+        for (const tag of tags) {
+            const chosenReaction = tag.reactions[action];
+            if (chosenReaction) {
+                const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
+                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
+            }
+        }
+    }
+
+    doReactiveAction(type: string, group: string, reaction: ReactionResult,
+                     reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
+        this.parent.finishAction(reaction, type, this.x, this.y, this.id);
+        for (const object of reachedObjects) {
+            object.react(group, this, time, strength);
+        }
     }
 }

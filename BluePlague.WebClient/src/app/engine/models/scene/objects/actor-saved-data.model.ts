@@ -1,6 +1,7 @@
-import { GameObjectSavedData } from './game-object-saved-data.model';
-
-export interface ActorSavedData extends GameObjectSavedData {
+export interface ActorSavedData {
+    id: number;
+    x: number;
+    y: number;
     player: boolean;
     name?: string;
     nativeId: string;

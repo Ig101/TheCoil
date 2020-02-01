@@ -29,7 +29,7 @@ export class EngineFacadeService {
             return of(this.sceneService.getSceneSnapshot());
           }
         } else {
-          return of(undefined);
+          return of(undefined as SceneSnapshot);
         }
       }));
   }

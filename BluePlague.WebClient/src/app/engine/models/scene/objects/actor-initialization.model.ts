@@ -1,6 +1,7 @@
-import { GameObjectInitialization } from './game-object-initialization.model';
 import { ActorNative } from '../../natives/actor-native.model';
 
-export interface ActorInitialization extends GameObjectInitialization {
+export interface ActorInitialization {
+    x: number;
+    y: number;
     native: ActorNative;
 }
