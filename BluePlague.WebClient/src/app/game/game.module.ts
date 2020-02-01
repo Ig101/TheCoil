@@ -3,16 +3,23 @@ import { CommonModule } from '@angular/common';
 import { GameRoutingModule } from './game-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { EngineModule } from '../engine/engine.module';
+import { AsciiGameComponent } from './ascii-game/ascii-game.component';
+import { GameStateService } from './services/game-state.service';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    AsciiGameComponent
+  ],
   imports: [
     CommonModule,
     GameRoutingModule,
     SharedModule,
     EngineModule
+  ],
+  providers: [
+    GameStateService
   ]
 })
 export class GameModule { }

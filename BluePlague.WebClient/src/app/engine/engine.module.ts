@@ -16,9 +16,6 @@ import { GeneratorService } from './services/generator.service';
     CommonModule,
     SharedModule
   ],
-  exports: [
-
-  ],
   providers: [
     EngineFacadeService,
     MetaService,

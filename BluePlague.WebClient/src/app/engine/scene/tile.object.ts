@@ -19,7 +19,7 @@ export class Tile implements IReactiveObject {
     readonly x: number;
     readonly y: number;
     sprite: Sprite; // native
-    backgroundColor: {r: number, g: number, b: number, a: number}; // native
+    backgroundColor: {r: number, g: number, b: number}; // native
     readonly nativeId: string;
     readonly tags: Tag<Tile>[]; // native
     readonly passable: boolean; // native

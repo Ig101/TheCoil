@@ -9,6 +9,7 @@ import { ExternalResponse } from 'src/app/shared/models/external-response.model'
 import { renderFlagCheckIfStmt } from '@angular/compiler/src/render3/view/template';
 import { RoomTypeEnum } from '../models/enums/room-type.enum';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
+import { ActorSavedData } from '../models/scene/objects/actor-saved-data.model';
 
 @Injectable()
 export class SynchronizationService {
@@ -19,7 +20,11 @@ export class SynchronizationService {
 
   sendSynchronizationInfo(scene: SceneSavedData, meta: MetaInformation,
                           actions: EnginePlayerAction[]): Observable<ExternalResponse<EngineSnapshot>> {
-    meta.turn = scene.turn;
+    console.groupCollapsed('sceneSynchronization');
+    console.log(scene);
+    console.log(meta);
+    console.log(actions);
+    console.groupEnd();
     return of({
       success: true,
       result: {
@@ -37,14 +42,25 @@ export class SynchronizationService {
           difficulty: 0,
           dungeon: 'world',
           depth: 0,
-          seed: 0,
-          roomType: RoomTypeEnum.World
+          roomType: RoomTypeEnum.World,
+          name: 'World'
         } as MetaInformation,
         scene: {
           turn: 0,
-          changedActors: [{
-
-          }],
+          idIncrementor: 2,
+          changedActors: [
+            {
+              player: true,
+              nativeId: 'player',
+              name: 'harry',
+              durability: 100,
+              energy: 100,
+              remainedTurnTime: 0,
+              x: 5,
+              y: 5,
+              id: 1
+            } as ActorSavedData
+          ],
           deletedActors: [],
           changedTiles: [],
           unsettledActors: []

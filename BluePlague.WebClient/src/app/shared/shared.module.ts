@@ -13,9 +13,6 @@ import { LoadingService } from './services/loading.service';
   providers: [
     WebCommunicationService,
     LoadingService
-  ],
-  exports: [
-    WebCommunicationService
   ]
 })
 export class SharedModule { }

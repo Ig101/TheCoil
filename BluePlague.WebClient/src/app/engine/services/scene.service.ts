@@ -16,6 +16,10 @@ export class SceneService {
   private scene: Scene;
   private unsettledActors: UnsettledActorSavedData[] = [];
 
+  get sceneLoaded(): boolean {
+    return this.scene !== undefined;
+  }
+
   constructor(
     private nativeService: NativeService
   ) { }
@@ -45,7 +49,7 @@ export class SceneService {
     return this.scene.savedData;
   }
 
-  validateAndGetActions(action: EnginePlayerAction) {
+  validateAndGetAction(action: EnginePlayerAction) {
     return this.scene.parsePlayerAction(action, true);
   }
 

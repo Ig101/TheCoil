@@ -37,7 +37,7 @@ export class Scene {
 
     private idIncrementor = 0;
 
-    private actors: Actor[];
+    private actors: Actor[] = [];
     private tiles: Tile[][];
 
     readonly width: number;
@@ -81,7 +81,7 @@ export class Scene {
     ) {
         this.global = initialization.global;
         this.scale = initialization.scale;
-        this.turn = initialization.turn;
+        this.turn = savedData.turn;
         this.width = initialization.width;
         this.height = initialization.height;
         this.tiles = new Array(this.width);

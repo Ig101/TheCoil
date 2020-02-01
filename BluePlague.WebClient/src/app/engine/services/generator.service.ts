@@ -13,8 +13,14 @@ export class GeneratorService {
     private webCommunicationService: WebCommunicationService
   ) { }
 
-  generateScene(roomType: RoomTypeEnum, seed: number): Observable<SceneInitialization> {
-    // TODO DefaultSceneGen
-    return of(null);
+  generateScene(roomType: RoomTypeEnum, seed?: number): Observable<SceneInitialization> {
+    const ini = {
+      global: false,
+      scale: 1,
+      tiles: [],
+      width: 10,
+      height: 10
+    } as SceneInitialization;
+    return of(ini);
   }
 }

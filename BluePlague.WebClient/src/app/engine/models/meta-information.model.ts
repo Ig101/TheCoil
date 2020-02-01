@@ -9,7 +9,5 @@ export interface MetaInformation {
     depth: number;
     // Codes extra info of room
     name: string;
-    seed: number;
-    // Time code
-    turn: number;
+    seed?: number; // If null, room is creating without random
 }

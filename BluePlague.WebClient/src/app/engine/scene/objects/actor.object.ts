@@ -17,7 +17,7 @@ import { IReactiveObject } from '../interfaces/reactive-object.interface';
 
 export class Actor extends GameObject implements IActiveObject {
     readonly nativeId: string;
-    readonly speedModificator: number; // native
+    readonly speedModification: number; // native
     readonly weight: number; // native
     readonly maxDurability: number; // native
     readonly maxEnergy: number; // native
@@ -63,6 +63,7 @@ export class Actor extends GameObject implements IActiveObject {
             id: this.id,
             x: this.x,
             y: this.y,
+            name: this.name,
             nativeId: this.nativeId,
             durability: this.durability,
             energy: this.energy,
@@ -73,7 +74,7 @@ export class Actor extends GameObject implements IActiveObject {
     constructor(parent: Scene, id: number, native: ActorNative, x: number, y: number, name?: string) {
         super(parent, id, native.sprite, x, y, name ? name : native.name);
         this.nativeId = native.id;
-        this.speedModificator = native.speedModificator;
+        this.speedModification = native.speedModificator;
         this.maxDurability = native.maxDurability;
         this.weight = native.weight;
         this.durability = this.maxDurability;
@@ -86,10 +87,10 @@ export class Actor extends GameObject implements IActiveObject {
 
         this.calculatedWeight = this.weight;
         this.calculatedActions = this.actions;
-        this.calculatedMaxDurability = this.calculatedMaxDurability;
-        this.calculatedMaxEnergy = this.calculatedMaxEnergy;
-        this.calculatedSpeedModification = this.calculatedSpeedModification;
-        this.calculatedTags = this.calculatedTags;
+        this.calculatedMaxDurability = this.maxDurability;
+        this.calculatedMaxEnergy = this.maxEnergy;
+        this.calculatedSpeedModification = this.speedModification;
+        this.calculatedTags = this.tags;
 
         this.tile = parent.getTile(x, y);
         this.tile.objects.push(this);

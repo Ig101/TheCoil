@@ -19,6 +19,8 @@ import { SceneInitialization } from '../models/scene/scene-initialization.model'
 @Injectable()
 export class NativeService {
 
+  private loaded = false;
+
   private actors: { [id: string]: ActorNative; };
   private tiles: { [id: string]: TileNative; };
   private sprites: { [id: string]: SpriteNative; };
@@ -32,8 +34,11 @@ export class NativeService {
   ) { }
 
   loadNatives(): Observable<ExternalResponse<any>> {
-    this.loadInternalNatives();
-    this.loadNativesFromNetworkMock();
+    if (!this.loaded) {
+      this.loadInternalNatives();
+      this.loadNativesFromNetworkMock();
+      this.loaded = true;
+    }
     return of({
       success: true
     } as ExternalResponse<any>);
@@ -49,7 +54,39 @@ export class NativeService {
 
   // temporary
   private loadNativesFromNetworkMock() {
-    throw new Error('Method not implemented.');
+    this.sprites = {
+      player: {
+        character: '@',
+        color: {r: 1, g: 1, b: 1, a: 1}
+      },
+      grass: {
+        character: '-',
+        color: {r: 0.2, g: 0.9, b: 0.2, a: 1}
+      }
+    };
+    this.actors = {
+      player: {
+        id: 'player',
+        name: 'player',
+        sprite: this.sprites.player,
+        speedModificator: 5,
+        weight: 100,
+        maxDurability: 100,
+        maxEnergy: 100,
+        tags: [],
+        actions: [this.actions.wait, this.actions.move],
+        passable: false
+      } as ActorNative
+    };
+    this.tiles = {
+      defaultWorld: {
+        id: 'defaultWorld',
+        sprite: this.sprites.grass,
+        backgroundColor: {r: 0, g: 0.2, b: 0},
+        tags: [],
+        passable: true
+      } as TileNative
+    };
   }
 
   private loadInternalNatives() {

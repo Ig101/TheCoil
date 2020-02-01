@@ -11,14 +11,15 @@ import { NativeService } from './native.service';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
 import { TileInitialization } from '../models/scene/tile-initialization.model';
 import { GeneratorService } from './generator.service';
+import { RoomTypeEnum } from '../models/enums/room-type.enum';
 
 @Injectable()
 export class MetaService {
 
   private readonly synchronizationTimer = 20000;
-  private timer: NodeJS.Timer;
-  private currentActionsBanch: EnginePlayerAction[];
-  private lastActionsBanch: EnginePlayerAction[];
+  private timer;
+  private currentActionsBanch: EnginePlayerAction[] = [];
+  private lastActionsBanch: EnginePlayerAction[] = [];
 
   private metaInformationInternal: MetaInformation;
 
@@ -36,37 +37,19 @@ export class MetaService {
   private initializeScene(): Observable<SceneInitialization> {
     return this.generatorService.generateScene(this.metaInformation.roomType, this.metaInformation.seed)
       .pipe(map(initialScene => {
-        initialScene.turn = this.metaInformation.turn;
-        initialScene.tiles.length = initialScene.width;
         for (let x = 0; x < initialScene.width; x++) {
           for (let y = 0; y < initialScene.height; y++) {
             if (!initialScene.tiles.find(tile => tile.x === x && tile.y === y)) {
               initialScene.tiles.push({
                 x,
                 y,
-                native: this.nativeService.getTile(`default${this.metaInformation.roomType}`)
+                native: this.nativeService.getTile(`default${RoomTypeEnum[this.metaInformation.roomType]}`)
               } as TileInitialization);
             }
           }
         }
         return initialScene;
       }));
-  }
-
-  private synchronization() {
-    this.lastActionsBanch.push(...this.currentActionsBanch);
-    this.currentActionsBanch = [];
-    this.synchronizationService.sendSynchronizationInfo(this.sceneService.getSceneSavedData(),
-                                                        this.metaInformation, this.lastActionsBanch)
-      .subscribe(result => {
-        if (result.success) {
-          this.lastActionsBanch.length = 0;
-          this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
-        } else {
-          // TODO ExitGame
-        }
-      });
-
   }
 
   loadGame(): Observable<SceneSnapshot> {
@@ -99,7 +82,25 @@ export class MetaService {
     clearInterval(this.timer);
   }
 
+  private synchronization(lastActionsBanch: EnginePlayerAction[], currentActionsBanch: EnginePlayerAction[],
+                          synchronizationService: SynchronizationService, sceneService: SceneService, metaInformation: MetaInformation) {
+    lastActionsBanch.push(...currentActionsBanch);
+    currentActionsBanch.length = 0;
+    synchronizationService.sendSynchronizationInfo(sceneService.getSceneSavedData(),
+                                                        metaInformation, lastActionsBanch)
+      .subscribe(result => {
+        if (result.success) {
+          lastActionsBanch.length = 0;
+          sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
+        } else {
+          // TODO ExitGame
+        }
+      });
+
+  }
+
   startSynchronizationTimer() {
-    this.timer = setInterval(this.synchronization, this.synchronizationTimer);
+    this.timer = setInterval(this.synchronization, this.synchronizationTimer, this.lastActionsBanch, this.currentActionsBanch,
+      this.synchronizationService, this.sceneService, this.metaInformation);
   }
 }
