@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WebCommunicationService } from './services/web-communication.service';
 import { LoadingService } from './services/loading.service';
+import { RandomService } from './services/random.service';
 
 
 
@@ -12,7 +13,8 @@ import { LoadingService } from './services/loading.service';
   ],
   providers: [
     WebCommunicationService,
-    LoadingService
+    LoadingService,
+    RandomService
   ]
 })
 export class SharedModule { }
