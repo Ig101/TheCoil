@@ -7,7 +7,9 @@ export class GameStateService {
   scene: SceneSnapshot;
   cameraX = 0;
   cameraY = 0;
-  zoom = 1;
+
+  playerX = 0;
+  playerY = 0;
 
   constructor() { }
 }

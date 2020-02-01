@@ -25,8 +25,8 @@ export class RandomService {
     if (end > this.maxValue) {
       end = this.maxValue;
     }
-    if (start < this.maxValue) {
-      start = this.maxValue;
+    if (start < -this.maxValue) {
+      start = -this.maxValue;
     }
     return Math.floor(this.nextDouble(fromSeed) * (end - start) + start);
   }

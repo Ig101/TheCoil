@@ -7,8 +7,10 @@ import { ActorSnapshot } from './objects/actor-snapshot.model';
 export interface TileSnapshot {
     x: number;
     y: number;
+    name: string;
     sprite: SpriteSnapshot;
     backgroundColor: {r: number, g: number, b: number};
+    bright: boolean;
     tags: Tag<Tile>[];
     passable: boolean;
     levelLink?: AnotherLevelLink;

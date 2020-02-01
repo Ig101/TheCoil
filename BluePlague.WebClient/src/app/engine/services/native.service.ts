@@ -62,6 +62,10 @@ export class NativeService {
       grass: {
         character: '-',
         color: {r: 50, g: 180, b: 50, a: 1}
+      },
+      tree: {
+        character: 'Y',
+        color: {r: 130, g: 52, b: 0, a: 1}
       }
     };
     this.actors = {
@@ -76,16 +80,27 @@ export class NativeService {
         tags: [],
         actions: [this.actions.wait, this.actions.move],
         passable: false
-      } as ActorNative
+      }
     };
     this.tiles = {
       defaultWorld: {
         id: 'defaultWorld',
+        name: 'grass',
         sprite: this.sprites.grass,
         backgroundColor: {r: 0, g: 20, b: 0},
+        bright: false,
         tags: [],
         passable: true
-      } as TileNative
+      },
+      tree: {
+        id: 'tree',
+        name: 'tree',
+        sprite: this.sprites.tree,
+        backgroundColor: {r: 0, g: 20, b: 0},
+        bright: false,
+        tags: [],
+        passable: true
+      }
     };
   }
 

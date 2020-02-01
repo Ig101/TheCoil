@@ -18,7 +18,9 @@ export class Tile implements IReactiveObject {
     readonly x: number;
     readonly y: number;
     sprite: Sprite; // native
+    name: string; // native
     backgroundColor: {r: number, g: number, b: number}; // native
+    bright: boolean;
     readonly nativeId: string;
     readonly tags: Tag<Tile>[]; // native
     readonly passable: boolean; // native
@@ -29,7 +31,9 @@ export class Tile implements IReactiveObject {
             x: this.x,
             y: this.y,
             sprite: this.sprite.snapshot,
+            name: this.name,
             backgroundColor: this.backgroundColor,
+            bright: this.bright,
             tags: this.tags,
             passable: this.passable,
             levelLink: this.levelLink,
@@ -51,9 +55,11 @@ export class Tile implements IReactiveObject {
         this.x = x;
         this.y = y;
         this.sprite = new Sprite(tile.sprite);
+        this.bright = tile.bright;
         this.nativeId = tile.id;
         this.passable = tile.passable;
         this.tags = tile.tags;
+        this.name = tile.name;
         this.backgroundColor = tile.backgroundColor;
         this.objects = [];
         this.levelLink = link;
