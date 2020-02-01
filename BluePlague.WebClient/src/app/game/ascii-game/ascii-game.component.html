@@ -1,1 +1,4 @@
-<canvas #gameCanvas class="game-canvas" width="0" height="0"></canvas>
+<canvas #gameCanvas class="game-canvas" width="1920" height="1080" 
+  (window:resize)="onResize($event)" (window:keydown)="onKeyDown($event)"
+  (window:keyup)="onKeyUp($event)" (window:mousedown)="onMouseDown($event)"
+  (window:mouseup)="onMouseUp($event)" (window:mousemove)="onMouseMove($event)"></canvas>
