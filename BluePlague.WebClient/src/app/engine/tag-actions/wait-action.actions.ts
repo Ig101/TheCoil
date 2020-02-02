@@ -3,6 +3,19 @@ import { Actor } from '../scene/objects/actor.object';
 import { ActorActionResult } from '../scene/models/actor-action-result.model';
 import { ActorAction } from '../scene/models/actor-action.model';
 import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
+import { ActionValidationResult } from '../scene/models/action-validation-result.model';
+
+function waitValidation(scene: Scene, actor: Actor, x: number, y: number, deep: boolean,
+                        externalIdentifier?: number): ActionValidationResult {
+  if (this.remainedTurnTime >= 0 && x - actor.x !== 0 || y - actor.y !== 0) {
+    return {
+      success: false
+    };
+  }
+  return {
+    success: true
+  };
+}
 
 function waitAction(scene: Scene, object: Actor, x: number, y: number, externalIdentifier?: number): ActorActionResult {
   const timeShift = object.calculatedSpeedModification;
@@ -20,6 +33,7 @@ export function registerWaitAction(): ActorAction {
   return {
     name: 'wait',
     group: 'wait',
-    action: waitAction
+    action: waitAction,
+    validator: waitValidation
   } as ActorAction;
 }

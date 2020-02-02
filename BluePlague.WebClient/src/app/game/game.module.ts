@@ -5,18 +5,19 @@ import { SharedModule } from '../shared/shared.module';
 import { EngineModule } from '../engine/engine.module';
 import { AsciiGameComponent } from './ascii-game/ascii-game.component';
 import { GameStateService } from './services/game-state.service';
+import { ContextMenuComponent } from './ascii-game/context-menu/context-menu.component';
 
 
 
 @NgModule({
   declarations: [
-    AsciiGameComponent
+    AsciiGameComponent,
+    ContextMenuComponent
   ],
   imports: [
-    CommonModule,
     GameRoutingModule,
     SharedModule,
-    EngineModule
+    EngineModule,
   ],
   providers: [
     GameStateService

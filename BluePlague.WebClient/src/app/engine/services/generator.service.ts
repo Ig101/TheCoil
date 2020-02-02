@@ -22,9 +22,29 @@ export class GeneratorService {
       global: false,
       scale: 1,
       tiles: [],
-      width: 57,
-      height: 19
+      width: 101,
+      height: 51
     } as SceneInitialization;
+    ini.tiles.push({
+      x: 0,
+      y: 50,
+      native: this.nativeService.getTile('stoneWall')
+    } as TileInitialization);
+    ini.tiles.push({
+      x: 0,
+      y: 0,
+      native: this.nativeService.getTile('stoneWall')
+    } as TileInitialization);
+    ini.tiles.push({
+      x: 100,
+      y: 50,
+      native: this.nativeService.getTile('stoneWall')
+    } as TileInitialization);
+    ini.tiles.push({
+      x: 100,
+      y: 0,
+      native: this.nativeService.getTile('stoneWall')
+    } as TileInitialization);
     for (let x = 2; x < 22; x++) {
       for (let y = 2; y < 12; y++) {
         if (x === 2 || x === 21 || y === 2 || y === 11) {

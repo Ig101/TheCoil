@@ -13,7 +13,6 @@ import { GeneratorService } from './services/generator.service';
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule,
     SharedModule
   ],
   providers: [

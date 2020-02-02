@@ -8,8 +8,13 @@ export class GameStateService {
   cameraX = 0;
   cameraY = 0;
 
-  playerX = 0;
-  playerY = 0;
+  get playerX() {
+    return this.scene.player.x;
+  }
+
+  get playerY() {
+    return this.scene.player.y;
+  }
 
   constructor() { }
 }

@@ -77,7 +77,7 @@ export class NativeService {
         weight: 100,
         maxDurability: 100,
         maxEnergy: 100,
-        tags: [],
+        tags: [this.actorTags.cryOnWait],
         actions: [this.actions.wait, this.actions.move],
         passable: false
       }
@@ -85,7 +85,7 @@ export class NativeService {
     this.tiles = {
       defaultDemo: {
         id: 'defaultDemo',
-        name: 'stoneFloor',
+        name: 'nothing',
         bright: false,
         tags: [],
         passable: false

@@ -3,9 +3,6 @@ import { CommonModule } from '@angular/common';
 import { WebCommunicationService } from './services/web-communication.service';
 import { LoadingService } from './services/loading.service';
 import { RandomService } from './services/random.service';
-
-
-
 @NgModule({
   declarations: [],
   imports: [
@@ -15,6 +12,9 @@ import { RandomService } from './services/random.service';
     WebCommunicationService,
     LoadingService,
     RandomService
+  ],
+  exports: [
+    CommonModule
   ]
 })
 export class SharedModule { }
