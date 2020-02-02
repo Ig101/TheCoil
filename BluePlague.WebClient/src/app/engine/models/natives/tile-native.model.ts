@@ -6,8 +6,8 @@ import { AnotherLevelLink } from '../../scene/models/another-level-link.model';
 export interface TileNative {
     id: string;
     name: string;
-    sprite: SpriteNative;
-    backgroundColor: {r: number, g: number, b: number};
+    sprite?: SpriteNative;
+    backgroundColor?: {r: number, g: number, b: number};
     bright: boolean;
     tags: Tag<Tile>[];
     passable: boolean;

@@ -5,6 +5,8 @@ import { GameStateService } from '../services/game-state.service';
 import { EngineActionResponse } from 'src/app/engine/models/engine-action-response.model';
 import { SpriteSnapshot } from 'src/app/engine/models/scene/abstract/sprite-snapshot.model';
 import { KeyboardKeyEnum } from 'src/app/shared/models/enum/keyboard-key.enum';
+import { EventManager } from '@angular/platform-browser';
+import { MouseState } from 'src/app/shared/models/mouse-state.model';
 
 @Component({
   selector: 'app-ascii-game',
@@ -27,10 +29,15 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   readonly defaultHeight = 1080;
   readonly defaultAspectRatio = this.defaultWidth / this.defaultHeight;
   defaultManyActorsSprite = {
-    character: '*',
+    character: '+',
     color: {r: 255, g: 255, b: 0, a: 1}
   } as SpriteSnapshot;
   pressedKeys: { [id: string]: boolean } = {};
+  mouseState: MouseState = {
+    buttons: 0,
+    x: 0,
+    y: 0
+  };
 
   get canvasWidth() {
     return this.gameCanvas.nativeElement.width;
@@ -75,20 +82,21 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.pressedKeys[event.key] = true;
   }
 
-  onKeyUp(event) {
+  onKeyUp(event: KeyboardEvent) {
     this.pressedKeys[event.key] = false;
   }
 
-  onMouseDown(event) {
-
+  onMouseDown(event: MouseEvent) {
+    this.mouseState.buttons = event.buttons;
   }
 
-  onMouseUp(event) {
-
+  onMouseUp(event: MouseEvent) {
+    this.mouseState.buttons = event.buttons;
   }
 
-  onMouseMove(event) {
-
+  onMouseMove(event: MouseEvent) {
+    this.mouseState.x = event.x;
+    this.mouseState.y = event.y;
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -136,8 +144,10 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     const canvasX = (x - cameraLeft) * this.tileWidth;
     const canvasY = (y - cameraTop) * this.tileHeight;
     const symbolY = canvasY + this.tileHeight * 0.7;
-    this.canvasContext.fillStyle = `rgb(${tile.backgroundColor.r}, ${tile.backgroundColor.g}, ${tile.backgroundColor.b})`;
-    this.canvasContext.fillRect(canvasX, canvasY, this.tileWidth + 1, this.tileHeight + 1);
+    if (tile.backgroundColor) {
+      this.canvasContext.fillStyle = `rgb(${tile.backgroundColor.r}, ${tile.backgroundColor.g}, ${tile.backgroundColor.b})`;
+      this.canvasContext.fillRect(canvasX, canvasY, this.tileWidth + 1, this.tileHeight + 1);
+    }
     if (tile.objects.length > 0) {
       const mainObject = tile.objects.find(object => !object.passable);
       if (mainObject) {
@@ -160,9 +170,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       this.canvasContext.fillText(firstObject.sprite.character, canvasX, symbolY);
       return;
     }
-    this.canvasContext.fillStyle = `rgba(${tile.sprite.color.r}, ${tile.sprite.color.g},
-      ${tile.sprite.color.b}, ${tile.sprite.color.a})`;
-    this.canvasContext.fillText(tile.sprite.character, canvasX, symbolY);
+    if (tile.sprite) {
+      this.canvasContext.fillStyle = `rgba(${tile.sprite.color.r}, ${tile.sprite.color.g},
+        ${tile.sprite.color.b}, ${tile.sprite.color.a})`;
+      this.canvasContext.fillText(tile.sprite.character, canvasX, symbolY);
+    }
   }
 
   private redrawScene() {

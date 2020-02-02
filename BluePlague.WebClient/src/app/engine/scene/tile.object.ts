@@ -30,7 +30,7 @@ export class Tile implements IReactiveObject {
         return {
             x: this.x,
             y: this.y,
-            sprite: this.sprite.snapshot,
+            sprite: this.sprite ? this.sprite.snapshot : undefined,
             name: this.name,
             backgroundColor: this.backgroundColor,
             bright: this.bright,
@@ -54,7 +54,7 @@ export class Tile implements IReactiveObject {
         this.parent = parent;
         this.x = x;
         this.y = y;
-        this.sprite = new Sprite(tile.sprite);
+        this.sprite = tile.sprite ? new Sprite(tile.sprite) : undefined;
         this.bright = tile.bright;
         this.nativeId = tile.id;
         this.passable = tile.passable;
@@ -71,7 +71,10 @@ export class Tile implements IReactiveObject {
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
-                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
+                if (reaction) {
+                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
+                        reaction.reachedObjects, time, reaction.strength);
+                }
             }
         }
     }

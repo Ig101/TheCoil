@@ -202,7 +202,10 @@ export class Actor implements IActiveObject, IReactiveObject {
             const chosenReaction = tag.outgoingReactions[action];
             if (chosenReaction) {
                 const reaction = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
-                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
+                if (reaction) {
+                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
+                        reaction.reachedObjects, time, reaction.strength);
+                }
             }
         }
     }
@@ -227,7 +230,10 @@ export class Actor implements IActiveObject, IReactiveObject {
             const chosenReaction = tag.reactions[action];
             if (chosenReaction) {
                 const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
-                this.doReactiveAction(reaction.type, reaction.group, reaction.reaction, reaction.reachedObjects, time, reaction.strength);
+                if (reaction) {
+                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
+                        reaction.reachedObjects, time, reaction.strength);
+                }
             }
         }
     }

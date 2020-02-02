@@ -40,10 +40,10 @@ export class SynchronizationService {
       result: {
         meta: {
           difficulty: 0,
-          dungeon: 'world',
+          dungeon: 'demo',
           depth: 0,
-          roomType: RoomTypeEnum.World,
-          name: 'World'
+          roomType: RoomTypeEnum.Demo,
+          name: 'Demo'
         } as MetaInformation,
         scene: {
           turn: 0,
@@ -56,8 +56,8 @@ export class SynchronizationService {
               durability: 100,
               energy: 100,
               remainedTurnTime: 0,
-              x: 28,
-              y: 9,
+              x: 10,
+              y: 7,
               id: 1
             } as ActorSavedData
           ],

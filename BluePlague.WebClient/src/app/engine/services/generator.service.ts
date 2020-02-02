@@ -25,12 +25,22 @@ export class GeneratorService {
       width: 57,
       height: 19
     } as SceneInitialization;
-    for (let i = 0; i < 300; i++) {
-      ini.tiles.push({
-        x: this.randomService.next(false, 0, 56),
-        y: this.randomService.next(false, 0, 18),
-        native: this.nativeService.getTile('tree')
-      } as TileInitialization);
+    for (let x = 2; x < 22; x++) {
+      for (let y = 2; y < 12; y++) {
+        if (x === 2 || x === 21 || y === 2 || y === 11) {
+          ini.tiles.push({
+            x,
+            y,
+            native: this.nativeService.getTile('stoneWall')
+          } as TileInitialization);
+        } else {
+          ini.tiles.push({
+            x,
+            y,
+            native: this.nativeService.getTile('stoneFloor')
+          } as TileInitialization);
+        }
+      }
     }
     return of(ini);
   }

@@ -57,15 +57,15 @@ export class NativeService {
     this.sprites = {
       player: {
         character: '@',
-        color: {r: 255, g: 255, b: 255, a: 1}
+        color: {r: 255, g: 255, b: 55, a: 1}
       },
-      grass: {
-        character: '-',
-        color: {r: 50, g: 180, b: 50, a: 1}
+      stoneFloor: {
+        character: '.',
+        color: {r: 120, g: 120, b: 120, a: 1}
       },
-      tree: {
-        character: 'Y',
-        color: {r: 130, g: 52, b: 0, a: 1}
+      stoneWall: {
+        character: '#',
+        color: {r: 200, g: 200, b: 200, a: 1}
       }
     };
     this.actors = {
@@ -83,24 +83,31 @@ export class NativeService {
       }
     };
     this.tiles = {
-      defaultWorld: {
-        id: 'defaultWorld',
-        name: 'grass',
-        sprite: this.sprites.grass,
-        backgroundColor: {r: 0, g: 20, b: 0},
+      defaultDemo: {
+        id: 'defaultDemo',
+        name: 'stoneFloor',
+        bright: false,
+        tags: [],
+        passable: false
+      },
+      stoneWall: {
+        id: 'stoneWall',
+        name: 'stoneWall',
+        sprite: this.sprites.stoneWall,
+        backgroundColor: {r: 20, g: 20, b: 20},
+        bright: false,
+        tags: [],
+        passable: false
+      },
+      stoneFloor: {
+        id: 'stoneFloor',
+        name: 'stoneFloor',
+        sprite: this.sprites.stoneFloor,
+        backgroundColor: {r: 20, g: 20, b: 20},
         bright: false,
         tags: [],
         passable: true
       },
-      tree: {
-        id: 'tree',
-        name: 'tree',
-        sprite: this.sprites.tree,
-        backgroundColor: {r: 0, g: 20, b: 0},
-        bright: false,
-        tags: [],
-        passable: true
-      }
     };
   }
 
