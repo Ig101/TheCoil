@@ -225,6 +225,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       this.gameCanvas.nativeElement.height = oldHeight;
     }
     this.zoom = this.gameCanvas.nativeElement.offsetWidth / this.canvasWidth;
+    if (this.contextMenu) {
+      this.contextX = (Math.floor(this.mouseState.x) - this.gameStateService.cameraX + this.canvasWidth / 2 /
+        this.tileWidth + 1) * this.zoom * this.tileWidth;
+      this.contextY = (Math.floor(this.mouseState.y) - this.gameStateService.cameraY + this.canvasHeight / 2 /
+        this.tileHeight - 1) * this.zoom * this.tileHeight;
+    }
     this.changed = true;
     this.redrawCycle(this);
   }
