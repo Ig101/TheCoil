@@ -16,6 +16,8 @@ export class SceneService {
   private scene: Scene;
   private unsettledActors: UnsettledActorSavedData[] = [];
 
+  private unsubscribeSubject = new Subject();
+
   get sceneLoaded(): boolean {
     return this.scene !== undefined;
   }
@@ -25,7 +27,10 @@ export class SceneService {
   ) { }
 
   subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
-    return this.scene.subscribe(next, unsubscription);
+    if (unsubscription) {
+      this.unsubscribeSubject.subscribe(unsubscription);
+    }
+    return this.scene.subscribe(next);
   }
 
   setupNewScene(scene: SceneInitialization, sceneSavedData: SceneSavedData) {
@@ -33,6 +38,7 @@ export class SceneService {
       this.scene.unsubscribe();
     }
     this.scene = new Scene(scene, sceneSavedData, this.nativeService);
+    this.unsubscribeSubject.next();
   }
 
   pushUnsettledActors(unsettledActors: UnsettledActorSavedData[]) {

@@ -19,7 +19,6 @@ export class Scene {
     private global = false;
     private scale = 1;
     private resoponseSubject = new Subject<EngineActionResponse>();
-    private unsubscribeSubject = new Subject();
 
     private changedActors: Actor[] = [];
     private deletedActors: number[] = [];
@@ -114,16 +113,11 @@ export class Scene {
         this.pushUnsettledActors(savedData.unsettledActors);
     }
 
-    subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
-        if (unsubscription) {
-            this.unsubscribeSubject.subscribe(unsubscription);
-        }
+    subscribe(next: (value: EngineActionResponse) => void) {
         return this.resoponseSubject.subscribe(next);
     }
 
     unsubscribe() {
-        this.unsubscribeSubject.next();
-        this.unsubscribeSubject.unsubscribe();
         this.resoponseSubject.unsubscribe();
     }
 
@@ -198,26 +192,24 @@ export class Scene {
 
     // if null, action is restricted
     parsePlayerAction(action: EnginePlayerAction, deep: boolean = true): ActionParsingResult {
-        switch (action.type) {
-            default:
-                const availability = this.player.validateAction(action, deep);
-                return {
-                    success: availability.success,
-                    extraValues: availability.extraValues,
-                    warning: availability.warning,
-                    actions: [action]
-                };
-        }
+        const availability = this.player.validateAction(action, deep);
+        return {
+            success: availability.success,
+            extraValues: availability.extraValues,
+            warning: availability.warning,
+            reason: availability.reason,
+            action
+        };
     }
 
-    parseAllPlayerActions(x: number, y: number): { [action: string]: ActionParsingResult; } {
-        const dictionary: { [action: string]: ActionParsingResult; } = {};
-        for (const action of Object.values(this.player.actions)) {
-            dictionary[action.name] = this.parsePlayerAction({
+    parseAllPlayerActions(x: number, y: number): ActionParsingResult[] {
+        const dictionary: ActionParsingResult[] = [];
+        for (const action of this.player.actions) {
+            dictionary.push(this.parsePlayerAction({
                 type: action.name,
                 x,
                 y
-            }, false);
+            }, false));
         }
         return dictionary;
     }

@@ -7,8 +7,9 @@ import { SpriteSnapshot } from 'src/app/engine/models/scene/abstract/sprite-snap
 import { KeyboardKeyEnum } from 'src/app/shared/models/enum/keyboard-key.enum';
 import { EventManager } from '@angular/platform-browser';
 import { MouseState } from 'src/app/shared/models/mouse-state.model';
-import { ContextMenu } from '../models/context-menu.model';
+import { ContextMenuContext } from '../models/context-menu-context.model';
 import { ActivatedRoute } from '@angular/router';
+import { ContextMenuItem } from '../models/context-menu-item.model';
 
 @Component({
   selector: 'app-ascii-game',
@@ -20,7 +21,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   @ViewChild('gameCanvas', { static: true }) gameCanvas: ElementRef<HTMLCanvasElement>;
   private canvasContext: CanvasRenderingContext2D;
 
-  contextMenu: ContextMenu;
+  contextMenu: ContextMenuContext;
+  contextX: number;
+  contextY: number;
 
   lastChange: number;
 
@@ -78,12 +81,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraY(value: number) {
-    const topSide = this.defaultHeight / this.tileHeight / 2 - 1;
+    const topSide = this.defaultHeight / this.tileHeight / 2 - 3;
     if (value < topSide) {
       this.gameStateService.cameraY = topSide;
       return;
     }
-    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2;
+    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2 + 2;
     if (value > bottomSide) {
       this.gameStateService.cameraY = bottomSide;
       return;
@@ -140,8 +143,19 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   onMouseUp(event: MouseEvent) {
     this.mouseState.buttonsInfo[event.button] = {pressed: false, timeStamp: 0};
+    this.recalculateMouseMove(event.x, event.y, event.timeStamp);
     if (event.button === 2) {
-
+      const x = Math.floor(this.mouseState.x);
+      const y = Math.floor(this.mouseState.y);
+      const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
+      this.blocked = true;
+      this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth + 1) * this.zoom * this.tileWidth;
+      this.contextY = (y - this.gameStateService.cameraY + this.canvasHeight / 2 / this.tileHeight - 1) * this.zoom * this.tileHeight;
+      this.contextMenu = {
+        targetX: x,
+        targetY: y,
+        actions
+      };
     }
   }
 
@@ -164,7 +178,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   onMouseMove(event: MouseEvent) {
     this.mouseState.realX = event.x;
     this.mouseState.realY = event.y;
-    this.recalculateMouseMove(event.x, event.y, event.timeStamp);
+    if (!this.blocked) {
+      this.recalculateMouseMove(event.x, event.y, event.timeStamp);
+    }
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -178,13 +194,23 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.changed = true;
   }
 
+  doAction(action: ContextMenuItem) {
+    this.contextMenu = undefined;
+    console.log(action);
+    if (action) {
+
+    } else {
+      this.blocked = false;
+    }
+  }
+
   processNewAction(response: EngineActionResponse) {
-    // TODO process changes
+    console.log(response);
     this.changed = true;
   }
 
   sceneWasDeleted() {
-
+    this.engineFacadeService.subscribeOnActionsResult(this.processNewAction);
   }
 
   setupAspectRatio(width: number, height: number) {
@@ -265,7 +291,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       const cameraLeft = this.gameStateService.cameraX - this.canvasWidth / 2 / this.tileWidth + 0.5;
       const cameraTop = this.gameStateService.cameraY - this.canvasHeight / 2 / this.tileHeight + 0.5;
       this.canvasContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      this.canvasContext.font = `${this.tileHeight * 1}px PT Mono`;
+      this.canvasContext.font = `${this.tileHeight}px PT Mono`;
       const left = Math.max(0, Math.floor(cameraLeft));
       const right = Math.min(snapshot.width - 1, Math.ceil(cameraLeft + this.canvasWidth / this.tileWidth));
       const top = Math.max(0, Math.floor(cameraTop));

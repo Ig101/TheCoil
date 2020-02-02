@@ -1,3 +1,8 @@
-<div class="overlay">
-
+<div class="overlay" (mouseup)="onExit($event)">
+  <div #contextMenu class="context-menu" [style.top]="top" [style.left]="left" *ngIf="items">
+    <app-context-menu-item *ngIf="maxPage === 0" [item]="noActionItem" [textHeight]="textHeight"></app-context-menu-item>
+    <app-context-menu-item *ngFor="let item of currentItems" [item]="item" [textHeight]="textHeight"></app-context-menu-item>
+    <app-context-menu-item *ngIf="maxPage > currentPage + 1" [item]="nextPageItem" [textHeight]="textHeight"></app-context-menu-item>
+    <app-context-menu-item *ngIf="currentPage > 0" [item]="previousPageItem" [textHeight]="textHeight"></app-context-menu-item>
+  </div>
 </div>

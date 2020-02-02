@@ -22,12 +22,13 @@ function moveAction(scene: Scene, object: Actor, x: number, y: number, externalI
 
 function moveValidation(scene: Scene, actor: Actor, x: number, y: number, deep: boolean,
                         externalIdentifier?: number): ActionValidationResult {
-  if (this.remainedTurnTime >= 0 || (Math.abs(x - actor.x) !== 1 && Math.abs(x - actor.x) !== 1)) {
+  if (actor.remainedTurnTime > 0 || (x - actor.x) > 1 || (x - actor.x) < -1 ||
+    (y - actor.y) > 1 || (y - actor.y) < -1 || ((y - actor.y) === 0 && (x - actor.x) === 0)) {
     return {
       success: false
     };
   }
-  const tile = this.parent.getTile(x, y);
+  const tile = scene.getTile(x, y);
   if (!tile.passable || tile.objects.filter(o => !o.passable).length > 0) {
     return {
       success: false

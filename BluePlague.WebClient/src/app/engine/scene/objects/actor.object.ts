@@ -159,7 +159,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResult {
-        const chosenAction = this.actions[action.type];
+        const chosenAction = this.actions.find(x => x.name === action.type);
         if (!chosenAction) {
             return {
                 success: false
@@ -167,7 +167,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         let validationResult: ActionValidationResult;
         if (chosenAction.validator) {
-            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, action.extraIdentifier, deep);
+            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, deep, action.extraIdentifier);
         } else {
             validationResult = {
                 success: true
@@ -177,8 +177,10 @@ export class Actor implements IActiveObject, IReactiveObject {
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action.type];
             if (chosenReaction && chosenReaction.validator) {
-                if (!chosenReaction.validator(this.parent, this, action.x, action.y)) {
+                const result = chosenReaction.validator(this.parent, this, action.x, action.y);
+                if (result) {
                     validationResult.success = false;
+                    validationResult.reason = result;
                     return validationResult;
                 }
             }
@@ -188,11 +190,11 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     act(action: EnginePlayerAction): number {
         const actionInfo = this.doAction(action);
-        this.remainedTurnTime += actionInfo.result.time;
-        this.reactOnOutgoingAction(action.type, actionInfo.result.time, actionInfo.result.strength);
-        this.doReactiveAction(action.type, actionInfo.group, actionInfo.result.reaction,
-                              actionInfo.result.reachedObjects, actionInfo.result.time, actionInfo.result.strength);
-        return actionInfo.result.time;
+        this.remainedTurnTime += actionInfo.time;
+        this.reactOnOutgoingAction(action.type, actionInfo.time, actionInfo.strength);
+        this.doReactiveAction(action.type, actionInfo.group, actionInfo.reaction,
+                              actionInfo.reachedObjects, actionInfo.time, actionInfo.strength);
+        return actionInfo.time;
     }
 
 
@@ -210,17 +212,23 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
     }
 
-    private doAction(action: EnginePlayerAction): {group: string, result: ActorActionResult} {
+    private doAction(action: EnginePlayerAction): ActorActionResult {
         const chosenAction = this.calculatedActions.find(x => x.name === action.type);
         if (!chosenAction) {
             return undefined;
         }
         const result = chosenAction.action(this.parent, this, action.x, action.y, action.extraIdentifier);
-        this.parent.finishAction(result.reaction, action.type, this.x, this.y, this.id);
-        if (chosenAction.group === 'move') {
+        if (!result.type) {
+            result.type = action.type;
+        }
+        if (!result.group) {
+            result.group = chosenAction.group;
+        }
+        this.parent.finishAction(result.reaction, result.type, this.x, this.y, this.id);
+        if (result.group === 'move') {
             result.time *= this.parent.moveSpeedModifier;
         }
-        return { group: chosenAction.group, result };
+        return result;
     }
 
     // Reactions
