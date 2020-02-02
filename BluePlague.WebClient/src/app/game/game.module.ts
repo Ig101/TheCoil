@@ -6,6 +6,7 @@ import { EngineModule } from '../engine/engine.module';
 import { AsciiGameComponent } from './ascii-game/ascii-game.component';
 import { GameStateService } from './services/game-state.service';
 import { ContextMenuComponent } from './ascii-game/context-menu/context-menu.component';
+import { GameResolverService } from './resolvers/game-resolver.service';
 
 
 
@@ -20,7 +21,8 @@ import { ContextMenuComponent } from './ascii-game/context-menu/context-menu.com
     EngineModule,
   ],
   providers: [
-    GameStateService
+    GameStateService,
+    GameResolverService
   ]
 })
 export class GameModule { }

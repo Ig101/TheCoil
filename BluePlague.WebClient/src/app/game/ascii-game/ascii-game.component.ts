@@ -7,6 +7,8 @@ import { SpriteSnapshot } from 'src/app/engine/models/scene/abstract/sprite-snap
 import { KeyboardKeyEnum } from 'src/app/shared/models/enum/keyboard-key.enum';
 import { EventManager } from '@angular/platform-browser';
 import { MouseState } from 'src/app/shared/models/mouse-state.model';
+import { ContextMenu } from '../models/context-menu.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-ascii-game',
@@ -16,6 +18,9 @@ import { MouseState } from 'src/app/shared/models/mouse-state.model';
 export class AsciiGameComponent implements OnInit, OnDestroy {
 
   @ViewChild('gameCanvas', { static: true }) gameCanvas: ElementRef<HTMLCanvasElement>;
+  private canvasContext: CanvasRenderingContext2D;
+
+  contextMenu: ContextMenu;
 
   lastChange: number;
 
@@ -36,10 +41,10 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   pressedKeys: { [id: string]: boolean } = {};
   mouseState: MouseState = {
     buttonsInfo: {},
-    x: 0,
-    y: 0,
-    realX: 0,
-    realY: 0
+    x: -1,
+    y: -1,
+    realX: -1,
+    realY: -1
   };
 
   get canvasWidth() {
@@ -86,11 +91,10 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.gameStateService.cameraY = value;
   }
 
-  private canvasContext: CanvasRenderingContext2D;
-
   constructor(
     private gameStateService: GameStateService,
-    private engineFacadeService: EngineFacadeService) {
+    private engineFacadeService: EngineFacadeService,
+    private activatedRoute: ActivatedRoute) {
       this.mouseState.buttonsInfo[0] = {
         pressed: false,
         timeStamp: 0
@@ -103,18 +107,15 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.tileWidth = this.tileHeight * 0.6;
-    console.log(this.gameCanvas);
     this.setupAspectRatio(this.gameCanvas.nativeElement.offsetWidth, this.gameCanvas.nativeElement.offsetHeight);
     this.canvasContext = this.gameCanvas.nativeElement.getContext('2d');
-    this.engineFacadeService.loadGame()
-      .subscribe(result => {
-        this.gameStateService.scene = result;
-        this.cameraX = result.player.x;
-        this.cameraY = result.player.y;
-        this.changed = true;
-        this.engineFacadeService.subscribeOnActionsResult(this.processNewAction, this.sceneWasDeleted);
-        this.drawingTimer = setInterval(this.updateCycle, 30, this);
-      });
+    const scene = this.activatedRoute.snapshot.data.scene;
+    this.gameStateService.scene = scene;
+    this.cameraX = scene.player.x;
+    this.cameraY = scene.player.y;
+    this.changed = true;
+    this.engineFacadeService.subscribeOnActionsResult(this.processNewAction, this.sceneWasDeleted);
+    this.drawingTimer = setInterval(this.updateCycle, 30, this);
   }
 
   ngOnDestroy(): void {
@@ -139,6 +140,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   onMouseUp(event: MouseEvent) {
     this.mouseState.buttonsInfo[event.button] = {pressed: false, timeStamp: 0};
+    if (event.button === 2) {
+
+    }
   }
 
   private recalculateMouseMove(x: number, y: number, timeStamp?: number) {
