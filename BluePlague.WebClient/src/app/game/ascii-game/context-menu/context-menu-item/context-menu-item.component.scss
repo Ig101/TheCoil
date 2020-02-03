@@ -1,7 +1,28 @@
 :host {
+  position: absolute;
   .menu-item {
-      width: 200px;
-      height: 20px;
-      background-color: yellow;
+      width: 30px;
+      height: 30px;
+      background-color: #000;
+      border: double #aaa;
+      border-radius: 30px;
+      font: 22px PT Mono;
+      color: #aaa;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+  }
+
+  .active {
+    cursor: pointer;
+    color: #fff;
+    border-color: #fff;
   }
 }

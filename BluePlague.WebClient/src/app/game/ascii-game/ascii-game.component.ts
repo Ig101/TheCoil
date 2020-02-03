@@ -33,7 +33,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   tileWidth = 0;
   tileHeight = 30;
-  readonly defaultWidth = 1080;
+  readonly defaultWidth = 1180;
   readonly defaultHeight = 1080;
   readonly defaultAspectRatio = this.defaultWidth / this.defaultHeight;
   zoom = 0;
@@ -63,12 +63,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraX(value: number) {
-    const leftSide = this.defaultWidth / this.tileWidth / 2 - 1;
+    const leftSide = this.defaultWidth / this.tileWidth / 2 - 6;
     if (value < leftSide) {
       this.gameStateService.cameraX = leftSide;
       return;
     }
-    const rightSide = this.gameStateService.scene.width - this.defaultWidth / this.tileWidth / 2;
+    const rightSide = this.gameStateService.scene.width - this.defaultWidth / this.tileWidth / 2 + 5;
     if (value > rightSide) {
       this.gameStateService.cameraX = rightSide;
       return;
@@ -143,19 +143,21 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   onMouseUp(event: MouseEvent) {
     this.mouseState.buttonsInfo[event.button] = {pressed: false, timeStamp: 0};
-    this.recalculateMouseMove(event.x, event.y, event.timeStamp);
-    if (event.button === 2) {
-      const x = Math.floor(this.mouseState.x);
-      const y = Math.floor(this.mouseState.y);
-      const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
-      this.blocked = true;
-      this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth + 1) * this.zoom * this.tileWidth;
-      this.contextY = (y - this.gameStateService.cameraY + this.canvasHeight / 2 / this.tileHeight - 1) * this.zoom * this.tileHeight;
-      this.contextMenu = {
-        targetX: x,
-        targetY: y,
-        actions
-      };
+    if (!this.blocked) {
+      this.recalculateMouseMove(event.x, event.y, event.timeStamp);
+      if (event.button === 2) {
+        const x = Math.floor(this.mouseState.x);
+        const y = Math.floor(this.mouseState.y);
+        if (this.gameStateService.scene.tiles[x][y].sprite) {
+          const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
+          this.blocked = true;
+          this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth) * this.zoom * this.tileWidth - 1;
+          this.contextY = (y - this.gameStateService.cameraY + this.canvasHeight / 2 / this.tileHeight) * this.zoom * this.tileHeight;
+          this.contextMenu = {
+            actions
+          };
+        }
+      }
     }
   }
 
@@ -198,7 +200,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.contextMenu = undefined;
     console.log(action);
     if (action) {
-
+      this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
+      // TODO Action itself
+      this.blocked = false;
     } else {
       this.blocked = false;
     }
@@ -227,9 +231,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.zoom = this.gameCanvas.nativeElement.offsetWidth / this.canvasWidth;
     if (this.contextMenu) {
       this.contextX = (Math.floor(this.mouseState.x) - this.gameStateService.cameraX + this.canvasWidth / 2 /
-        this.tileWidth + 1) * this.zoom * this.tileWidth;
+        this.tileWidth) * this.zoom * this.tileWidth;
       this.contextY = (Math.floor(this.mouseState.y) - this.gameStateService.cameraY + this.canvasHeight / 2 /
-        this.tileHeight - 1) * this.zoom * this.tileHeight;
+        this.tileHeight) * this.zoom * this.tileHeight;
     }
     this.changed = true;
     this.redrawCycle(this);

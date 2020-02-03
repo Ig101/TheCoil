@@ -9,11 +9,11 @@ import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
-import { ActionParsingResult } from './models/action-parsing-result.model';
 import { Subject } from 'rxjs';
 import { ReactionResult } from './models/reaction-result.model';
 import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
 import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
+import { ActionValidationResultFull } from './models/action-validation-result-full.model';
 export class Scene {
 
     private global = false;
@@ -191,19 +191,13 @@ export class Scene {
     // Actions
 
     // if null, action is restricted
-    parsePlayerAction(action: EnginePlayerAction, deep: boolean = true): ActionParsingResult {
+    parsePlayerAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResultFull {
         const availability = this.player.validateAction(action, deep);
-        return {
-            success: availability.success,
-            extraValues: availability.extraValues,
-            warning: availability.warning,
-            reason: availability.reason,
-            action
-        };
+        return availability;
     }
 
-    parseAllPlayerActions(x: number, y: number): ActionParsingResult[] {
-        const dictionary: ActionParsingResult[] = [];
+    parseAllPlayerActions(x: number, y: number): ActionValidationResultFull[] {
+        const dictionary: ActionValidationResultFull[] = [];
         for (const action of this.player.actions) {
             dictionary.push(this.parsePlayerAction({
                 type: action.name,

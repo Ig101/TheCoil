@@ -2,6 +2,8 @@ import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, 
 import { ContextMenuContext } from '../../models/context-menu-context.model';
 import { ContextMenuItemPage } from '../../models/context-menu-item-page.model';
 import { ContextMenuItem } from '../../models/context-menu-item.model';
+import { ContextMenuSystemTypesEnum } from '../../models/enums/context-menu-system-types.enum';
+import { EnginePlayerAction } from 'src/app/engine/models/engine-player-action.model';
 
 /*
 Variants:
@@ -19,8 +21,9 @@ export class ContextMenuComponent implements OnInit {
   @ViewChild('contextMenu', { static: true }) contextMenu: ElementRef<HTMLDivElement>;
 
   @Input() set context(value: ContextMenuContext) {
+    console.log('lala');
     if (value) {
-      this.items = [];
+      this.items.length = 0;
       let counter = this.pageSize;
       let pageNumber = -1;
       let page: ContextMenuItemPage;
@@ -28,23 +31,71 @@ export class ContextMenuComponent implements OnInit {
         if (action.success || action.reason) {
           if (counter >= this.pageSize) {
             counter = 0;
-            pageNumber++;
             page = {
               items: []
             } as ContextMenuItemPage;
             this.items.push(page);
+            pageNumber++;
+            if (pageNumber > 0) {
+              const previousShift = this.calculateShifts(counter);
+              page.items.push({
+                systemType: ContextMenuSystemTypesEnum.Previous,
+                action: {
+                  character: '<',
+                  type: 'previous page'
+                },
+                left: previousShift.left,
+                top: previousShift.top
+              } as ContextMenuItem);
+              counter++;
+
+              const previousPage = this.items[pageNumber - 1];
+              const moveItem = previousPage.items[this.pageSize - 1];
+              previousPage.items[this.pageSize - 1] = {
+                systemType: ContextMenuSystemTypesEnum.Next,
+                action: {
+                  character: '>',
+                  type: 'next page'
+                },
+                left: moveItem.left,
+                top: moveItem.top
+              } as ContextMenuItem;
+
+              const moveShift = this.calculateShifts(counter);
+              moveItem.left = moveShift.left;
+              moveItem.top = moveShift.top;
+              page.items.push(moveItem);
+              counter++;
+            }
           }
+          const shift = this.calculateShifts(counter);
           page.items.push({
-            type: action.action.type,
+            action: action.action,
+            left: shift.left,
+            top: shift.top,
             notAvailableReason: action.reason,
-            x: action.action.x,
-            y: action.action.y
-          } as ContextMenuItem);
+            warning: action.warning
+          });
           counter++;
         }
       }
-    } else {
-      this.items = undefined;
+      if (this.items.length === 0) {
+        const first = {
+          items: []
+        } as ContextMenuItemPage;
+        this.items.push(first);
+        const shift = this.calculateShifts(0);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'x',
+            type: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailableReason: ['no actions available']
+        } as ContextMenuItem);
+      }
     }
   }
   @Input() textHeight;
@@ -52,44 +103,36 @@ export class ContextMenuComponent implements OnInit {
   @Input() top;
 
 
-  @Output() doAction = new EventEmitter<ContextMenuItem>();
+  @Output() doAction = new EventEmitter<EnginePlayerAction>();
 
-  items: ContextMenuItemPage[];
   pageSize = 8;
+
+  items: ContextMenuItemPage[] = [];
   currentPage = 0;
+  radius = 60;
+  startAngle = Math.PI / this.pageSize + Math.PI / 2;
 
   inversion: boolean;
-  nextPageItem: ContextMenuItem;
-  previousPageItem: ContextMenuItem;
-  noActionItem: ContextMenuItem;
 
   get maxPage() {
     return this.items.length;
   }
 
   get currentItems() {
-    return this.items.length > 0 ? this.items[this.currentPage].items : [];
+    return this.items[this.currentPage].items;
   }
 
   constructor() { }
 
+  calculateShifts(position: number): {left: number, top: number} {
+    const angle = this.startAngle + position * Math.PI * 2 / this.pageSize;
+    return {
+      left: this.radius * Math.cos(angle) - 15,
+      top: this.radius * Math.sin(angle) - 15
+    };
+  }
+
   ngOnInit() {
-    this.previousPageItem = {
-      type: 'previous page',
-      x: 0,
-      y: 0
-    };
-    this.nextPageItem = {
-      type: 'next page',
-      x: 0,
-      y: 0
-    };
-    this.noActionItem = {
-      type: 'no actions available',
-      notAvailableReason: ['no actions available'],
-      x: 0,
-      y: 0
-    };
   }
 
   onExit(event) {
@@ -97,6 +140,21 @@ export class ContextMenuComponent implements OnInit {
       return;
     }
     this.doAction.next(undefined);
+  }
+
+  onClick(event: ContextMenuItem) {
+    if (event.systemType === ContextMenuSystemTypesEnum.Next) {
+      this.currentPage++;
+      return;
+    }
+    if (event.systemType === ContextMenuSystemTypesEnum.Previous) {
+      this.currentPage--;
+      return;
+    }
+    if (event.notAvailableReason) {
+      return;
+    }
+    this.doAction.next(event.action);
   }
 
 }

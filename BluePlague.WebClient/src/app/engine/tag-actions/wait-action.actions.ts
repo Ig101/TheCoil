@@ -31,6 +31,7 @@ function waitAction(scene: Scene, object: Actor, x: number, y: number, externalI
 
 export function registerWaitAction(): ActorAction {
   return {
+    character: 'W',
     name: 'wait',
     group: 'wait',
     action: waitAction,

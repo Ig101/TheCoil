@@ -4,6 +4,7 @@ import { ActorActionResult } from './actor-action-result.model';
 import { ActionValidationResult } from './action-validation-result.model';
 
 export interface ActorAction {
+  character: string; // < and > and x is reserved
   name: string;
   group: string;
   validator?: (scene: Scene, actor: Actor, x: number, y: number, deep: boolean, externalIdentifier?: number) => ActionValidationResult;

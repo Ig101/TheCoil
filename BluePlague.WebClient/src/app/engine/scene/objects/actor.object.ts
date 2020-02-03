@@ -14,6 +14,8 @@ import { IActiveObject } from '../interfaces/active-object.interface';
 import { ActionValidationResult } from '../models/action-validation-result.model';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
 import { Sprite } from '../abstract/sprite.object';
+import { ActionValidationResultFull } from '../models/action-validation-result-full.model';
+import { EnginePlayerActionFull } from '../../models/engine-player-action-full.model';
 
 export class Actor implements IActiveObject, IReactiveObject {
 
@@ -158,19 +160,31 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.remainedTurnTime -= time;
     }
 
-    validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResult {
+    validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResultFull {
         const chosenAction = this.actions.find(x => x.name === action.type);
         if (!chosenAction) {
             return {
-                success: false
+                success: false,
+                action: undefined
             };
         }
-        let validationResult: ActionValidationResult;
+        let validationResult: ActionValidationResultFull;
+        const fullAction = {
+            type: action.type,
+            extraIdentifier: action.extraIdentifier,
+            x: action.x,
+            y: action.y,
+            character: chosenAction.character,
+            group: chosenAction.group
+        } as EnginePlayerActionFull;
         if (chosenAction.validator) {
-            validationResult = chosenAction.validator(this.parent, this, action.x, action.y, deep, action.extraIdentifier);
+            validationResult =
+                chosenAction.validator(this.parent, this, action.x, action.y, deep, action.extraIdentifier) as ActionValidationResultFull;
+            validationResult.action = fullAction;
         } else {
             validationResult = {
-                success: true
+                success: true,
+                action: fullAction
             };
         }
         const tags = this.calculatedTags;

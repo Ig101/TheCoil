@@ -41,6 +41,7 @@ function moveValidation(scene: Scene, actor: Actor, x: number, y: number, deep: 
 
 export function registerMoveAction(): ActorAction {
   return {
+    character: 'M',
     name: 'move',
     group: 'move',
     validator: moveValidation,

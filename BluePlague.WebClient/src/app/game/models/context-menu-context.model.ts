@@ -1,7 +1,5 @@
-import { ActionParsingResult } from 'src/app/engine/scene/models/action-parsing-result.model';
+import { ActionValidationResultFull } from 'src/app/engine/scene/models/action-validation-result-full.model';
 
 export interface ContextMenuContext {
-  targetX: number;
-  targetY: number;
-  actions: ActionParsingResult[];
+  actions: ActionValidationResultFull[];
 }
