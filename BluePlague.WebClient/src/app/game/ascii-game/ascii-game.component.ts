@@ -81,12 +81,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraY(value: number) {
-    const topSide = this.defaultHeight / this.tileHeight / 2 - 3;
+    const topSide = this.defaultHeight / this.tileHeight / 2 - 4;
     if (value < topSide) {
       this.gameStateService.cameraY = topSide;
       return;
     }
-    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2 + 2;
+    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2 + 3;
     if (value > bottomSide) {
       this.gameStateService.cameraY = bottomSide;
       return;
