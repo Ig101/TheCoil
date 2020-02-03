@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { ContextMenuContext } from '../../models/context-menu-context.model';
 import { ContextMenuItemPage } from '../../models/context-menu-item-page.model';
 import { ContextMenuItem } from '../../models/context-menu-item.model';
@@ -16,12 +16,11 @@ Variants:
   styleUrls: ['./context-menu.component.scss', '../../game.module.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContextMenuComponent implements OnInit {
+export class ContextMenuComponent implements OnInit, OnDestroy {
 
   @ViewChild('contextMenu', { static: true }) contextMenu: ElementRef<HTMLDivElement>;
 
   @Input() set context(value: ContextMenuContext) {
-    console.log('lala');
     if (value) {
       this.items.length = 0;
       let counter = this.pageSize;
@@ -88,7 +87,7 @@ export class ContextMenuComponent implements OnInit {
         first.items.push({
           systemType: ContextMenuSystemTypesEnum.Nothing,
           action: {
-            character: 'x',
+            character: 'X',
             type: 'no actions'
           },
           left: shift.left,
@@ -133,6 +132,10 @@ export class ContextMenuComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    this.doAction.unsubscribe();
   }
 
   onExit(event) {
