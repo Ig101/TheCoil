@@ -1,4 +1,4 @@
 <div class="overlay" (mouseup)="onExit($event)">
   <app-context-menu-item *ngFor="let item of currentItems" [item]="item" [textHeight]="textHeight" 
-    [style.top]="(top + item.top) + 'px'" [style.left]="(left + item.left) + 'px'" (click)="onClick(item)"></app-context-menu-item>
+    [style.top]="getItemTop(item) + 'px'" [style.left]="getItemLeft(item) + 'px'" (click)="onClick(item)"></app-context-menu-item>
 </div>

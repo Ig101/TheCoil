@@ -55,7 +55,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     realY: -1
   };
 
-  animationsLoaded = true;
+  animationsLoaded = false;
   animationTimer;
   animationFrequency = 120;
   animationsQueue: AnimationItem[] = [];
@@ -212,7 +212,6 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   doAction(action: EnginePlayerActionFull) {
     this.contextMenu = undefined;
     if (action) {
-      this.animationsLoaded = false;
       this.engineFacadeService.sendActions([action]);
       this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
       this.animationsLoaded = true;
@@ -275,6 +274,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       }
     } else if (this.animationsLoaded && this.blocked) {
       this.blocked = false;
+      this.animationsLoaded = false;
     }
   }
 

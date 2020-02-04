@@ -138,6 +138,14 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
     this.doAction.unsubscribe();
   }
 
+  getItemLeft(item: ContextMenuItem) {
+    return Math.round(this.left + item.left);
+  }
+
+  getItemTop(item: ContextMenuItem) {
+    return Math.round(this.top + item.top);
+  }
+
   onExit(event) {
     if (event.target !== event.currentTarget) {
       return;
