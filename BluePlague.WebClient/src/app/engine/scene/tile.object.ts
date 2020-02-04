@@ -41,6 +41,20 @@ export class Tile implements IReactiveObject {
         } as TileSnapshot;
     }
 
+    get lightSnapshot(): TileSnapshot {
+        return {
+            x: this.x,
+            y: this.y,
+            sprite: this.sprite ? this.sprite.snapshot : undefined,
+            name: this.name,
+            backgroundColor: this.backgroundColor,
+            bright: this.bright,
+            tags: this.tags,
+            passable: this.passable,
+            levelLink: this.levelLink
+        } as TileSnapshot;
+    }
+
     get savedData(): TileSavedData {
         return {
             x: this.x,

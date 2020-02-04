@@ -23,7 +23,7 @@ function waitAction(scene: Scene, object: Actor, x: number, y: number, externalI
     time: timeShift,
     reaction: {
       level: ReactionMessageLevelEnum.Trace,
-      message: [object.name, ' waits.']
+      message: [object.name, 'waited.']
     },
     reachedObjects: [object.tile, ...object.tile.objects.filter(o => o !== object)]
   };

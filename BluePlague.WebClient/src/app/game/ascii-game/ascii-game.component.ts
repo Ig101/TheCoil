@@ -10,6 +10,10 @@ import { MouseState } from 'src/app/shared/models/mouse-state.model';
 import { ContextMenuContext } from '../models/context-menu-context.model';
 import { ActivatedRoute } from '@angular/router';
 import { ContextMenuItem } from '../models/context-menu-item.model';
+import { EnginePlayerActionFull } from 'src/app/engine/models/engine-player-action-full.model';
+import { AnimationItem } from '../models/animation-item.model';
+import { ReactionResult } from 'src/app/engine/scene/models/reaction-result.model';
+import { SceneChanges } from 'src/app/engine/models/scene/scene-changes.model';
 
 @Component({
   selector: 'app-ascii-game',
@@ -28,6 +32,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   lastChange: number;
 
   drawingTimer;
+  drawingFrequency = 30;
   changed = false;
   blocked = false;
 
@@ -49,6 +54,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     realX: -1,
     realY: -1
   };
+
+  animationsLoaded = true;
+  animationTimer;
+  animationFrequency = 120;
+  animationsQueue: AnimationItem[] = [];
 
   get canvasWidth() {
     return this.gameCanvas.nativeElement.width;
@@ -117,8 +127,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.cameraX = scene.player.x;
     this.cameraY = scene.player.y;
     this.changed = true;
-    this.engineFacadeService.subscribeOnActionsResult(this.processNewAction, this.sceneWasDeleted);
-    this.drawingTimer = setInterval(this.updateCycle, 30, this);
+    this.engineFacadeService.subscribeOnActionsResult(
+      (result) => this.processNewAction(result),
+      () => this.sceneWasDeleted());
+    this.drawingTimer = setInterval(this.updateCycle, this.drawingFrequency, this);
+    this.animationTimer = setInterval(this.playAnimationCycle, this.animationFrequency, this);
   }
 
   ngOnDestroy(): void {
@@ -196,21 +209,73 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.changed = true;
   }
 
-  doAction(action: ContextMenuItem) {
+  doAction(action: EnginePlayerActionFull) {
     this.contextMenu = undefined;
-    console.log(action);
     if (action) {
+      this.animationsLoaded = false;
+      this.engineFacadeService.sendActions([action]);
       this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
-      // TODO Action itself
-      this.blocked = false;
+      this.animationsLoaded = true;
     } else {
       this.blocked = false;
     }
   }
 
   processNewAction(response: EngineActionResponse) {
-    console.log(response);
+    // TODO Animations
+    this.animationsQueue.push({
+      snapshotChanges: response.changes,
+      message: response.result
+    } as AnimationItem);
+  }
+
+  private drawAnimationMessage(message: ReactionResult) {
+      // TODO Draw message
+  }
+
+  private updateSnapshot(changes: SceneChanges) {
+    this.gameStateService.scene.turn = changes.turn;
+    for (const tile of changes.changedTiles) {
+      const snapshotTile = this.gameStateService.scene.tiles[tile.x][tile.y];
+      snapshotTile.name = tile.name;
+      snapshotTile.sprite = tile.sprite;
+      snapshotTile.backgroundColor = tile.backgroundColor;
+      snapshotTile.tags = tile.tags;
+      snapshotTile.passable = tile.passable;
+      snapshotTile.levelLink = tile.levelLink;
+    }
+    for (const deletedActor of changes.deletedActors) {
+      const snapshotTile = this.gameStateService.scene.tiles[deletedActor.x][deletedActor.y];
+      const index = snapshotTile.objects.findIndex(x => x.id === deletedActor.id);
+      if (index >= 0) {
+        snapshotTile.objects.splice(index, 1);
+      }
+    }
+    for (const actor of changes.changedActors) {
+      const snapshotTile = this.gameStateService.scene.tiles[actor.x][actor.y];
+      const snapshotActorId = snapshotTile.objects.findIndex(x => x.id === actor.id);
+      if (snapshotActorId >= 0) {
+        snapshotTile.objects[snapshotActorId] = actor;
+      } else {
+        snapshotTile.objects.push(actor);
+      }
+    }
     this.changed = true;
+  }
+
+  playAnimation() {
+    if (this.animationsQueue.length > 0) {
+      const animation = this.animationsQueue.shift();
+      console.log(animation);
+      if (animation.message) {
+        this.drawAnimationMessage(animation.message);
+      }
+      if (animation.snapshotChanges) {
+        this.updateSnapshot(animation.snapshotChanges);
+      }
+    } else if (this.animationsLoaded && this.blocked) {
+      this.blocked = false;
+    }
   }
 
   sceneWasDeleted() {
@@ -236,7 +301,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         this.tileHeight) * this.zoom * this.tileHeight;
     }
     this.changed = true;
-    this.redrawCycle(this);
+    this.redrawScene();
   }
 
   // Drawing
@@ -340,12 +405,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private redrawCycle(context: AsciiGameComponent) {
-    context.redrawScene();
-  }
-
   private updateCycle(context: AsciiGameComponent) {
     context.updateScene();
     context.redrawScene();
+  }
+
+  private playAnimationCycle(context: AsciiGameComponent) {
+    context.playAnimation();
   }
 }

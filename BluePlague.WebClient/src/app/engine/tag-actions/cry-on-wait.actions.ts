@@ -9,7 +9,7 @@ function cryOnWaitWaitOutgoing(scene: Scene, object: Actor, weight?: number, str
     { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number }  {
   const reaction = {
     level: ReactionMessageLevelEnum.Attention,
-    message: [object.name, 'cry-on-wait']
+    message: [object.name, 'criedOnWait.']
   };
   return {
     type: 'shout',

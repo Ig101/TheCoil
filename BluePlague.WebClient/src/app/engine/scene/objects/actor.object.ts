@@ -16,6 +16,7 @@ import { IReactiveObject } from '../interfaces/reactive-object.interface';
 import { Sprite } from '../abstract/sprite.object';
 import { ActionValidationResultFull } from '../models/action-validation-result-full.model';
 import { EnginePlayerActionFull } from '../../models/engine-player-action-full.model';
+import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 
 export class Actor implements IActiveObject, IReactiveObject {
 
@@ -85,7 +86,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     constructor(parent: Scene, id: number, native: ActorNative, x: number, y: number, name?: string) {
-        this.name = name;
+        this.name = name ? name : native.name;
         this.x = x;
         this.y = y;
         this.id = id;
@@ -116,21 +117,25 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     // Technic
     changePosition(x: number, y: number) {
+        const oldX = this.x;
+        const oldY = this.y;
         this.x = x;
         this.y = y;
-        this.tile.objects.remove(this);
+        removeFromArray(this.tile.objects, this);
         this.tile = this.parent.getTile(x, y);
         this.tile.objects.push(this);
-        this.parent.registerActorChange(this);
+        this.parent.registerActorPositionChange(oldX, oldY, this);
     }
 
     changePositionToTile(tile: Tile) {
+        const oldX = this.x;
+        const oldY = this.y;
         this.x = tile.x;
         this.y = tile.y;
-        this.tile.objects.remove(this);
+        removeFromArray(this.tile.objects, this);
         this.tile = tile;
         this.tile.objects.push(this);
-        this.parent.registerActorChange(this);
+        this.parent.registerActorPositionChange(oldX, oldY, this);
     }
 
     changeDurability(amount: number) {
@@ -139,7 +144,7 @@ export class Actor implements IActiveObject, IReactiveObject {
             this.durability = this.calculatedMaxDurability;
         } else if (this.durability <= 0) {
             this.dead = true;
-            this.tile.objects.remove(this);
+            removeFromArray(this.tile.objects, this);
             this.parent.pushDead(this);
         }
         this.parent.registerActorChange(this);
@@ -205,9 +210,10 @@ export class Actor implements IActiveObject, IReactiveObject {
     act(action: EnginePlayerAction): number {
         const actionInfo = this.doAction(action);
         this.remainedTurnTime += actionInfo.time;
-        this.reactOnOutgoingAction(action.type, actionInfo.time, actionInfo.strength);
-        this.doReactiveAction(action.type, actionInfo.group, actionInfo.reaction,
-                              actionInfo.reachedObjects, actionInfo.time, actionInfo.strength);
+        this.reactOnOutgoingAction(actionInfo.type, actionInfo.time, actionInfo.strength);
+        for (const object of actionInfo.reachedObjects) {
+            object.react(actionInfo.group, this, actionInfo.time, actionInfo.strength);
+        }
         return actionInfo.time;
     }
 
@@ -238,7 +244,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         if (!result.group) {
             result.group = chosenAction.group;
         }
-        this.parent.finishAction(result.reaction, result.type, this.x, this.y, this.id);
+        this.parent.finishAction(result.reaction, result.type, this.x, this.y, action.extraIdentifier, this.id);
         if (result.group === 'move') {
             result.time *= this.parent.moveSpeedModifier;
         }
@@ -262,7 +268,7 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     doReactiveAction(type: string, group: string, reaction: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(reaction, type, this.x, this.y, this.id);
+        this.parent.finishAction(reaction, type, this.x, this.y, undefined, this.id);
         for (const object of reachedObjects) {
             object.react(group, this, time, strength);
         }

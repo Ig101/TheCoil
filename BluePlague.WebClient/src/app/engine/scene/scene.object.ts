@@ -14,11 +14,12 @@ import { ReactionResult } from './models/reaction-result.model';
 import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor-saved-data.model';
 import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
 import { ActionValidationResultFull } from './models/action-validation-result-full.model';
+import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 export class Scene {
 
     private global = false;
     private scale = 1;
-    private resoponseSubject = new Subject<EngineActionResponse>();
+    private responseSubject = new Subject<EngineActionResponse>();
 
     private changedActors: Actor[] = [];
     private deletedActors: number[] = [];
@@ -26,7 +27,7 @@ export class Scene {
     private unsettledActors: UnsettledActorSavedData[] = [];
 
     private sessionChangedActors: Actor[] = [];
-    private sessionDeletedActors: number[] = [];
+    private sessionDeletedActors: {id: number, x: number, y: number}[] = [];
     private sessionChangedTiles: Tile[] = [];
 
     private corpsesPool: Actor[] = [];
@@ -114,11 +115,11 @@ export class Scene {
     }
 
     subscribe(next: (value: EngineActionResponse) => void) {
-        return this.resoponseSubject.subscribe(next);
+        return this.responseSubject.subscribe(next);
     }
 
     unsubscribe() {
-        this.resoponseSubject.unsubscribe();
+        this.responseSubject.unsubscribe();
     }
 
     // Creation
@@ -147,6 +148,20 @@ export class Scene {
         this.corpsesPool.push(actor);
     }
 
+    registerActorPositionChange(oldX: number, oldY: number, actor: Actor) {
+        if (!this.changedActors.includes(actor)) {
+            this.changedActors.push(actor);
+        }
+        if (!this.sessionChangedActors.includes(actor)) {
+            this.sessionChangedActors.push(actor);
+        }
+        this.sessionDeletedActors.push({
+            id: actor.id,
+            x: oldX,
+            y: oldY
+        });
+    }
+
     registerActorChange(actor: Actor) {
         if (!this.changedActors.includes(actor)) {
             this.changedActors.push(actor);
@@ -158,12 +173,20 @@ export class Scene {
 
     registerActorDeath(actor: Actor) {
         if (!this.deletedActors.includes(actor.id)) {
+            removeFromArray(this.changedActors, actor);
             this.deletedActors.push(actor.id);
         }
-        if (!this.sessionDeletedActors.includes(actor.id)) {
-            this.sessionDeletedActors.push(actor.id);
+        if (!this.sessionDeletedActors.find(x => x.id === actor.id)) {
+            this.sessionDeletedActors.push({
+                id: actor.id,
+                x: actor.x,
+                y: actor.y
+            });
         }
-        this.actors.remove(actor);
+        if (this.sessionChangedActors.includes(actor)) {
+            removeFromArray(this.sessionChangedActors, actor);
+        }
+        removeFromArray(this.actors, actor);
     }
 
     registerTileChange(tile: Tile) {
@@ -218,12 +241,13 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    finishAction(reaction: ReactionResult, type: string, x: number, y: number, actorId?: number) {
-        this.resoponseSubject.next({
+    finishAction(reaction: ReactionResult, type: string, x: number, y: number, extraIdentifier?: number, actorId?: number) {
+        this.responseSubject.next({
             actorId,
             type,
             x,
             y,
+            extraIdentifier,
             changes: this.getSessionChanges(),
             result: reaction
         });
@@ -270,10 +294,10 @@ export class Scene {
             turn: this.turn,
             changedActors: this.sessionChangedActors.map(x => x.snapshot),
             deletedActors: this.sessionDeletedActors,
-            changedTiles: this.sessionChangedTiles.map(x => x.snapshot)
+            changedTiles: this.sessionChangedTiles.map(x => x.lightSnapshot)
         };
         this.sessionChangedActors.length = 0;
-        this.sessionDeletedActors.length = 0;
+        this.sessionDeletedActors = [];
         this.sessionChangedTiles.length = 0;
         return result;
     }

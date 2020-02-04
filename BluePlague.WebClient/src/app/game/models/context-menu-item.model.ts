@@ -4,7 +4,6 @@ import { ContextMenuSystemTypesEnum } from './enums/context-menu-system-types.en
 export interface ContextMenuItem {
   systemType?: ContextMenuSystemTypesEnum;
   action: EnginePlayerActionFull;
-
   left: number;
   top: number;
   notAvailableReason?: string[];

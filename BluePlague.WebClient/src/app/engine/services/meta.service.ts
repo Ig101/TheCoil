@@ -60,13 +60,12 @@ export class MetaService {
           return this.initializeScene()
             .pipe(map(sceneInitialization => {
               this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
-              this.sceneService.subscribe(actions => {
-                const playerAction = actions[0].action;
+              this.sceneService.subscribe(action => {
                 this.currentActionsBanch.push({
-                  type: playerAction.type,
-                  extraIdentifier: playerAction.extraIdentifier,
-                  x: playerAction.x,
-                  y: playerAction.y
+                  type: action.type,
+                  extraIdentifier: action.extraIdentifier,
+                  x: action.x,
+                  y: action.y
                 } as EnginePlayerAction);
               });
               this.startSynchronizationTimer();
@@ -82,16 +81,15 @@ export class MetaService {
     clearInterval(this.timer);
   }
 
-  private synchronization(lastActionsBanch: EnginePlayerAction[], currentActionsBanch: EnginePlayerAction[],
-                          synchronizationService: SynchronizationService, sceneService: SceneService, metaInformation: MetaInformation) {
-    lastActionsBanch.push(...currentActionsBanch);
-    currentActionsBanch.length = 0;
-    synchronizationService.sendSynchronizationInfo(sceneService.getSceneSavedData(),
-                                                        metaInformation, lastActionsBanch)
+  synchronization() {
+    this.lastActionsBanch.push(...this.currentActionsBanch);
+    this.currentActionsBanch.length = 0;
+    this.synchronizationService.sendSynchronizationInfo(this.sceneService.getSceneSavedData(),
+                                                        this.metaInformation, this.lastActionsBanch)
       .subscribe(result => {
         if (result.success) {
-          lastActionsBanch.length = 0;
-          sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
+          this.lastActionsBanch = [];
+          this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
         } else {
           // TODO ExitGame
         }
@@ -99,8 +97,11 @@ export class MetaService {
 
   }
 
-  startSynchronizationTimer() {
-    this.timer = setInterval(this.synchronization, this.synchronizationTimer, this.lastActionsBanch, this.currentActionsBanch,
-      this.synchronizationService, this.sceneService, this.metaInformation);
+  private startSynchronizationTimer() {
+    this.timer = setInterval(this.timedSynchronization, this.synchronizationTimer, this);
+  }
+
+  private timedSynchronization(metaService: MetaService) {
+    metaService.synchronization();
   }
 }

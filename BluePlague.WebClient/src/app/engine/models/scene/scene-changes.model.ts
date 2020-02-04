@@ -4,6 +4,6 @@ import { TileSnapshot } from './tile-snapshot.model';
 export interface SceneChanges {
     turn: number;
     changedActors: ActorSnapshot[];
-    deletedActors: number[];
+    deletedActors: {id: number, x: number, y: number}[];
     changedTiles: TileSnapshot[];
 }

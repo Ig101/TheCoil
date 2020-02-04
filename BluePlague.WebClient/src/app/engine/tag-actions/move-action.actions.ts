@@ -15,7 +15,7 @@ function moveAction(scene: Scene, object: Actor, x: number, y: number, externalI
     reachedObjects: [tile, ...tile.objects.filter(o => o !== object)],
     reaction: {
       level: ReactionMessageLevelEnum.Trace,
-      message: [object.name, ' moved.']
+      message: [object.name, 'moved.']
     }
   } as ActorActionResult;
 }

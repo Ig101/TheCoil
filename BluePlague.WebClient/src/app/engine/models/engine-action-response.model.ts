@@ -6,6 +6,7 @@ export interface EngineActionResponse {
     actorId?: number;
     x: number;
     y: number;
+    extraIdentifier?: number;
     type: string;
     changes: SceneChanges;
     result: ReactionResult;
