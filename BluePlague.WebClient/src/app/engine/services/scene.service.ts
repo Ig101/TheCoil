@@ -63,6 +63,10 @@ export class SceneService {
     return this.scene.parseAllPlayerActions(x, y);
   }
 
+  validatePlayerSmartAction(x: number, y: number) {
+    return this.scene.parsePlayerSmartAction(x, y);
+  }
+
   sendActions(actions: EnginePlayerAction[]) {
     while (actions.length > 0) {
       const action = actions.shift();

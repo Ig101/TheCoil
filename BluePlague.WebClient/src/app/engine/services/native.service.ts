@@ -78,7 +78,7 @@ export class NativeService {
         maxDurability: 100,
         maxEnergy: 100,
         tags: [this.actorTags.cryOnWait],
-        actions: [this.actions.wait, this.actions.move],
+        actions: [this.actions.smart],
         passable: false
       }
     };

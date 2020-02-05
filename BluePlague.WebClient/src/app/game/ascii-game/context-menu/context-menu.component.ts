@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { ContextMenuContext } from '../../models/context-menu-context.model';
-import { ContextMenuItemPage } from '../../models/context-menu-item-page.model';
-import { ContextMenuItem } from '../../models/context-menu-item.model';
-import { ContextMenuSystemTypesEnum } from '../../models/enums/context-menu-system-types.enum';
+import { ContextMenuContext } from '../models/context-menu-context.model';
+import { ContextMenuItemPage } from '../models/context-menu-item-page.model';
+import { ContextMenuItem } from '../models/context-menu-item.model';
+import { ContextMenuSystemTypesEnum } from '../models/enums/context-menu-system-types.enum';
 import { EnginePlayerAction } from 'src/app/engine/models/engine-player-action.model';
 
 /*

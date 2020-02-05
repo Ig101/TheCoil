@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ContextMenuItem } from 'src/app/game/models/context-menu-item.model';
+import { ContextMenuItem } from 'src/app/game/ascii-game/models/context-menu-item.model';
 
 @Component({
   selector: 'app-context-menu-item',

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { GameResolverService } from './resolvers/game-resolver.service';
+import { AsciiGameComponent } from './ascii-game.component';
 
 const routes: Routes = [
-  {path: 'ascii', loadChildren: './ascii-game/ascii-game.module#AsciiGameModule', resolve: { scene: GameResolverService } },
-  {path: '**', redirectTo: 'ascii'}
+  {path: '', component: AsciiGameComponent },
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({
@@ -17,4 +17,4 @@ const routes: Routes = [
     RouterModule
   ]
 })
-export class GameRoutingModule { }
+export class AsciiGameRoutingModule { }

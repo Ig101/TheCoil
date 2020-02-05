@@ -1,30 +1,22 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { GameRoutingModule } from './game-routing.module';
 import { SharedModule } from '../shared/shared.module';
-import { EngineModule } from '../engine/engine.module';
-import { AsciiGameComponent } from './ascii-game/ascii-game.component';
-import { GameStateService } from './services/game-state.service';
-import { ContextMenuComponent } from './ascii-game/context-menu/context-menu.component';
+import { GameRoutingModule } from './game-routing.module';
 import { GameResolverService } from './resolvers/game-resolver.service';
-import { ContextMenuItemComponent } from './ascii-game/context-menu/context-menu-item/context-menu-item.component';
-
+import { GameStateService } from './services/game-state.service';
+import { EngineModule } from '../engine/engine.module';
+import { GameSettingsService } from './services/game-settings.service';
 
 
 @NgModule({
-  declarations: [
-    AsciiGameComponent,
-    ContextMenuComponent,
-    ContextMenuItemComponent
-  ],
   imports: [
     GameRoutingModule,
-    SharedModule,
     EngineModule,
+    SharedModule,
   ],
   providers: [
     GameStateService,
-    GameResolverService
+    GameResolverService,
+    GameSettingsService
   ]
 })
 export class GameModule { }

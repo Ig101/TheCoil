@@ -42,8 +42,20 @@ export class EngineFacadeService {
     return this.sceneService.validateAndGetAllActions(x, y);
   }
 
+  validateSmartAction(x: number, y: number) {
+    return this.sceneService.validatePlayerSmartAction(x, y);
+  }
+
   sendActions(actions: EnginePlayerAction[]) {
     this.sceneService.sendActions(actions);
+  }
+
+  sendSmartAction(x: number, y: number) {
+    this.sceneService.sendActions([{
+      type: 'smart',
+      x,
+      y
+    }]);
   }
 
   subscribeOnActionsResult(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {

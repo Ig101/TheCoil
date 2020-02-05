@@ -7,18 +7,21 @@ import { SpriteSnapshot } from 'src/app/engine/models/scene/abstract/sprite-snap
 import { KeyboardKeyEnum } from 'src/app/shared/models/enum/keyboard-key.enum';
 import { EventManager } from '@angular/platform-browser';
 import { MouseState } from 'src/app/shared/models/mouse-state.model';
-import { ContextMenuContext } from '../models/context-menu-context.model';
+import { ContextMenuContext } from './models/context-menu-context.model';
 import { ActivatedRoute } from '@angular/router';
-import { ContextMenuItem } from '../models/context-menu-item.model';
+import { ContextMenuItem } from './models/context-menu-item.model';
 import { EnginePlayerActionFull } from 'src/app/engine/models/engine-player-action-full.model';
-import { AnimationItem } from '../models/animation-item.model';
+import { AnimationItem } from './models/animation-item.model';
 import { ReactionResult } from 'src/app/engine/scene/models/reaction-result.model';
 import { SceneChanges } from 'src/app/engine/models/scene/scene-changes.model';
+import { KeyState } from '../models/key-state.model';
+import { GameSettingsService } from '../services/game-settings.service';
+import { ReactionMessageLevelEnum } from 'src/app/engine/models/enums/reaction-message-level.enum';
 
 @Component({
   selector: 'app-ascii-game',
   templateUrl: './ascii-game.component.html',
-  styleUrls: ['./ascii-game.component.scss', '../game.module.scss']
+  styleUrls: ['./ascii-game.component.scss']
 })
 export class AsciiGameComponent implements OnInit, OnDestroy {
 
@@ -46,7 +49,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     character: '+',
     color: {r: 255, g: 255, b: 0, a: 1}
   } as SpriteSnapshot;
-  pressedKeys: { [id: string]: boolean } = {};
+  pressedKey: KeyState;
   mouseState: MouseState = {
     buttonsInfo: {},
     x: -1,
@@ -57,7 +60,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   animationsLoaded = false;
   animationTimer;
-  animationFrequency = 120;
+  animationFrequency = 60;
   animationsQueue: AnimationItem[] = [];
 
   get canvasWidth() {
@@ -107,7 +110,8 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   constructor(
     private gameStateService: GameStateService,
     private engineFacadeService: EngineFacadeService,
-    private activatedRoute: ActivatedRoute) {
+    private activatedRoute: ActivatedRoute,
+    private gameSettingsService: GameSettingsService) {
       this.mouseState.buttonsInfo[0] = {
         pressed: false,
         timeStamp: 0
@@ -143,11 +147,42 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    this.pressedKeys[event.key] = true;
+    const action = this.gameSettingsService.smartActionsKeyBindings[event.key];
+    if (action && !this.blocked) {
+      const thisAction = this.pressedKey && this.pressedKey.action === action;
+      if (thisAction && this.pressedKey.pressedTime > 0) {
+        return;
+      }
+      if (!thisAction) {
+        this.pressedKey = {
+          pressedTime: 120,
+          action,
+          key: event.key
+        };
+      } else {
+        this.pressedKey.pressedTime = 120;
+      }
+      const x = this.pressedKey.action.xShift + this.gameStateService.playerX;
+      const y = this.pressedKey.action.yShift + this.gameStateService.playerY;
+      const validation = this.engineFacadeService.validateSmartAction(x, y);
+      if (validation.success) {
+        this.doSmartAction(x, y);
+      } else if (validation.reason) {
+        console.log(validation.reason);
+        this.drawAnimationMessage({
+          level: ReactionMessageLevelEnum.Information,
+          message: validation.reason
+        });
+      }
+    }
+    if (action) {
+    }
   }
 
   onKeyUp(event: KeyboardEvent) {
-    this.pressedKeys[event.key] = false;
+    if (this.pressedKey && this.pressedKey.key === event.key) {
+      this.pressedKey = undefined;
+    }
   }
 
   onMouseDown(event: MouseEvent) {
@@ -212,12 +247,19 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   doAction(action: EnginePlayerActionFull) {
     this.contextMenu = undefined;
     if (action) {
+      this.blocked = true;
       this.engineFacadeService.sendActions([action]);
       this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
       this.animationsLoaded = true;
     } else {
       this.blocked = false;
     }
+  }
+
+  doSmartAction(x: number, y: number) {
+    this.blocked = true;
+    this.engineFacadeService.sendSmartAction(x, y);
+    this.animationsLoaded = true;
   }
 
   processNewAction(response: EngineActionResponse) {
@@ -257,6 +299,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         snapshotTile.objects[snapshotActorId] = actor;
       } else {
         snapshotTile.objects.push(actor);
+      }
+      if (actor.id === this.gameStateService.scene.player.id) {
+        this.gameStateService.scene.player = actor;
       }
     }
     this.changed = true;
@@ -392,17 +437,17 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   // Updating
-  private processKeys(context: AsciiGameComponent, shift: number) {
-
+  private processKeys(shift: number) {
+    if (this.pressedKey) {
+      this.pressedKey.pressedTime -= shift;
+    }
   }
 
   private updateScene() {
     const time = performance.now();
     const shift = time - this.lastChange;
     this.lastChange = time;
-    if (!this.blocked) {
-      this.processKeys(this, shift);
-    }
+    this.processKeys(shift);
   }
 
   private updateCycle(context: AsciiGameComponent) {

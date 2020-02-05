@@ -15,6 +15,8 @@ import { UnsettledActorSavedData } from '../models/scene/objects/unsettled-actor
 import { ReactionMessageLevelEnum } from '../models/enums/reaction-message-level.enum';
 import { ActionValidationResultFull } from './models/action-validation-result-full.model';
 import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
+import { actorSmartValidation } from '../tag-actions/actor-smart-action.actions';
+import { ActionValidationResult } from './models/action-validation-result.model';
 export class Scene {
 
     private global = false;
@@ -229,6 +231,10 @@ export class Scene {
             }, false));
         }
         return dictionary;
+    }
+
+    parsePlayerSmartAction(x: number, y: number): ActionValidationResult {
+        return actorSmartValidation(this, this.player, x, y);
     }
 
     playerAct(action: EnginePlayerAction, unsettledActors: UnsettledActorSavedData[]) {
