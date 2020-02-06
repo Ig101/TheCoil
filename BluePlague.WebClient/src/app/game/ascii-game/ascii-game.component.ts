@@ -38,6 +38,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   drawingFrequency = 30;
   changed = false;
   blocked = false;
+  mouseBlocked = false;
 
   tileWidth = 0;
   tileHeight = 30;
@@ -58,6 +59,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     realY: -1
   };
 
+  firstAnimation = false;
   animationsLoaded = false;
   animationTimer;
   animationFrequency = 60;
@@ -168,7 +170,6 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       if (validation.success) {
         this.doSmartAction(x, y);
       } else if (validation.reason) {
-        console.log(validation.reason);
         this.drawAnimationMessage({
           level: ReactionMessageLevelEnum.Information,
           message: validation.reason
@@ -199,6 +200,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         if (this.gameStateService.scene.tiles[x][y].sprite) {
           const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
           this.blocked = true;
+          this.mouseBlocked = true;
           this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth) * this.zoom * this.tileWidth - 1;
           this.contextY = (y - this.gameStateService.cameraY + this.canvasHeight / 2 / this.tileHeight) * this.zoom * this.tileHeight;
           this.contextMenu = {
@@ -228,7 +230,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   onMouseMove(event: MouseEvent) {
     this.mouseState.realX = event.x;
     this.mouseState.realY = event.y;
-    if (!this.blocked) {
+    if (!this.mouseBlocked) {
       this.recalculateMouseMove(event.x, event.y, event.timeStamp);
     }
   }
@@ -246,8 +248,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   doAction(action: EnginePlayerActionFull) {
     this.contextMenu = undefined;
+    this.mouseBlocked = false;
     if (action) {
-      this.blocked = true;
+      this.firstAnimation = true;
       this.engineFacadeService.sendActions([action]);
       this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
       this.animationsLoaded = true;
@@ -268,9 +271,14 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       snapshotChanges: response.changes,
       message: response.result
     } as AnimationItem);
+    if (this.firstAnimation) {
+      this.firstAnimation = false;
+      this.playAnimation();
+    }
   }
 
   private drawAnimationMessage(message: ReactionResult) {
+    console.log(message.message.join(' '));
       // TODO Draw message
   }
 
@@ -308,16 +316,18 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   playAnimation() {
-    if (this.animationsQueue.length > 0) {
+    let timed = false;
+    while (this.animationsQueue.length > 0 && !timed) {
       const animation = this.animationsQueue.shift();
-      console.log(animation);
       if (animation.message) {
         this.drawAnimationMessage(animation.message);
       }
       if (animation.snapshotChanges) {
         this.updateSnapshot(animation.snapshotChanges);
       }
-    } else if (this.animationsLoaded && this.blocked) {
+      timed = false;
+    }
+    if (this.animationsQueue.length === 0 && this.animationsLoaded && this.blocked) {
       this.blocked = false;
       this.animationsLoaded = false;
     }

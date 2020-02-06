@@ -42,6 +42,8 @@ export class Scene {
     private actors: Actor[] = [];
     private tiles: Tile[][];
 
+    private gatheringCorpsesStarted = false;
+
     readonly width: number;
     readonly height: number;
 
@@ -102,9 +104,12 @@ export class Scene {
                 tile.native, tile.x, tile.y);
         }
         for (const actor of savedData.changedActors) {
-            const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, false);
+            const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, false);
             this.changedActors.push(newActor);
             newActor.id = actor.id;
+            newActor.durability = actor.durability;
+            newActor.energy = actor.energy;
+            newActor.remainedTurnTime = actor.remainedTurnTime;
             if (actor.player) {
                 this.player = newActor;
             }
@@ -125,10 +130,10 @@ export class Scene {
     }
 
     // Creation
-    createActor(native: ActorNative, x: number, y: number, newActor: boolean = true): Actor {
+    createActor(native: ActorNative, x: number, y: number, name?: string, newActor: boolean = true): Actor {
         const id = this.idIncrementor;
         this.idIncrementor++;
-        const actor = new Actor(this, id, native, x, y);
+        const actor = new Actor(this, id, native, x, y, name);
         this.actors.push(actor);
         if (newActor) {
             this.registerActorChange(actor);
@@ -257,20 +262,24 @@ export class Scene {
             changes: this.getSessionChanges(),
             result: reaction
         });
-        for (const corpse of this.corpsesPool) {
-            corpse.doReactiveAction(
-                'die',
-                'die',
-                {
-                    level: ReactionMessageLevelEnum.Information,
-                    message: [corpse.name, ' died.']
-                } as ReactionResult,
-                [ corpse.tile, ...corpse.tile.objects ],
-                0
-            );
-            this.registerActorDeath(corpse);
+        if (!this.gatheringCorpsesStarted) {
+            this.gatheringCorpsesStarted = true;
+            while (this.corpsesPool.length > 0) {
+                const corpse = this.corpsesPool.pop();
+                this.registerActorDeath(corpse);
+                corpse.doReactiveAction(
+                    'die',
+                    'die',
+                    {
+                        level: ReactionMessageLevelEnum.Information,
+                        message: [corpse.name, 'is dead.']
+                    } as ReactionResult,
+                    [ corpse.tile, ...corpse.tile.objects ],
+                    0
+                );
+            }
+            this.gatheringCorpsesStarted = false;
         }
-        this.corpsesPool.length = 0;
     }
 
     private getActorsForAction() {

@@ -59,6 +59,16 @@ export class SynchronizationService {
               x: 10,
               y: 7,
               id: 1
+            } as ActorSavedData,
+            {
+              player: false,
+              nativeId: 'dummy',
+              durability: 20,
+              energy: 100,
+              remainedTurnTime: 0,
+              x: 12,
+              y: 7,
+              id: 2
             } as ActorSavedData
           ],
           deletedActors: [],

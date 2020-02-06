@@ -88,6 +88,9 @@ export class Tile implements IReactiveObject {
                 if (reaction) {
                     this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
                         reaction.reachedObjects, time, reaction.strength);
+                    if (reaction.strength) {
+                        strength = reaction.strength;
+                    }
                 }
             }
         }

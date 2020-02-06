@@ -109,7 +109,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.calculatedMaxDurability = this.maxDurability;
         this.calculatedMaxEnergy = this.maxEnergy;
         this.calculatedSpeedModification = this.speedModification;
-        this.calculatedTags = this.tags;
+        this.calculatedTags = this.tags.sort((a, b) => a.priority - b.priority);
 
         this.tile = parent.getTile(x, y);
         this.tile.objects.push(this);
@@ -227,6 +227,9 @@ export class Actor implements IActiveObject, IReactiveObject {
                 if (reaction) {
                     this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
                         reaction.reachedObjects, time, reaction.strength);
+                    if (reaction.strength) {
+                        strength = reaction.strength;
+                    }
                 }
             }
         }
@@ -261,6 +264,9 @@ export class Actor implements IActiveObject, IReactiveObject {
                 if (reaction) {
                     this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
                         reaction.reachedObjects, time, reaction.strength);
+                    if (reaction.strength) {
+                        strength = reaction.strength;
+                    }
                 }
             }
         }

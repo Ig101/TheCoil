@@ -10,9 +10,9 @@ import { ActorNative } from '../models/natives/actor-native.model';
 import { TileNative } from '../models/natives/tile-native.model';
 import { SpriteNative } from '../models/natives/sprite-native.model';
 import { ActionTag } from '../scene/models/action-tag.model';
-import { getActionsRegistry } from '../tag-actions/actions-registry';
-import { getActorTagsRegistry } from '../tag-actions/actor-tags-registry';
-import { getTileTagsRegistry } from '../tag-actions/tile-tags-registry';
+import { getActionsRegistry } from '../tag-actions/actions/actions-registry';
+import { getActorTagsRegistry } from '../tag-actions/actor-tags/actor-tags-registry';
+import { getTileTagsRegistry } from '../tag-actions/tile-tags/tile-tags-registry';
 import { ActorAction } from '../scene/models/actor-action.model';
 import { SceneInitialization } from '../models/scene/scene-initialization.model';
 
@@ -59,6 +59,10 @@ export class NativeService {
         character: '@',
         color: {r: 255, g: 255, b: 55, a: 1}
       },
+      dummy: {
+        character: '&',
+        color: {r: 255, g: 255, b: 255, a: 1}
+      },
       stoneFloor: {
         character: '.',
         color: {r: 120, g: 120, b: 120, a: 1}
@@ -77,8 +81,20 @@ export class NativeService {
         weight: 100,
         maxDurability: 100,
         maxEnergy: 100,
-        tags: [this.actorTags.cryOnWait],
-        actions: [this.actions.smart],
+        tags: [this.actorTags.flesh],
+        actions: [this.actions.smart, this.actions.attack],
+        passable: false
+      },
+      dummy: {
+        id: 'dummy',
+        name: 'dummy',
+        sprite: this.sprites.dummy,
+        speedModificator: 10,
+        weight: 100,
+        maxDurability: 100,
+        maxEnergy: 100,
+        tags: [this.actorTags.cryOnWait, this.actorTags.flesh],
+        actions: [this.actions.wait],
         passable: false
       }
     };
@@ -94,7 +110,7 @@ export class NativeService {
         id: 'stoneWall',
         name: 'stoneWall',
         sprite: this.sprites.stoneWall,
-        backgroundColor: {r: 20, g: 20, b: 20},
+        backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],
         passable: false
@@ -103,7 +119,7 @@ export class NativeService {
         id: 'stoneFloor',
         name: 'stoneFloor',
         sprite: this.sprites.stoneFloor,
-        backgroundColor: {r: 20, g: 20, b: 20},
+        backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],
         passable: true
