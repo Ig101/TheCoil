@@ -6,7 +6,6 @@ import { EngineModule } from 'src/app/engine/engine.module';
 import { AsciiGameComponent } from './ascii-game.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { ContextMenuItemComponent } from './context-menu/context-menu-item/context-menu-item.component';
-import { AsciiAnimationsRegistryService } from './services/ascii-animations-registry.service';
 
 
 
@@ -20,8 +19,5 @@ import { AsciiAnimationsRegistryService } from './services/ascii-animations-regi
     SharedModule,
     AsciiGameRoutingModule
   ],
-  providers: [
-    AsciiAnimationsRegistryService
-  ]
 })
 export class AsciiGameModule { }

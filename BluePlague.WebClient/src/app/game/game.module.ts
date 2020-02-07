@@ -5,6 +5,8 @@ import { GameResolverService } from './resolvers/game-resolver.service';
 import { GameStateService } from './services/game-state.service';
 import { EngineModule } from '../engine/engine.module';
 import { GameSettingsService } from './services/game-settings.service';
+import { AsciiAnimationsRegistryService } from './services/ascii-animations-registry.service';
+import { AsciiGameResolverService } from './resolvers/ascii-game-resolver.service';
 
 
 @NgModule({
@@ -16,7 +18,9 @@ import { GameSettingsService } from './services/game-settings.service';
   providers: [
     GameStateService,
     GameResolverService,
-    GameSettingsService
+    GameSettingsService,
+    AsciiGameResolverService,
+    AsciiAnimationsRegistryService
   ]
 })
 export class GameModule { }

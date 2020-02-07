@@ -17,6 +17,7 @@ import { SceneChanges } from 'src/app/engine/models/scene/scene-changes.model';
 import { KeyState } from '../models/key-state.model';
 import { GameSettingsService } from '../services/game-settings.service';
 import { ReactionMessageLevelEnum } from 'src/app/engine/models/enums/reaction-message-level.enum';
+import { AsciiAnimationsRegistryService } from '../services/ascii-animations-registry.service';
 
 @Component({
   selector: 'app-ascii-game',
@@ -113,7 +114,8 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     private gameStateService: GameStateService,
     private engineFacadeService: EngineFacadeService,
     private activatedRoute: ActivatedRoute,
-    private gameSettingsService: GameSettingsService) {
+    private gameSettingsService: GameSettingsService,
+    private asciiAnimationsRegistryService: AsciiAnimationsRegistryService) {
       this.mouseState.buttonsInfo[0] = {
         pressed: false,
         timeStamp: 0
@@ -266,12 +268,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   processNewAction(response: EngineActionResponse) {
-    // TODO Animations
-    console.log(response);
-    this.animationsQueue.push({
-      snapshotChanges: response.changes,
-      message: response.result
-    } as AnimationItem);
+    this.animationsQueue.push(...this.asciiAnimationsRegistryService.getAnimations(response));
     if (this.firstAnimation) {
       this.firstAnimation = false;
       this.playAnimation();
