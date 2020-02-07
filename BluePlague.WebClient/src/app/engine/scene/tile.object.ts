@@ -79,28 +79,28 @@ export class Tile implements IReactiveObject {
         this.levelLink = link;
     }
 
-    react(action: string, initiator: Actor, time: number, strength?: number) {
+    react(reaction: string, initiator: Actor, time: number, strength?: number) {
         const tags = this.tags;
         for (const tag of tags) {
-            const chosenReaction = tag.reactions[action];
+            const chosenReaction = tag.reactions[reaction];
             if (chosenReaction) {
-                const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
-                if (reaction) {
-                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
-                        reaction.reachedObjects, time, reaction.strength);
-                    if (reaction.strength) {
-                        strength = reaction.strength;
+                const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
+                if (result) {
+                    this.doReactiveAction(result.animation, result.reaction, result.result,
+                        result.reachedObjects, time, result.strength);
+                    if (result.strength) {
+                        strength = result.strength;
                     }
                 }
             }
         }
     }
 
-    doReactiveAction(type: string, group: string, reaction: ReactionResult,
+    doReactiveAction(animation: string, reaction: string, result: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(reaction, type, this.x, this.y);
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects);
         for (const object of reachedObjects) {
-            object.react(group, this, time, strength);
+            object.react(reaction, this, time, strength);
         }
     }
 }

@@ -21,7 +21,7 @@ export function waitAction(scene: Scene, object: Actor, x: number, y: number, ex
   const timeShift = object.calculatedSpeedModification;
   return {
     time: timeShift,
-    reaction: {
+    result: {
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'waits.']
     },
@@ -33,7 +33,8 @@ export function registerWaitAction(): ActorAction {
   return {
     character: 'W',
     name: 'wait',
-    group: 'wait',
+    reaction: 'wait',
+    animation: 'wait',
     action: waitAction,
     validator: waitValidation
   } as ActorAction;

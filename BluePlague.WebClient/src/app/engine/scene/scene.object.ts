@@ -17,6 +17,7 @@ import { ActionValidationResultFull } from './models/action-validation-result-fu
 import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 import { actorSmartValidation } from '../tag-actions/actor-smart-action.actions';
 import { ActionValidationResult } from './models/action-validation-result.model';
+import { IReactiveObject } from './interfaces/reactive-object.interface';
 export class Scene {
 
     private global = false;
@@ -230,7 +231,7 @@ export class Scene {
         const dictionary: ActionValidationResultFull[] = [];
         for (const action of this.player.actions) {
             dictionary.push(this.parsePlayerAction({
-                type: action.name,
+                name: action.name,
                 x,
                 y
             }, false));
@@ -252,15 +253,19 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    finishAction(reaction: ReactionResult, type: string, x: number, y: number, extraIdentifier?: number, actorId?: number) {
+    finishAction(reaction: ReactionResult, animation: string, x: number, y: number, reachedObjects: IReactiveObject[],
+                 extraIdentifier?: number, actorId?: number) {
         this.responseSubject.next({
             actorId,
-            type,
+            animation,
             x,
             y,
             extraIdentifier,
             changes: this.getSessionChanges(),
-            result: reaction
+            result: reaction,
+            reachedTiles: reachedObjects.filter(o => o instanceof Tile).map((o: Tile) => {
+                return { x: o.x, y: o.y };
+            })
         });
         if (!this.gatheringCorpsesStarted) {
             this.gatheringCorpsesStarted = true;
@@ -295,7 +300,7 @@ export class Scene {
             if (actor !== this.player) {
                 while (actor.remainedTurnTime <= 0) {
                     actor.act({
-                        type: 'wait',
+                        name: 'wait',
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction);

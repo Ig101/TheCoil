@@ -267,6 +267,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   processNewAction(response: EngineActionResponse) {
     // TODO Animations
+    console.log(response);
     this.animationsQueue.push({
       snapshotChanges: response.changes,
       message: response.result

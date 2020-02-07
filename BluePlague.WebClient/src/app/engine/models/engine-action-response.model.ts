@@ -7,7 +7,8 @@ export interface EngineActionResponse {
     x: number;
     y: number;
     extraIdentifier?: number;
-    type: string;
+    animation: string;
     changes: SceneChanges;
     result: ReactionResult;
+    reachedTiles: {x: number, y: number}[];
 }

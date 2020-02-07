@@ -41,7 +41,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                 systemType: ContextMenuSystemTypesEnum.Previous,
                 action: {
                   character: '<',
-                  type: 'previous page'
+                  name: 'previous page'
                 },
                 left: previousShift.left,
                 top: previousShift.top
@@ -54,7 +54,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                 systemType: ContextMenuSystemTypesEnum.Next,
                 action: {
                   character: '>',
-                  type: 'next page'
+                  name: 'next page'
                 },
                 left: moveItem.left,
                 top: moveItem.top
@@ -88,7 +88,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
           systemType: ContextMenuSystemTypesEnum.Nothing,
           action: {
             character: 'X',
-            type: 'no actions'
+            name: 'no actions'
           },
           left: shift.left,
           top: shift.top,

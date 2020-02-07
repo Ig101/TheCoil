@@ -6,5 +6,5 @@ import { IReactiveObject } from '../interfaces/reactive-object.interface';
 export interface IncomingActionReaction<T> {
   weight: number;
   reaction: (scene: Scene, object: T, initiator: Actor, time: number, weight?: number, strength?: number) =>
-    { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number };
+    { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], strength?: number };
 }

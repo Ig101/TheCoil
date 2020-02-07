@@ -166,7 +166,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResultFull {
-        const chosenAction = this.actions.find(x => x.name === action.type);
+        const chosenAction = this.actions.find(x => x.name === action.name);
         if (!chosenAction) {
             return {
                 success: false,
@@ -175,12 +175,13 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         let validationResult: ActionValidationResultFull;
         const fullAction = {
-            type: action.type,
+            name: action.name,
             extraIdentifier: action.extraIdentifier,
             x: action.x,
             y: action.y,
             character: chosenAction.character,
-            group: chosenAction.group
+            reaction: chosenAction.reaction,
+            animation: chosenAction.animation
         } as EnginePlayerActionFull;
         if (chosenAction.validator) {
             validationResult =
@@ -194,7 +195,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         const tags = this.calculatedTags;
         for (const tag of tags) {
-            const chosenReaction = tag.outgoingReactions[action.type];
+            const chosenReaction = tag.outgoingReactions[action.name];
             if (chosenReaction && chosenReaction.validator) {
                 const result = chosenReaction.validator(this.parent, this, action.x, action.y);
                 if (result) {
@@ -210,9 +211,9 @@ export class Actor implements IActiveObject, IReactiveObject {
     act(action: EnginePlayerAction): number {
         const actionInfo = this.doAction(action);
         this.remainedTurnTime += actionInfo.time;
-        this.reactOnOutgoingAction(actionInfo.type, actionInfo.time, actionInfo.strength);
+        this.reactOnOutgoingAction(actionInfo.name, actionInfo.time, actionInfo.strength);
         for (const object of actionInfo.reachedObjects) {
-            object.react(actionInfo.group, this, actionInfo.time, actionInfo.strength);
+            object.react(actionInfo.reaction, this, actionInfo.time, actionInfo.strength);
         }
         return actionInfo.time;
     }
@@ -223,12 +224,12 @@ export class Actor implements IActiveObject, IReactiveObject {
         for (const tag of tags) {
             const chosenReaction = tag.outgoingReactions[action];
             if (chosenReaction) {
-                const reaction = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
-                if (reaction) {
-                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
-                        reaction.reachedObjects, time, reaction.strength);
-                    if (reaction.strength) {
-                        strength = reaction.strength;
+                const result = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
+                if (result) {
+                    this.doReactiveAction(result.animation, result.reaction, result.result,
+                        result.reachedObjects, time, result.strength);
+                    if (result.strength) {
+                        strength = result.strength;
                     }
                 }
             }
@@ -236,47 +237,50 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     private doAction(action: EnginePlayerAction): ActorActionResult {
-        const chosenAction = this.calculatedActions.find(x => x.name === action.type);
+        const chosenAction = this.calculatedActions.find(x => x.name === action.name);
         if (!chosenAction) {
             return undefined;
         }
         const result = chosenAction.action(this.parent, this, action.x, action.y, action.extraIdentifier);
-        if (!result.type) {
-            result.type = action.type;
+        if (!result.animation) {
+            result.animation = chosenAction.animation;
         }
-        if (!result.group) {
-            result.group = chosenAction.group;
+        if (!result.reaction) {
+            result.reaction = chosenAction.reaction;
         }
-        this.parent.finishAction(result.reaction, result.type, this.x, this.y, action.extraIdentifier, this.id);
-        if (result.group === 'move') {
+        if (!result.name) {
+            result.name = chosenAction.name;
+        }
+        this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects, action.extraIdentifier, this.id);
+        if (result.reaction === 'move') {
             result.time *= this.parent.moveSpeedModifier;
         }
         return result;
     }
 
     // Reactions
-    react(action: string, initiator: Actor, time: number, strength?: number) {
+    react(reaction: string, initiator: Actor, time: number, strength?: number) {
         const tags = this.tags;
         for (const tag of tags) {
-            const chosenReaction = tag.reactions[action];
+            const chosenReaction = tag.reactions[reaction];
             if (chosenReaction) {
-                const reaction = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
-                if (reaction) {
-                    this.doReactiveAction(reaction.type, reaction.group, reaction.reaction,
-                        reaction.reachedObjects, time, reaction.strength);
-                    if (reaction.strength) {
-                        strength = reaction.strength;
+                const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
+                if (result) {
+                    this.doReactiveAction(result.animation, result.reaction, result.result,
+                        result.reachedObjects, time, result.strength);
+                    if (result.strength) {
+                        strength = result.strength;
                     }
                 }
             }
         }
     }
 
-    doReactiveAction(type: string, group: string, reaction: ReactionResult,
+    doReactiveAction(animation: string, reaction: string, result: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(reaction, type, this.x, this.y, undefined, this.id);
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, undefined, this.id);
         for (const object of reachedObjects) {
-            object.react(group, this, time, strength);
+            object.react(reaction, this, time, strength);
         }
     }
 }

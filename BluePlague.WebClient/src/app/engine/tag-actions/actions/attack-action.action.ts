@@ -18,15 +18,15 @@ export function attackAction(scene: Scene, object: Actor, x: number, y: number, 
     time: timeShift,
     reachedObjects: [tile, ...(livingTarget ? [livingTarget] : tile.objects.filter(o => o !== object))],
     strength: 10,
-    reaction: {
+    result: {
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'attacks', livingTarget ? livingTarget.name : 'position.']
     }
   } as ActorActionResult;
 }
 
-export function attackValidation(scene: Scene, actor: Actor, x: number, y: number, deep: boolean,
-                                 externalIdentifier?: number): ActionValidationResult {
+export function defaultAttackValidation(scene: Scene, actor: Actor, x: number, y: number, deep: boolean,
+                                        externalIdentifier?: number): ActionValidationResult {
   if (actor.remainedTurnTime > 0 || (x - actor.x) > 1 || (x - actor.x) < -1 ||
     (y - actor.y) > 1 || (y - actor.y) < -1 || ((y - actor.y) === 0 && (x - actor.x) === 0)) {
     return {
@@ -44,12 +44,13 @@ export function attackValidation(scene: Scene, actor: Actor, x: number, y: numbe
   };
 }
 
-export function registerAttackAction(): ActorAction {
+export function registerDefaultAttackAction(): ActorAction {
   return {
     character: 'A',
-    name: 'attack',
-    group: 'attack',
-    validator: attackValidation,
+    name: 'defaultAttack',
+    reaction: 'physical',
+    animation: 'attack',
+    validator: defaultAttackValidation,
     action: attackAction
   } as ActorAction;
 }

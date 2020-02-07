@@ -52,7 +52,7 @@ export class EngineFacadeService {
 
   sendSmartAction(x: number, y: number) {
     this.sceneService.sendActions([{
-      type: 'smart',
+      name: 'smart',
       x,
       y
     }]);

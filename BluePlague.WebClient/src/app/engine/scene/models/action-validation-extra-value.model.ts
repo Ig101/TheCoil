@@ -1,7 +1,7 @@
 export interface ActionValidationExtraValue {
   extraIndentifier: number;
   character: string;
-  type: string;
+  name: string;
   warning?: string[];
   reason?: string[];
 }

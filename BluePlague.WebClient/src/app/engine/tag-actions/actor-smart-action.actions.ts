@@ -12,7 +12,7 @@ import { ActorAction } from '../scene/models/actor-action.model';
 import { SmartActionEnum } from '../models/enums/smart-action.enum';
 import { waitAction, waitValidation } from './actions/wait-action.actions';
 import { moveAction, moveValidation } from './actions/move-action.actions';
-import { attackValidation, attackAction } from './actions/attack-action.action';
+import { defaultAttackValidation, attackAction } from './actions/attack-action.action';
 
 function getActionType(scene: Scene, object: Actor, x: number, y: number): SmartActionEnum {
   if (x - object.x === 0 && y - object.y === 0) {
@@ -34,18 +34,33 @@ function actorSmartAction(scene: Scene, object: Actor, x: number, y: number): Ac
   switch (action) {
     case SmartActionEnum.Move:
       result = moveAction(scene, object, x, y);
-      result.type = 'move';
-      result.group = 'move';
+      result.name = 'move';
+      if (!result.animation) {
+        result.animation = 'move';
+      }
+      if (!result.reaction) {
+        result.reaction = 'move';
+      }
       break;
     case SmartActionEnum.Attack:
       result = attackAction(scene, object, x, y);
-      result.type = 'attack';
-      result.group = 'attack';
+      result.name = 'defaultAttack';
+      if (!result.animation) {
+        result.animation = 'attack';
+      }
+      if (!result.reaction) {
+        result.reaction = 'physical';
+      }
       break;
     default:
       result = waitAction(scene, object, x, y);
-      result.type = 'wait';
-      result.group = 'wait';
+      result.name = 'wait';
+      if (!result.animation) {
+        result.animation = 'wait';
+      }
+      if (!result.reaction) {
+        result.reaction = 'wait';
+      }
       break;
   }
   return result;
@@ -55,7 +70,8 @@ export function registerSmartAction(): ActorAction {
   return {
     character: '@',
     name: 'smart',
-    group: 'smart',
+    reaction: 'smart',
+    animation: 'smart',
     validator: () => {
                   return { success: false };
                 },
@@ -66,19 +82,19 @@ export function registerSmartAction(): ActorAction {
 export function actorSmartValidation(scene: Scene, actor: Actor, x: number, y: number): ActionValidationResult {
   const action = getActionType(scene, actor, x, y);
   let validationResult: ActionValidationResult;
-  let type: string;
+  let reaction: string;
   switch (action) {
     case SmartActionEnum.Move:
       validationResult = moveValidation(scene, actor, x, y, false);
-      type = 'move';
+      reaction = 'move';
       break;
     case SmartActionEnum.Wait:
       validationResult = waitValidation(scene, actor, x, y, false);
-      type = 'wait';
+      reaction = 'wait';
       break;
     case SmartActionEnum.Attack:
-      validationResult = attackValidation(scene, actor, x, y, false);
-      type = 'attack';
+      validationResult = defaultAttackValidation(scene, actor, x, y, false);
+      reaction = 'defaultAttack';
       break;
     default:
       return {
@@ -90,7 +106,7 @@ export function actorSmartValidation(scene: Scene, actor: Actor, x: number, y: n
   }
   const tags = actor.calculatedTags;
   for (const tag of tags) {
-      const chosenReaction = tag.outgoingReactions[type];
+      const chosenReaction = tag.outgoingReactions[reaction];
       if (chosenReaction && chosenReaction.validator) {
           const result = chosenReaction.validator(scene, actor, x, y);
           if (result) {

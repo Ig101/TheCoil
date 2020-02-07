@@ -8,5 +8,5 @@ export interface OutgoingActionReaction<T> {
   weight?: number;
   validator?: (scene: Scene, object: T, x: number, y: number) => string[]; // if null -> allowed, if string[] -> not allowed
   reaction: (scene: Scene, object: T, weight?: number, strength?: number) =>
-    { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number };
+    { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], strength?: number };
 }

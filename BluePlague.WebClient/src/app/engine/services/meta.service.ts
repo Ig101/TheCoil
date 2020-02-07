@@ -62,7 +62,7 @@ export class MetaService {
               this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
               this.sceneService.subscribe(action => {
                 this.currentActionsBanch.push({
-                  type: action.type,
+                  name: action.animation,
                   extraIdentifier: action.extraIdentifier,
                   x: action.x,
                   y: action.y

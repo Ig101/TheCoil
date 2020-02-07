@@ -7,15 +7,15 @@ import { IReactiveObject } from '../../scene/interfaces/reactive-object.interfac
 import { TagPriorityEnum } from '../../models/enums/tag-priority.enum';
 
 function cryOnWaitWaitOutgoing(scene: Scene, object: Actor, weight?: number, strength?: number):
-    { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number }  {
+    { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], strength?: number }  {
   const reaction = {
     level: ReactionMessageLevelEnum.Attention,
     message: [object.name, 'cries on wait.']
   };
   return {
-    type: 'shout',
-    group: 'shout',
-    reaction,
+    animation: 'shout',
+    reaction: 'shout',
+    result: reaction,
     reachedObjects: []
   };
 }

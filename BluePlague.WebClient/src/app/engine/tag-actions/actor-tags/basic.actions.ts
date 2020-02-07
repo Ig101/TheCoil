@@ -4,19 +4,19 @@ import { ReactionResult } from '../../scene/models/reaction-result.model';
 import { IReactiveObject } from '../../scene/interfaces/reactive-object.interface';
 import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
 
-export function receiveDamageAttackIncoming(scene: Scene, object: Actor, initiator: Actor, time: number, weight?: number,
-                                            strength?: number):
-    { type: string, group: string, reaction: ReactionResult, reachedObjects: IReactiveObject[], strength?: number } {
+export function receiveDamagePhysicalIncoming(scene: Scene, object: Actor, initiator: Actor, time: number, weight?: number,
+                                              strength?: number):
+    { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], strength?: number } {
   const calculatedStrength = strength * weight;
   object.changeDurability(-calculatedStrength);
   const reaction = {
     level: ReactionMessageLevelEnum.Information,
-    message: [object.name, 'receives', calculatedStrength.toString(), 'damage.']
+    message: [object.name, 'receives', calculatedStrength.toString(), 'physical damage.']
   };
   return {
-    type: 'react',
-    group: 'react',
-    reaction,
+    animation: 'hurt',
+    reaction: 'hurt',
+    result: reaction,
     reachedObjects: []
   };
 }

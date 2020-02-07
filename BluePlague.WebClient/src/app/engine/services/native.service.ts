@@ -82,7 +82,7 @@ export class NativeService {
         maxDurability: 100,
         maxEnergy: 100,
         tags: [this.actorTags.flesh],
-        actions: [this.actions.smart, this.actions.attack],
+        actions: [this.actions.smart, this.actions.defaultAttack],
         passable: false
       },
       dummy: {

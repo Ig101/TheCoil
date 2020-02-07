@@ -13,7 +13,7 @@ export function moveAction(scene: Scene, object: Actor, x: number, y: number, ex
   return {
     time: timeShift,
     reachedObjects: [tile, ...tile.objects.filter(o => o !== object)],
-    reaction: {
+    result: {
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'moves.']
     }
@@ -44,7 +44,8 @@ export function registerMoveAction(): ActorAction {
   return {
     character: 'M',
     name: 'move',
-    group: 'move',
+    reaction: 'moveR',
+    animation: 'move',
     validator: moveValidation,
     action: moveAction
   } as ActorAction;
