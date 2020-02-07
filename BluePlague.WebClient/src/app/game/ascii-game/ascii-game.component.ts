@@ -177,6 +177,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       if (validation.success) {
         this.doSmartAction(x, y);
       } else if (validation.reason) {
+        for (const logItem of this.log) {
+          logItem.expiring = true;
+        }
         this.drawAnimationMessage({
           level: ReactionMessageLevelEnum.Information,
           message: validation.reason
