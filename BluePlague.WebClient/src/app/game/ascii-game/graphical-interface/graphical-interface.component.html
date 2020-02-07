@@ -1,0 +1,10 @@
+<div class="overlay hud-container">
+  <div class="part">
+    <div class="filler"></div>
+    <span class="log font" *ngFor="let item of log" [style.opacity]="item.opacity" [style.color]="item.color">{{item.message.join(' ')}}</span>
+  </div>
+  <div class="filler"></div>
+  <div class="part">
+
+  </div>
+</div>

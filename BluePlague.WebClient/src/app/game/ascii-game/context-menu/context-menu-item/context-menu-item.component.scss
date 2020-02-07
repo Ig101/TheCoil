@@ -1,4 +1,6 @@
 :host {
+  @import '../../ascii-game.module.scss';
+
   position: absolute;
   .menu-item {
       width: 28px;
@@ -7,7 +9,6 @@
       border: double #999;
       border-width: thick;
       border-radius: 28px;
-      font: 22px PT Mono;
       color: #999;
       justify-content: center;
       display: flex;

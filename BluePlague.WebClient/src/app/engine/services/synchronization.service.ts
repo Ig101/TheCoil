@@ -56,8 +56,8 @@ export class SynchronizationService {
               durability: 100,
               energy: 100,
               remainedTurnTime: 0,
-              x: 10,
-              y: 7,
+              x: 46,
+              y: 25,
               id: 1
             } as ActorSavedData,
             {
@@ -66,8 +66,8 @@ export class SynchronizationService {
               durability: 20,
               energy: 100,
               remainedTurnTime: 0,
-              x: 12,
-              y: 7,
+              x: 49,
+              y: 25,
               id: 2
             } as ActorSavedData
           ],

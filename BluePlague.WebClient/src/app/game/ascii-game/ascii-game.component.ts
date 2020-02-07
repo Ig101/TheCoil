@@ -18,6 +18,8 @@ import { KeyState } from '../models/key-state.model';
 import { GameSettingsService } from '../services/game-settings.service';
 import { ReactionMessageLevelEnum } from 'src/app/engine/models/enums/reaction-message-level.enum';
 import { AsciiAnimationsRegistryService } from '../services/ascii-animations-registry.service';
+import { LogItem } from './models/log-item.model';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-ascii-game',
@@ -65,6 +67,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   animationTimer;
   animationFrequency = 60;
   animationsQueue: AnimationItem[] = [];
+
+  log: LogItem[] = [];
+  logSubject = new BehaviorSubject<LogItem[]>(this.log);
 
   get canvasWidth() {
     return this.gameCanvas.nativeElement.width;
@@ -263,6 +268,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   doSmartAction(x: number, y: number) {
     this.blocked = true;
+    this.firstAnimation = true;
     this.engineFacadeService.sendSmartAction(x, y);
     this.animationsLoaded = true;
   }
@@ -270,14 +276,43 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   processNewAction(response: EngineActionResponse) {
     this.animationsQueue.push(...this.asciiAnimationsRegistryService.getAnimations(response));
     if (this.firstAnimation) {
+      for (let i = 0; i < this.log.length; i++) {
+        const logItem = this.log[i];
+        logItem.opacity -= 0.25;
+        if (logItem.opacity <= 0) {
+          this.log.splice(i, 1);
+          i--;
+        }
+      }
+      this.logSubject.next(this.log);
       this.firstAnimation = false;
       this.playAnimation();
     }
   }
 
   private drawAnimationMessage(message: ReactionResult) {
-    console.log(message.message.join(' '));
-      // TODO Draw message
+    let info: {
+      color: string;
+    };
+    switch (message.level) {
+      case ReactionMessageLevelEnum.Information:
+        info = {
+          color: '#fff'
+        };
+        break;
+      case ReactionMessageLevelEnum.Attention:
+        info = {
+          color: '#ff0'
+        };
+    }
+    if (info) {
+      this.log.push({
+        opacity: 1.0,
+        color: info.color,
+        message: message.message
+      });
+      this.logSubject.next(this.log);
+    }
   }
 
   private updateSnapshot(changes: SceneChanges) {
