@@ -13,19 +13,22 @@ export class GraphicalInterfaceComponent implements OnInit {
   @Input() logSubject: Observable<LogItem[]>;
 
   get logView(): LogItem[] {
-    console.log('get');
     return this.log;
   }
 
   log: LogItem[];
 
-  maxLogItems = 20;
+  maxLogItems = 10;
 
   constructor(private changeDetector: ChangeDetectorRef) { }
 
+  getItemOpacity(item: LogItem) {
+    return Math.max(0, item.opacity);
+  }
+
   ngOnInit() {
     this.logSubject.subscribe((value) => {
-      this.log = value.slice(value.length - this.maxLogItems);
+      this.log = value.slice(Math.max(0, value.length - this.maxLogItems));
       this.changeDetector.detectChanges();
     });
   }

@@ -276,16 +276,10 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   processNewAction(response: EngineActionResponse) {
     this.animationsQueue.push(...this.asciiAnimationsRegistryService.getAnimations(response));
     if (this.firstAnimation) {
-      for (let i = 0; i < this.log.length; i++) {
-        const logItem = this.log[i];
-        logItem.opacity -= 0.25;
-        if (logItem.opacity <= 0) {
-          this.log.splice(i, 1);
-          i--;
-        }
-      }
-      this.logSubject.next(this.log);
       this.firstAnimation = false;
+      for (const logItem of this.log) {
+        logItem.expiring = true;
+      }
       this.playAnimation();
     }
   }
@@ -307,11 +301,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     }
     if (info) {
       this.log.push({
-        opacity: 1.0,
+        opacity: 3,
         color: info.color,
-        message: message.message
+        message: message.message,
+        expiring: false
       });
-      this.logSubject.next(this.log);
     }
   }
 
@@ -491,6 +485,17 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     const shift = time - this.lastChange;
     this.lastChange = time;
     this.processKeys(shift);
+    for (let i = 0; i < this.log.length; i++) {
+      const logItem = this.log[i];
+      if (logItem.expiring) {
+        logItem.opacity -= 0.0005 * shift;
+        if (logItem.opacity <= 0) {
+          this.log.splice(i, 1);
+          i--;
+        }
+      }
+    }
+    this.logSubject.next(this.log);
   }
 
   private updateCycle(context: AsciiGameComponent) {
