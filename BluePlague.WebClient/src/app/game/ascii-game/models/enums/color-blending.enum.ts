@@ -2,5 +2,6 @@ export enum ColorBlendingEnum {
   SingleColor,
   Gradient,
   RandomColor,
-  UseActorColor
+  UseActorCharacterAndColor,
+  UseActorCharacter
 }

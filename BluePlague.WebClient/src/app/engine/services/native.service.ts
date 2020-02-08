@@ -61,7 +61,7 @@ export class NativeService {
       },
       dummy: {
         character: '&',
-        color: {r: 255, g: 255, b: 255, a: 1}
+        color: {r: 255, g: 80, b: 0, a: 1}
       },
       stoneFloor: {
         character: '.',

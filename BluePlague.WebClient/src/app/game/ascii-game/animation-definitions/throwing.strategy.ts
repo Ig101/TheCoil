@@ -31,9 +31,13 @@ export function throwingAnimationStrategy(response: EngineActionResponse, declar
               a: Math.random() * (declaration.secondColor.a - declaration.firstColor.a) + declaration.firstColor.a,
             };
             break;
-          case ColorBlendingEnum.UseActorColor:
+          case ColorBlendingEnum.UseActorCharacterAndColor:
             character = response.actor.sprite.character;
             color = response.actor.sprite.color;
+            break;
+          case ColorBlendingEnum.UseActorCharacter:
+            character = response.actor.sprite.character;
+            color = declaration.firstColor;
             break;
           default:
             color = declaration.firstColor;
