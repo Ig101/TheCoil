@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  {path: 'game', loadChildren: './game/game.module#GameModule' },
+  {path: 'game', loadChildren: () => import('./game/game.module').then(x => x.GameModule) },
   {path: '**', redirectTo: 'game'}
 ];
 

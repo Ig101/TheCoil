@@ -5,7 +5,7 @@ import { GameResolverService } from './resolvers/game-resolver.service';
 import { AsciiGameResolverService } from './resolvers/ascii-game-resolver.service';
 
 const routes: Routes = [
-  {path: 'ascii', loadChildren: './ascii-game/ascii-game.module#AsciiGameModule',
+  {path: 'ascii', loadChildren: () => import('./ascii-game/ascii-game.module').then(x => x.AsciiGameModule),
     resolve: { scene: GameResolverService, AsciiGameResolverService } },
   {path: '**', redirectTo: 'ascii'}
 ];
