@@ -227,7 +227,7 @@ export class Actor implements IActiveObject, IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.strength);
+                        result.reachedObjects, time, result.range, result.strength);
                     if (result.strength) {
                         strength = result.strength;
                     }
@@ -251,7 +251,8 @@ export class Actor implements IActiveObject, IReactiveObject {
         if (!result.name) {
             result.name = chosenAction.name;
         }
-        this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects, action.extraIdentifier, this.id);
+        this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects, result.range,
+            action.extraIdentifier, result.actor);
         if (result.reaction === 'move') {
             result.time *= this.parent.moveSpeedModifier;
         }
@@ -267,7 +268,7 @@ export class Actor implements IActiveObject, IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.strength);
+                        result.reachedObjects, time, result.range, result.strength);
                     if (result.strength) {
                         strength = result.strength;
                     }
@@ -277,8 +278,8 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     doReactiveAction(animation: string, reaction: string, result: ReactionResult,
-                     reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, undefined, this.id);
+                     reachedObjects: IReactiveObject[], time: number, strength: number = 1, range?: number) {
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, range, undefined, this);
         for (const object of reachedObjects) {
             object.react(reaction, this, time, strength);
         }

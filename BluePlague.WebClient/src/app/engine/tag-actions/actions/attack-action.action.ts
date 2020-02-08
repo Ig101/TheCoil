@@ -21,7 +21,8 @@ export function attackAction(scene: Scene, object: Actor, x: number, y: number, 
     result: {
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'attacks', livingTarget ? livingTarget.name : 'position.']
-    }
+    },
+    actor: object
   } as ActorActionResult;
 }
 

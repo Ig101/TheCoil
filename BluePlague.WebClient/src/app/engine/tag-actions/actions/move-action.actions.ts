@@ -16,7 +16,8 @@ export function moveAction(scene: Scene, object: Actor, x: number, y: number, ex
     result: {
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'moves.']
-    }
+    },
+    actor: object
   } as ActorActionResult;
 }
 

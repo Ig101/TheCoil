@@ -25,7 +25,8 @@ export function waitAction(scene: Scene, object: Actor, x: number, y: number, ex
       level: ReactionMessageLevelEnum.Trace,
       message: [object.name, 'waits.']
     },
-    reachedObjects: [object.tile, ...object.tile.objects.filter(o => o !== object)]
+    reachedObjects: [object.tile, ...object.tile.objects.filter(o => o !== object)],
+    actor: object
   };
 }
 

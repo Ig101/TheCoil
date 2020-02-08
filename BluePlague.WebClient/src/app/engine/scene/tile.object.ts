@@ -87,7 +87,7 @@ export class Tile implements IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.strength);
+                        result.reachedObjects, time, result.range, result.strength);
                     if (result.strength) {
                         strength = result.strength;
                     }
@@ -97,8 +97,8 @@ export class Tile implements IReactiveObject {
     }
 
     doReactiveAction(animation: string, reaction: string, result: ReactionResult,
-                     reachedObjects: IReactiveObject[], time: number, strength: number = 1) {
-        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects);
+                     reachedObjects: IReactiveObject[], time: number, strength: number = 1, range?: number) {
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, range);
         for (const object of reachedObjects) {
             object.react(reaction, this, time, strength);
         }

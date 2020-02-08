@@ -253,16 +253,17 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    finishAction(reaction: ReactionResult, animation: string, x: number, y: number, reachedObjects: IReactiveObject[],
-                 extraIdentifier?: number, actorId?: number) {
+    finishAction(reaction: ReactionResult, animation: string, x: number, y: number, reachedObjects: IReactiveObject[], range?: number,
+                 extraIdentifier?: number, actor?: Actor) {
         this.responseSubject.next({
-            actorId,
+            actor: actor.snapshot,
             animation,
             x,
             y,
             extraIdentifier,
             changes: this.getSessionChanges(),
             result: reaction,
+            range,
             reachedTiles: reachedObjects.filter(o => o instanceof Tile).map((o: Tile) => {
                 return { x: o.x, y: o.y };
             })
