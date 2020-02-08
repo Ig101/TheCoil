@@ -6,7 +6,7 @@ describe('GameStateService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GameStateService = TestBed.get(GameStateService);
+    const service: GameStateService = TestBed.inject(GameStateService);
     expect(service).toBeTruthy();
   });
 });

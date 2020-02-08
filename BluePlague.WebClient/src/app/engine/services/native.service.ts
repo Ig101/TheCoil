@@ -93,7 +93,7 @@ export class NativeService {
         weight: 100,
         maxDurability: 100,
         maxEnergy: 100,
-        tags: [this.actorTags.cryOnWait, this.actorTags.flesh],
+        tags: [this.actorTags.cryOnWait, this.actorTags.flesh, this.actorTags.explodeOnDeath],
         actions: [this.actions.wait],
         passable: false
       }

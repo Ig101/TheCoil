@@ -7,6 +7,7 @@ import { ColorBlendingEnum } from '../models/enums/color-blending.enum';
 
 export function waveAnimationStrategy(response: EngineActionResponse, declaration: AnimationDeclaration): AnimationItem[] {
   let startRange = 0;
+  let endRange = 0;
   let maximumRange = 0;
   if (response.range) {
     maximumRange = response.range;
@@ -18,7 +19,6 @@ export function waveAnimationStrategy(response: EngineActionResponse, declaratio
       }
     }
   }
-  let endRange = declaration.progression * maximumRange;
   const tiles = response.reachedTiles.map(o => {
     const range = rangeBetween(response.x, response.y, o.x, o.y);
     return {
@@ -29,19 +29,22 @@ export function waveAnimationStrategy(response: EngineActionResponse, declaratio
   });
   const result: AnimationItem[] = [];
   while (endRange < maximumRange) {
+    startRange = endRange;
+    endRange += declaration.progression * maximumRange;
     const tempTiles = tiles.filter(o => {
-      return o.range > startRange && o.range < endRange;
+      return o.range > startRange && o.range <= endRange;
     });
     result.push({
       overlay: tempTiles.map(o => {
         let color;
+        let character = declaration.character;
         switch (declaration.colorBlending) {
           case ColorBlendingEnum.Gradient:
             color = {
-              r: declaration.secondColor.r * (maximumRange - o.range) + declaration.firstColor.r * o.range,
-              g: declaration.secondColor.g * (maximumRange - o.range) + declaration.firstColor.g * o.range,
-              b: declaration.secondColor.b * (maximumRange - o.range) + declaration.firstColor.b * o.range,
-              a: declaration.secondColor.a * (maximumRange - o.range) + declaration.firstColor.a * o.range,
+              r: declaration.firstColor.r * (maximumRange - o.range) + declaration.secondColor.r * o.range,
+              g: declaration.firstColor.g * (maximumRange - o.range) + declaration.secondColor.g * o.range,
+              b: declaration.firstColor.b * (maximumRange - o.range) + declaration.secondColor.b * o.range,
+              a: declaration.firstColor.a * (maximumRange - o.range) + declaration.secondColor.a * o.range,
             };
             break;
           case ColorBlendingEnum.RandomColor:
@@ -52,20 +55,24 @@ export function waveAnimationStrategy(response: EngineActionResponse, declaratio
               a: Math.random() * (declaration.secondColor.a - declaration.firstColor.a) + declaration.firstColor.a,
             };
             break;
+          case ColorBlendingEnum.UseActorColor:
+            character = response.actor.sprite.character;
+            color = response.actor.sprite.color;
+            break;
           default:
             color = declaration.firstColor;
             break;
         }
         return {
-          character: declaration.character,
+          character,
           color,
           x: o.x,
           y: o.y
         } as AnimationTileReplacement;
       })
     } as AnimationItem);
-    startRange = endRange;
-    endRange += declaration.progression * maximumRange;
   }
+  result[0].message = response.result;
+  result[result.length - 1].snapshotChanges = response.changes;
   return result;
 }

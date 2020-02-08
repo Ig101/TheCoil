@@ -5,7 +5,7 @@ import { ActionTag } from '../../scene/models/action-tag.model';
 import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
 import { IReactiveObject } from '../../scene/interfaces/reactive-object.interface';
 import { TagPriorityEnum } from '../../models/enums/tag-priority.enum';
-import { receiveDamagePhysicalIncoming } from './basic.actions';
+import { receiveDamagePhysicalIncoming, receiveDamageFireIncoming } from './basic.actions';
 
 export function registerFleshTag(): ActionTag<Actor> {
   return {
@@ -14,6 +14,10 @@ export function registerFleshTag(): ActionTag<Actor> {
     reactions: {
       physical: {
         reaction: receiveDamagePhysicalIncoming,
+        weight: 1
+      },
+      fire: {
+        reaction: receiveDamageFireIncoming,
         weight: 1
       }
     },

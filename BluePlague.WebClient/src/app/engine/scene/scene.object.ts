@@ -273,16 +273,7 @@ export class Scene {
             while (this.corpsesPool.length > 0) {
                 const corpse = this.corpsesPool.pop();
                 this.registerActorDeath(corpse);
-                corpse.doReactiveAction(
-                    'die',
-                    'die',
-                    {
-                        level: ReactionMessageLevelEnum.Information,
-                        message: [corpse.name, 'is dead.']
-                    } as ReactionResult,
-                    [ corpse.tile, ...corpse.tile.objects ],
-                    0
-                );
+                corpse.doReactiveActionOnDeath();
             }
             this.gatheringCorpsesStarted = false;
         }

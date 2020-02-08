@@ -6,7 +6,7 @@ describe('AsciiGameResolverService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: AsciiGameResolverService = TestBed.get(AsciiGameResolverService);
+    const service: AsciiGameResolverService = TestBed.inject(AsciiGameResolverService);
     expect(service).toBeTruthy();
   });
 });

@@ -6,7 +6,7 @@ describe('AsciiAnimationsRegistryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: AsciiAnimationsRegistryService = TestBed.get(AsciiAnimationsRegistryService);
+    const service: AsciiAnimationsRegistryService = TestBed.inject(AsciiAnimationsRegistryService);
     expect(service).toBeTruthy();
   });
 });

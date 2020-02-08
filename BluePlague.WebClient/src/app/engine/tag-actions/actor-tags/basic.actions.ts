@@ -20,3 +20,20 @@ export function receiveDamagePhysicalIncoming(scene: Scene, object: Actor, initi
     reachedObjects: []
   };
 }
+
+export function receiveDamageFireIncoming(scene: Scene, object: Actor, initiator: Actor, time: number, weight?: number,
+                                          strength?: number):
+    { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], strength?: number } {
+  const calculatedStrength = strength * weight;
+  object.changeDurability(-calculatedStrength);
+  const reaction = {
+    level: ReactionMessageLevelEnum.Information,
+    message: [object.name, 'receives', calculatedStrength.toString(), 'fire damage.']
+  };
+  return {
+    animation: 'hurt',
+    reaction: 'hurt',
+    result: reaction,
+    reachedObjects: []
+  };
+}

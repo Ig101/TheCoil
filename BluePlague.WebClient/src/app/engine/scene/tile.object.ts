@@ -87,7 +87,7 @@ export class Tile implements IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.range, result.strength);
+                        result.reachedObjects, time, result.strength, result.range);
                     if (result.strength) {
                         strength = result.strength;
                     }

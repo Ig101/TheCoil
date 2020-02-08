@@ -20,6 +20,7 @@ import { ReactionMessageLevelEnum } from 'src/app/engine/models/enums/reaction-m
 import { AsciiAnimationsRegistryService } from '../services/ascii-animations-registry.service';
 import { LogItem } from './models/log-item.model';
 import { Subject, BehaviorSubject } from 'rxjs';
+import { AnimationTileReplacement } from './models/animation-tile-replacement.model';
 
 @Component({
   selector: 'app-ascii-game',
@@ -67,6 +68,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   animationTimer;
   animationFrequency = 60;
   animationsQueue: AnimationItem[] = [];
+  animationReplacements: AnimationTileReplacement[];
 
   log: LogItem[] = [];
   logSubject = new BehaviorSubject<LogItem[]>(this.log);
@@ -346,6 +348,10 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   playAnimation() {
+    if (this.animationReplacements) {
+      this.changed = true;
+    }
+    this.animationReplacements = undefined;
     let timed = false;
     while (this.animationsQueue.length > 0 && !timed) {
       const animation = this.animationsQueue.shift();
@@ -355,7 +361,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       if (animation.snapshotChanges) {
         this.updateSnapshot(animation.snapshotChanges);
       }
-      timed = false;
+      if (animation.overlay) {
+        timed = true;
+        this.animationReplacements = animation.overlay;
+        this.changed = true;
+      }
     }
     if (this.animationsQueue.length === 0 && this.animationsLoaded && this.blocked) {
       this.blocked = false;
@@ -413,7 +423,15 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         this.canvasContext.fillStyle = `rgb(${tile.backgroundColor.r}, ${tile.backgroundColor.g}, ${tile.backgroundColor.b})`;
         this.canvasContext.fillRect(canvasX, canvasY, this.tileWidth + 1, this.tileHeight + 1);
       }
-      if (tile.objects.length > 0) {
+      let replacement;
+      if (this.animationReplacements) {
+        replacement = this.animationReplacements.find(o => o.x === x && o.y === y);
+      }
+      if (replacement) {
+        const color = this.brightImpact(tile.bright, replacement.color);
+        this.canvasContext.fillStyle = `rgba(${color.r},${color.g},${color.b},${color.a})`;
+        this.canvasContext.fillText(replacement.character, canvasX, symbolY);
+      } else if (tile.objects.length > 0) {
         const mainObject = tile.objects.find(object => !object.passable);
         if (mainObject) {
           const color = this.brightImpact(tile.bright, mainObject.sprite.color);

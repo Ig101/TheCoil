@@ -6,7 +6,7 @@ describe('NativeService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: NativeService = TestBed.get(NativeService);
+    const service: NativeService = TestBed.inject(NativeService);
     expect(service).toBeTruthy();
   });
 });

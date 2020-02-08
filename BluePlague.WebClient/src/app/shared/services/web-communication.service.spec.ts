@@ -6,7 +6,7 @@ describe('WebCommunicationService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: WebCommunicationService = TestBed.get(WebCommunicationService);
+    const service: WebCommunicationService = TestBed.inject(WebCommunicationService);
     expect(service).toBeTruthy();
   });
 });

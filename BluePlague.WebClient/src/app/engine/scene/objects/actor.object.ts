@@ -17,6 +17,7 @@ import { Sprite } from '../abstract/sprite.object';
 import { ActionValidationResultFull } from '../models/action-validation-result-full.model';
 import { EnginePlayerActionFull } from '../../models/engine-player-action-full.model';
 import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
+import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
 
 export class Actor implements IActiveObject, IReactiveObject {
 
@@ -227,7 +228,7 @@ export class Actor implements IActiveObject, IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.range, result.strength);
+                        result.reachedObjects, time, result.strength, result.range);
                     if (result.strength) {
                         strength = result.strength;
                     }
@@ -268,12 +269,24 @@ export class Actor implements IActiveObject, IReactiveObject {
                 const result = chosenReaction.reaction(this.parent, this, initiator, time, chosenReaction.weight, strength);
                 if (result) {
                     this.doReactiveAction(result.animation, result.reaction, result.result,
-                        result.reachedObjects, time, result.range, result.strength);
+                        result.reachedObjects, time, result.strength, result.range);
                     if (result.strength) {
                         strength = result.strength;
                     }
                 }
             }
+        }
+    }
+
+    doReactiveActionOnDeath() {
+        const reachedObjects = [this.tile, ...this.tile.objects];
+        this.parent.finishAction(                    {
+            level: ReactionMessageLevelEnum.Information,
+            message: [this.name, 'is dead.']
+        } as ReactionResult, 'die', this.x, this.y, reachedObjects, undefined, undefined, this);
+        this.reactOnOutgoingAction('die', 0);
+        for (const object of reachedObjects) {
+            object.react('die', this, 0);
         }
     }
 

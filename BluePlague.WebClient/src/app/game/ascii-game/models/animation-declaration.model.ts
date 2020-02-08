@@ -6,7 +6,7 @@ import { ColorBlendingEnum } from './enums/color-blending.enum';
 export interface AnimationDeclaration {
   calculationStrategy: (response: EngineActionResponse, declaration: AnimationDeclaration) => AnimationItem[];
   character: string;
-  firstColor: {r: number, g: number, b: number, a: number};
+  firstColor?: {r: number, g: number, b: number, a: number};
   secondColor?: {r: number, g: number, b: number, a: number};
   colorBlending: ColorBlendingEnum;
   progression: number; // 1 for 1 turn progression

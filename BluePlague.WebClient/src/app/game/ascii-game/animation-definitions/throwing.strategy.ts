@@ -5,20 +5,22 @@ import { rangeBetween } from 'src/app/helpers/math.helper';
 import { ColorBlendingEnum } from '../models/enums/color-blending.enum';
 import { AnimationTileReplacement } from '../models/animation-tile-replacement.model';
 
-export function throwingStrategy(response: EngineActionResponse, declaration: AnimationDeclaration): AnimationItem[] {
-  let position = declaration.progression;
+export function throwingAnimationStrategy(response: EngineActionResponse, declaration: AnimationDeclaration): AnimationItem[] {
+  let position = 0;
   const result: AnimationItem[] = [];
   while (position < 1) {
+    position += declaration.progression;
     result.push({
       overlay: response.reachedTiles.map(o => {
         let color;
+        let character = declaration.character;
         switch (declaration.colorBlending) {
           case ColorBlendingEnum.Gradient:
             color = {
-              r: declaration.secondColor.r * (1 - position) + declaration.firstColor.r * position,
-              g: declaration.secondColor.g * (1 - position) + declaration.firstColor.g * position,
-              b: declaration.secondColor.b * (1 - position) + declaration.firstColor.b * position,
-              a: declaration.secondColor.a * (1 - position) + declaration.firstColor.a * position,
+              r: declaration.firstColor.r * (1 - position) + declaration.secondColor.r * position,
+              g: declaration.firstColor.g * (1 - position) + declaration.secondColor.g * position,
+              b: declaration.firstColor.b * (1 - position) + declaration.secondColor.b * position,
+              a: declaration.firstColor.a * (1 - position) + declaration.secondColor.a * position,
             };
             break;
           case ColorBlendingEnum.RandomColor:
@@ -29,19 +31,24 @@ export function throwingStrategy(response: EngineActionResponse, declaration: An
               a: Math.random() * (declaration.secondColor.a - declaration.firstColor.a) + declaration.firstColor.a,
             };
             break;
+          case ColorBlendingEnum.UseActorColor:
+            character = response.actor.sprite.character;
+            color = response.actor.sprite.color;
+            break;
           default:
             color = declaration.firstColor;
             break;
         }
         return {
-          character: declaration.character,
+          character,
           color,
-          x: Math.floor((o.x - response.x) * position + response.x),
-          y: Math.floor((o.y - response.y) * position + response.y)
+          x: Math.round((o.x - response.x) * position + response.x),
+          y: Math.round((o.y - response.y) * position + response.y)
         } as AnimationTileReplacement;
       })
     } as AnimationItem);
-    position += declaration.progression;
   }
+  result[0].message = response.result;
+  result[result.length - 1].snapshotChanges = response.changes;
   return result;
 }
