@@ -5,14 +5,14 @@
   position: absolute;
   display: flex;
   justify-content: center;
-  width: 200px;
+  width: 250px;
   .target {
-    padding: 2px;
-    max-width: 200px;
+    padding: 3px;
+    max-width: 250px;
     background-color: #000;
-    border: double #999;
-    border-width: thick;
-    color: white;
+    border: double #fff;
+    border-width: 5px;
+    color: #fff;
     text-overflow: ellipsis;
     overflow: hidden;
   }

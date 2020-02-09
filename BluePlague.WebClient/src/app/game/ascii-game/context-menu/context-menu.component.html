@@ -1,6 +1,6 @@
 <div #overlay class="overlay" (mousedown)="prepareExit($event)" (mouseup)="onExit($event)">
-  <div class="target-container" (mouseup)="onExit($event)" [style.top]="getTargetTop() + 'px'" [style.left]="getTargetLeft() + 'px'">
-    <div class="target font" (mouseup)="onExit($event)">{{targetName}}</div>
+  <div class="target-container" (mousedown)="prepareExit($event)" (mouseup)="onExit($event)" [style.top]="getTargetTop() + 'px'" [style.left]="getTargetLeft() + 'px'">
+    <div class="target font" (mousedown)="prepareExit($event)" (mouseup)="onExit($event)">{{targetName}}</div>
   </div>
   <app-context-menu-item *ngFor="let item of currentItems" [item]="item" [textHeight]="textHeight" 
     [style.top]="getItemTop(item) + 'px'" [style.left]="getItemLeft(item) + 'px'" (click)="onClick(item)"></app-context-menu-item>

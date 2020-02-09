@@ -23,8 +23,8 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
 
   @Input() textHeight;
   @Input() set left(value: number) {
-    this.leftInternal =  Math.max(100,
-      Math.min(this.overlay.nativeElement.clientWidth - (100), value));
+    this.leftInternal =  Math.max(125,
+      Math.min(this.overlay.nativeElement.clientWidth - (125), value));
   }
   @Input() set top(value: number) {
     this.topInternal = Math.max(this.radius + this.textHeight * 2,
@@ -101,7 +101,91 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
           items: []
         } as ContextMenuItemPage;
         this.items.push(first);
-        const shift = this.calculateShifts(0);
+        let shift = this.calculateShifts(0);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(1);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(2);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(3);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(4);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(5);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(6);
+        first.items.push({
+          systemType: ContextMenuSystemTypesEnum.Nothing,
+          action: {
+            character: 'X',
+            name: 'no actions'
+          },
+          left: shift.left,
+          top: shift.top,
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
+        } as ContextMenuItem);
+        shift = this.calculateShifts(7);
         first.items.push({
           systemType: ContextMenuSystemTypesEnum.Nothing,
           action: {
@@ -123,7 +207,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   targetName: string;
   items: ContextMenuItemPage[] = [];
   currentPage = 0;
-  radius = 50;
+  radius = 60;
   startAngle = Math.PI / this.pageSize + Math.PI / 2;
 
   inversion: boolean;
@@ -149,7 +233,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
     return {
       left: this.radius * cos - 17,
       top: this.radius * Math.sin(angle) - 17,
-      leftTooltip: (cos < 0 && this.leftInternal > 250) || this.leftInternal > this.overlay.nativeElement.clientWidth - 250
+      leftTooltip: (cos < 0 && this.leftInternal > 300) || this.leftInternal > this.overlay.nativeElement.clientWidth - 300
     };
   }
 
@@ -169,7 +253,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   }
 
   getTargetLeft() {
-    return this.leftInternal - 100;
+    return this.leftInternal - 125;
   }
 
   getTargetTop() {

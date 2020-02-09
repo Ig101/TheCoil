@@ -46,7 +46,6 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   tileWidth = 0;
   tileHeight = 30;
-  textHeight = 26;
   readonly defaultWidth = 1180;
   readonly defaultHeight = 1080;
   readonly defaultAspectRatio = this.defaultWidth / this.defaultHeight;
