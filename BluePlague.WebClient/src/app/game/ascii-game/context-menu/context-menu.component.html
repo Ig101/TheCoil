@@ -1,4 +1,4 @@
-<div #overlay class="overlay" (mouseup)="onExit($event)">
+<div #overlay class="overlay" (mousedown)="prepareExit($event)" (mouseup)="onExit($event)">
   <div class="target-container" (mouseup)="onExit($event)" [style.top]="getTargetTop() + 'px'" [style.left]="getTargetLeft() + 'px'">
     <div class="target font" (mouseup)="onExit($event)">{{targetName}}</div>
   </div>

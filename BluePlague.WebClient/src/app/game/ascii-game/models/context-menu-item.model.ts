@@ -6,6 +6,8 @@ export interface ContextMenuItem {
   action: EnginePlayerActionFull;
   left: number;
   top: number;
+  notAvailable: boolean;
   notAvailableReason?: string[];
   warning?: string[];
+  leftTooltip: boolean;
 }

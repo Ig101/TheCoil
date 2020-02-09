@@ -5,5 +5,5 @@
   Not working in your browser
 </canvas>
 <app-graphical-interface [logSubject]="logSubject"></app-graphical-interface>
-<app-context-menu *ngIf="contextMenu" [textHeight]="textHeight" [context]="contextMenu" [top]="contextY" [left]="contextX"
+<app-context-menu *ngIf="contextMenu" [textHeight]="textHeight" [top]="contextY" [left]="contextX" [context]="contextMenu"
   (doAction)="doAction($event)"></app-context-menu>

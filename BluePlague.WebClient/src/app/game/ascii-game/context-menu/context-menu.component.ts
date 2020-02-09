@@ -21,6 +21,15 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   @ViewChild('contextMenu', { static: true }) contextMenu: ElementRef<HTMLDivElement>;
   @ViewChild('overlay', { static: true }) overlay: ElementRef<HTMLDivElement>;
 
+  @Input() textHeight;
+  @Input() set left(value: number) {
+    this.leftInternal =  Math.max(100,
+      Math.min(this.overlay.nativeElement.clientWidth - (100), value));
+  }
+  @Input() set top(value: number) {
+    this.topInternal = Math.max(this.radius + this.textHeight * 2,
+      Math.min(this.overlay.nativeElement.clientHeight - (this.radius + this.textHeight), value));
+  }
   @Input() set context(value: ContextMenuContext) {
     if (value) {
       this.targetName = value.targetName;
@@ -46,7 +55,9 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                   name: 'previous page'
                 },
                 left: previousShift.left,
-                top: previousShift.top
+                top: previousShift.top,
+                notAvailable: false,
+                leftTooltip: previousShift.leftTooltip
               } as ContextMenuItem);
               counter++;
 
@@ -59,12 +70,15 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                   name: 'next page'
                 },
                 left: moveItem.left,
-                top: moveItem.top
+                top: moveItem.top,
+                notAvailable: false,
+                leftTooltip: moveItem.leftTooltip
               } as ContextMenuItem;
 
               const moveShift = this.calculateShifts(counter);
               moveItem.left = moveShift.left;
               moveItem.top = moveShift.top;
+              moveItem.leftTooltip = moveShift.leftTooltip;
               page.items.push(moveItem);
               counter++;
             }
@@ -74,8 +88,10 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
             action: action.action,
             left: shift.left,
             top: shift.top,
+            notAvailable: !action.success,
             notAvailableReason: action.reason,
-            warning: action.warning
+            warning: action.warning,
+            leftTooltip: shift.leftTooltip
           });
           counter++;
         }
@@ -94,22 +110,12 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
           },
           left: shift.left,
           top: shift.top,
-          notAvailableReason: ['no actions available']
+          notAvailable: true,
+          leftTooltip: shift.leftTooltip
         } as ContextMenuItem);
       }
     }
   }
-  @Input() textHeight;
-  @Input() set left(value: number) {
-    this.leftInternal =  Math.max(100,
-      Math.min(this.overlay.nativeElement.clientWidth - (100), value));
-  }
-
-  @Input() set top(value: number) {
-    this.topInternal = Math.max(this.radius + this.textHeight * 2,
-      Math.min(this.overlay.nativeElement.clientHeight - (this.radius + this.textHeight), value));
-  }
-
   @Output() doAction = new EventEmitter<EnginePlayerAction>();
 
   pageSize = 8;
@@ -121,6 +127,8 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   startAngle = Math.PI / this.pageSize + Math.PI / 2;
 
   inversion: boolean;
+
+  preparedToExit: boolean[] = [];
 
   private leftInternal;
   private topInternal;
@@ -135,11 +143,13 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
 
   constructor() { }
 
-  calculateShifts(position: number): {left: number, top: number} {
+  calculateShifts(position: number): {left: number, top: number, leftTooltip: boolean} {
     const angle = this.startAngle + position * Math.PI * 2 / this.pageSize;
+    const cos = Math.cos(angle);
     return {
-      left: this.radius * Math.cos(angle) - 17,
-      top: this.radius * Math.sin(angle) - 17
+      left: this.radius * cos - 17,
+      top: this.radius * Math.sin(angle) - 17,
+      leftTooltip: (cos < 0 && this.leftInternal > 250) || this.leftInternal > this.overlay.nativeElement.clientWidth - 250
     };
   }
 
@@ -166,10 +176,18 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
     return Math.round(this.topInternal - this.radius - this.textHeight * 2);
   }
 
-  onExit(event) {
+  prepareExit(event: MouseEvent) {
     if (event.target !== event.currentTarget) {
       return;
     }
+    this.preparedToExit[event.button] = true;
+  }
+
+  onExit(event: MouseEvent) {
+    if (event.target !== event.currentTarget || !this.preparedToExit[event.button]) {
+      return;
+    }
+    this.preparedToExit[event.button] = undefined;
     this.doAction.next(undefined);
   }
 
@@ -182,7 +200,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
       this.currentPage--;
       return;
     }
-    if (event.notAvailableReason) {
+    if (event.notAvailable) {
       return;
     }
     this.doAction.next(event.action);

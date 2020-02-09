@@ -1,1 +1,4 @@
-<div class="menu-item font" [ngClass]="{active: !item.notAvailableReason}">{{item.action.character}}</div>
+<div class="menu-item font" [ngClass]="{active: !item.notAvailable, 'menu-item-tooltip': tooltip, 'menu-item-tooltip-left': tooltip && item.leftTooltip, 'menu-item-tooltip-supress': supress}"
+  (mousedown)="switchTooltip($event, true)" (window:mouseup)="switchTooltip($event, false)">
+  {{item.action.character}} - {{item.action.name}}
+</div>
