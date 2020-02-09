@@ -231,8 +231,8 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
     const angle = this.startAngle + position * Math.PI * 2 / this.pageSize;
     const cos = Math.cos(angle);
     return {
-      left: this.radius * cos - 17,
-      top: this.radius * Math.sin(angle) - 17,
+      left: this.radius * cos - 19,
+      top: this.radius * Math.sin(angle) - 19,
       leftTooltip: (cos < 0 && this.leftInternal > 300) || this.leftInternal > this.overlay.nativeElement.clientWidth - 300
     };
   }
