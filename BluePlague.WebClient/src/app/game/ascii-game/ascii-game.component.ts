@@ -46,6 +46,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   tileWidth = 0;
   tileHeight = 30;
+  textHeight = 26;
   readonly defaultWidth = 1180;
   readonly defaultHeight = 1080;
   readonly defaultAspectRatio = this.defaultWidth / this.defaultHeight;
@@ -86,12 +87,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraX(value: number) {
-    const leftSide = this.defaultWidth / this.tileWidth / 2 - 6;
+    const leftSide = this.defaultWidth / this.tileWidth / 2 - 3;
     if (value < leftSide) {
       this.gameStateService.cameraX = leftSide;
       return;
     }
-    const rightSide = this.gameStateService.scene.width - this.defaultWidth / this.tileWidth / 2 + 5;
+    const rightSide = this.gameStateService.scene.width - this.defaultWidth / this.tileWidth / 2 + 2;
     if (value > rightSide) {
       this.gameStateService.cameraX = rightSide;
       return;
@@ -104,12 +105,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraY(value: number) {
-    const topSide = this.defaultHeight / this.tileHeight / 2 - 4;
+    const topSide = this.defaultHeight / this.tileHeight / 2 - 2;
     if (value < topSide) {
       this.gameStateService.cameraY = topSide;
       return;
     }
-    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2 + 3;
+    const bottomSide = this.gameStateService.scene.height - this.defaultHeight / this.tileHeight / 2 + 1;
     if (value > bottomSide) {
       this.gameStateService.cameraY = bottomSide;
       return;
@@ -209,14 +210,30 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       if (event.button === 2) {
         const x = Math.floor(this.mouseState.x);
         const y = Math.floor(this.mouseState.y);
-        if (this.gameStateService.scene.tiles[x][y].sprite) {
+        if (x < this.gameStateService.scene.width && y < this.gameStateService.scene.height && x >= 0 && y >= 0 &&
+            this.gameStateService.scene.tiles[x][y].sprite) {
           const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
           this.blocked = true;
           this.mouseBlocked = true;
-          this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth) * this.zoom * this.tileWidth - 1;
+          this.contextX = (x - this.gameStateService.cameraX + this.canvasWidth / 2 / this.tileWidth) * this.zoom * this.tileWidth;
           this.contextY = (y - this.gameStateService.cameraY + this.canvasHeight / 2 / this.tileHeight) * this.zoom * this.tileHeight;
+          const tile = this.gameStateService.scene.tiles[x][y];
+          let targetName;
+          if (tile.objects.length > 0) {
+            const mainObject = tile.objects.find(object => !object.passable);
+            if (mainObject) {
+              targetName = mainObject.name;
+            } else if (tile.objects.length > 1) {
+              targetName = tile.objects[0].name;
+            } else {
+              targetName = 'plenty';
+            }
+          } else {
+            targetName = tile.name;
+          }
           this.contextMenu = {
-            actions
+            actions,
+            targetName
           };
         }
       }

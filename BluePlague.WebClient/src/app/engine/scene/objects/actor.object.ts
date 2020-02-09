@@ -58,6 +58,7 @@ export class Actor implements IActiveObject, IReactiveObject {
             id: this.id,
             x: this.x,
             y: this.y,
+            name: this.name,
             weight: this.calculatedWeight,
             sprite: this.sprite.snapshot,
             speedModificator: this.calculatedSpeedModification,

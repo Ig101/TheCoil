@@ -8,6 +8,7 @@ export interface ActorSnapshot {
     id: number;
     x: number;
     y: number;
+    name: string;
     passable: boolean;
     sprite: SpriteSnapshot;
     speedModificator: number;

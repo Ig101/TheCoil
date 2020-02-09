@@ -108,7 +108,7 @@ export class NativeService {
       },
       stoneWall: {
         id: 'stoneWall',
-        name: 'stoneWall',
+        name: 'stoneWall000000000',
         sprite: this.sprites.stoneWall,
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,

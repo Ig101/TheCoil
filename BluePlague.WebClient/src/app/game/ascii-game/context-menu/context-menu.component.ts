@@ -19,9 +19,11 @@ Variants:
 export class ContextMenuComponent implements OnInit, OnDestroy {
 
   @ViewChild('contextMenu', { static: true }) contextMenu: ElementRef<HTMLDivElement>;
+  @ViewChild('overlay', { static: true }) overlay: ElementRef<HTMLDivElement>;
 
   @Input() set context(value: ContextMenuContext) {
     if (value) {
+      this.targetName = value.targetName;
       this.items.length = 0;
       let counter = this.pageSize;
       let pageNumber = -1;
@@ -98,20 +100,30 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
     }
   }
   @Input() textHeight;
-  @Input() left;
-  @Input() top;
+  @Input() set left(value: number) {
+    this.leftInternal =  Math.max(100,
+      Math.min(this.overlay.nativeElement.clientWidth - (100), value));
+  }
 
+  @Input() set top(value: number) {
+    this.topInternal = Math.max(this.radius + this.textHeight * 2,
+      Math.min(this.overlay.nativeElement.clientHeight - (this.radius + this.textHeight), value));
+  }
 
   @Output() doAction = new EventEmitter<EnginePlayerAction>();
 
   pageSize = 8;
 
+  targetName: string;
   items: ContextMenuItemPage[] = [];
   currentPage = 0;
-  radius = 60;
+  radius = 50;
   startAngle = Math.PI / this.pageSize + Math.PI / 2;
 
   inversion: boolean;
+
+  private leftInternal;
+  private topInternal;
 
   get maxPage() {
     return this.items.length;
@@ -126,8 +138,8 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   calculateShifts(position: number): {left: number, top: number} {
     const angle = this.startAngle + position * Math.PI * 2 / this.pageSize;
     return {
-      left: this.radius * Math.cos(angle) - 15,
-      top: this.radius * Math.sin(angle) - 15
+      left: this.radius * Math.cos(angle) - 17,
+      top: this.radius * Math.sin(angle) - 17
     };
   }
 
@@ -139,11 +151,19 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
   }
 
   getItemLeft(item: ContextMenuItem) {
-    return Math.round(this.left + item.left);
+    return Math.round(this.leftInternal + item.left);
   }
 
   getItemTop(item: ContextMenuItem) {
-    return Math.round(this.top + item.top);
+    return Math.round(this.topInternal + item.top);
+  }
+
+  getTargetLeft() {
+    return this.leftInternal - 100;
+  }
+
+  getTargetTop() {
+    return Math.round(this.topInternal - this.radius - this.textHeight * 2);
   }
 
   onExit(event) {

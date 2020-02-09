@@ -3,12 +3,13 @@
 
   position: absolute;
   .menu-item {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       background-color: #000;
       border: double #999;
       border-width: thick;
-      border-radius: 28px;
+      border-radius: 24px;
+      font-weight: bold;
       color: #999;
       justify-content: center;
       display: flex;
