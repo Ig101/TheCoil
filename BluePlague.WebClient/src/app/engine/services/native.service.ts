@@ -87,7 +87,7 @@ export class NativeService {
       },
       dummy: {
         id: 'dummy',
-        name: 'dummy',
+        name: $localize`:@@game.actor.dummy:Dummy`,
         sprite: this.sprites.dummy,
         speedModificator: 10,
         weight: 100,
@@ -108,7 +108,7 @@ export class NativeService {
       },
       stoneWall: {
         id: 'stoneWall',
-        name: 'stoneWall',
+        name: $localize`:@@game.tile.stoneWall:Stone wall`,
         sprite: this.sprites.stoneWall,
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
@@ -117,7 +117,7 @@ export class NativeService {
       },
       stoneFloor: {
         id: 'stoneFloor',
-        name: 'stoneFloor',
+        name: $localize`:@@game.tile.stoneFloor:Stone floor`,
         sprite: this.sprites.stoneFloor,
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,

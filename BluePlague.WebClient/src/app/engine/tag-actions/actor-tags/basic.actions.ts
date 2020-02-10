@@ -11,7 +11,8 @@ export function receiveDamagePhysicalIncoming(scene: Scene, object: Actor, initi
   object.changeDurability(-calculatedStrength);
   const reaction = {
     level: ReactionMessageLevelEnum.Information,
-    message: [object.name, 'receives', calculatedStrength.toString(), 'physical damage.']
+    message: $localize`:@@game.reaction.basic.receiveDamage.physical:${object.name}:name:
+      receives ${calculatedStrength.toString()}:strength: physical damage.`
   };
   return {
     animation: 'hurt',
@@ -28,7 +29,8 @@ export function receiveDamageFireIncoming(scene: Scene, object: Actor, initiator
   object.changeDurability(-calculatedStrength);
   const reaction = {
     level: ReactionMessageLevelEnum.Information,
-    message: [object.name, 'receives', calculatedStrength.toString(), 'fire damage.']
+    message: $localize`:@@game.reaction.basic.receiveDamage.fire:${object.name}:name:
+      receives ${calculatedStrength.toString()}:strength: fire damage.`
   };
   return {
     animation: 'hurt',

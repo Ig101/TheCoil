@@ -23,7 +23,7 @@ export function waitAction(scene: Scene, object: Actor, x: number, y: number, ex
     time: timeShift,
     result: {
       level: ReactionMessageLevelEnum.Trace,
-      message: [object.name, 'waits.']
+      message: $localize`:@@game.reaction.action.wait:${object.name}:name: waits.`
     },
     reachedObjects: [object.tile, ...object.tile.objects.filter(o => o !== object)],
     actor: object

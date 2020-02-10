@@ -15,7 +15,7 @@ export function moveAction(scene: Scene, object: Actor, x: number, y: number, ex
     reachedObjects: [tile, ...tile.objects.filter(o => o !== object)],
     result: {
       level: ReactionMessageLevelEnum.Trace,
-      message: [object.name, 'moves.']
+      message: $localize`:@@game.reaction.action.move:${object.name}:name: moves.`
     },
     actor: object
   } as ActorActionResult;
@@ -33,7 +33,7 @@ export function moveValidation(scene: Scene, actor: Actor, x: number, y: number,
   if (!tile.passable || tile.objects.filter(o => !o.passable).length > 0) {
     return {
       success: false,
-      reason: [actor.name, 'faces obstacle.']
+      reason: $localize`:@@game.reaction.validation.move:${actor.name}:name: faces obstacle.`
     };
   }
   return {
@@ -45,7 +45,7 @@ export function registerMoveAction(): ActorAction {
   return {
     character: 'M',
     name: 'move',
-    reaction: 'moveR',
+    reaction: 'move',
     animation: 'move',
     validator: moveValidation,
     action: moveAction

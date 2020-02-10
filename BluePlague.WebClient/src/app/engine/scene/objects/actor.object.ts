@@ -283,7 +283,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         const reachedObjects = [this.tile, ...this.tile.objects];
         this.parent.finishAction(                    {
             level: ReactionMessageLevelEnum.Information,
-            message: [this.name, 'is dead.']
+            message: $localize`:@@game.reaction.action.die:${this.name}:name: is dead.`
         } as ReactionResult, 'die', this.x, this.y, reachedObjects, undefined, undefined, this);
         this.reactOnOutgoingAction('die', 0);
         for (const object of reachedObjects) {

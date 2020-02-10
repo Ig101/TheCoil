@@ -4,5 +4,5 @@ export interface LogItem {
   expiring: boolean;
   opacity: number;
   color: string;
-  message: string[];
+  message: string;
 }

@@ -11,7 +11,7 @@ function explodeOnDeathDieOutgoing(scene: Scene, object: Actor, weight?: number,
     { animation: string, reaction: string, result: ReactionResult, reachedObjects: IReactiveObject[], range?: number, strength?: number }  {
   const reaction = {
     level: ReactionMessageLevelEnum.Attention,
-    message: [object.name, 'explodes.']
+    message: $localize`:@@game.reaction.explode:${object.name}:name: explodes.`
   };
   const range = weight ? weight : 3;
   const reachedObjects = [];

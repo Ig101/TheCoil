@@ -319,6 +319,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         info = {
           color: '#ff0'
         };
+        break;
+      case ReactionMessageLevelEnum.Trace:
+        info = {
+          color: '#999'
+        };
+        break;
     }
     if (info) {
       this.log.push({

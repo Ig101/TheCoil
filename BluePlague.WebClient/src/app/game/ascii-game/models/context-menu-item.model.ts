@@ -7,7 +7,7 @@ export interface ContextMenuItem {
   left: number;
   top: number;
   notAvailable: boolean;
-  notAvailableReason?: string[];
-  warning?: string[];
+  notAvailableReason?: string;
+  warning?: string;
   leftTooltip: boolean;
 }

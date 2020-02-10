@@ -20,7 +20,8 @@ export function attackAction(scene: Scene, object: Actor, x: number, y: number, 
     strength: 10,
     result: {
       level: ReactionMessageLevelEnum.Trace,
-      message: [object.name, 'attacks', livingTarget ? livingTarget.name : 'position.']
+      message: $localize`:@@game.reaction.action.defaultAttack:${object.name}:name:
+        attacks ${livingTarget ? livingTarget.name : $localize`:@@game.reaction.action.defaultAttack.area:area`}:target:.`
     },
     actor: object
   } as ActorActionResult;

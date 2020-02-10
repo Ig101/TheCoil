@@ -2,5 +2,5 @@ import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-le
 
 export interface ReactionResult {
   level: ReactionMessageLevelEnum;
-  message?: string[];
+  message?: string;
 }

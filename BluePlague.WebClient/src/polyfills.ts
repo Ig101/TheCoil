@@ -61,3 +61,27 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+import '@angular/localize/init';
+import { loadTranslations } from '@angular/localize';
+
+/*loadTranslations({
+  // Actions
+  'game.reaction.action.die': '{$name} умер.',
+  'game.reaction.action.defaultAttack': '{$name} атакует {$target}.',
+  'game.reaction.action.defaultAttack.area': 'область',
+  'game.reaction.action.move': '{$name} перемещается.',
+  'game.reaction.action.wait': '{$name} ждёт.',
+  'game.reaction.basic.receiveDamage.physical': '{$name} получает {$strength} единиц физического урона.',
+  'game.reaction.basic.receiveDamage.fire': '{$name} получает {$strength} единиц огненного урона.',
+  // ActionValidations
+  'game.reaction.validation.move': '{$name} встречает препятствие.',
+  // Reactions
+  'game.reaction.alert': '{$name} издает звуки тревоги.',
+  'game.reaction.explode': '{$name} взрывается.',
+  // Tiles
+  'game.tile.stoneFloor': 'Каменный пол',
+  'game.tile.stoneWall': 'Каменная стена',
+  // Actors
+  'game.actor.dummy': 'Манекен'
+});*/
+

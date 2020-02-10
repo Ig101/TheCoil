@@ -2,7 +2,7 @@ import { ActionValidationExtraValue } from './action-validation-extra-value.mode
 
 export interface ActionValidationResult {
   success: boolean;
-  warning?: string[];
-  reason?: string[];
+  warning?: string;
+  reason?: string;
   extraValues?: ActionValidationExtraValue[];
 }
