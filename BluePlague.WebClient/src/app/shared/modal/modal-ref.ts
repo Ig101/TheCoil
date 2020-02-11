@@ -23,10 +23,10 @@ export class ModalRef<Tmodel, Tresult> {
     this.componentRef.destroy();
     this.componentRef.destroy();
     this.modalRef.destroy();
-    const dialogs = document.body.querySelectorAll('app-modal-shell');
-    if (dialogs.length > 1) {
-      (dialogs.item(dialogs.length - 1) as HTMLElement).style.overflowY = null;
-      (dialogs.item(dialogs.length - 1) as HTMLElement).style.overflowX = null;
+    const modals = document.body.querySelectorAll('app-modal-shell');
+    if (modals.length > 1) {
+      (modals.item(modals.length - 1) as HTMLElement).style.overflowY = null;
+      (modals.item(modals.length - 1) as HTMLElement).style.overflowX = null;
     } else {
       (document.body as HTMLElement).style.overflowY = null;
       (document.body as HTMLElement).style.overflowX = null;
