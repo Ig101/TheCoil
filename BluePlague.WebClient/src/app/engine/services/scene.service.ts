@@ -26,6 +26,10 @@ export class SceneService {
     private nativeService: NativeService
   ) { }
 
+  isPlayerAlive() {
+    return this.scene.playerAlive;
+  }
+
   subscribe(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {
     if (unsubscription) {
       this.unsubscribeSubject.subscribe(unsubscription);

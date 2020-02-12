@@ -10,6 +10,7 @@ import { renderFlagCheckIfStmt } from '@angular/compiler/src/render3/view/templa
 import { RoomTypeEnum } from '../models/enums/room-type.enum';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { ActorSavedData } from '../models/scene/objects/actor-saved-data.model';
+import { GameStateEnum } from '../models/enums/game-state.enum';
 
 @Injectable()
 export class SynchronizationService {
@@ -43,7 +44,8 @@ export class SynchronizationService {
           dungeon: 'demo',
           depth: 0,
           roomType: RoomTypeEnum.Demo,
-          name: 'Demo'
+          name: 'Demo',
+          gameState: GameStateEnum.Pending
         } as MetaInformation,
         scene: {
           turn: 0,

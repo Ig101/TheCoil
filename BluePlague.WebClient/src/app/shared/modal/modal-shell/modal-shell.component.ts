@@ -8,18 +8,10 @@ import { ModalRef } from '../modal-ref';
 })
 export class ModalShellComponent implements OnInit {
 
-  closeOnOverlayClick = true;
   ref: ModalRef<unknown, unknown>;
 
   constructor() { }
 
   ngOnInit() {
   }
-
-  closeDialogOnOverlay(event: any) {
-    if (this.closeOnOverlayClick && event.target === event.currentTarget) {
-      this.ref.close(undefined);
-    }
-  }
-
 }

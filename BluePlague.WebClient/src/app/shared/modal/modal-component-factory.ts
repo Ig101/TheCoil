@@ -12,8 +12,7 @@ export class ModalComponentFactory {
     private readonly injector: Injector,
     ) { }
 
-  create<Tmodel, Tresult>(component: Type<ModalComponent<Tmodel, Tresult>>,
-                          closeOnOverlayClick: boolean):
+  create<Tmodel, Tresult>(component: Type<ModalComponent<Tmodel, Tresult>>):
                           ModalRef<Tmodel, Tresult> {
     (document.body as HTMLElement).style.overflowY = 'hidden';
     (document.body as HTMLElement).style.overflowX = 'hidden';
@@ -39,7 +38,6 @@ export class ModalComponentFactory {
     const result = new ModalRef<Tmodel, Tresult>(modalRef, componentRef, this.appRef);
     componentRef.instance.ref = result;
     modalRef.instance.ref = result;
-    modalRef.instance.closeOnOverlayClick = closeOnOverlayClick;
     return result;
   }
 }

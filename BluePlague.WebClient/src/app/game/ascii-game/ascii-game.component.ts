@@ -19,7 +19,7 @@ import { GameSettingsService } from '../services/game-settings.service';
 import { ReactionMessageLevelEnum } from 'src/app/engine/models/enums/reaction-message-level.enum';
 import { AsciiAnimationsRegistryService } from '../services/ascii-animations-registry.service';
 import { LogItem } from './models/log-item.model';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { AnimationTileReplacement } from './models/animation-tile-replacement.model';
 
 @Component({
@@ -31,6 +31,8 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   @ViewChild('gameCanvas', { static: true }) gameCanvas: ElementRef<HTMLCanvasElement>;
   private canvasContext: CanvasRenderingContext2D;
+
+  private metaSubscription: Subscription;
 
   contextMenu: ContextMenuContext;
   contextX: number;
@@ -134,6 +136,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
+    this.metaSubscription = this.engineFacadeService.subscribeOnMetaInformationChange(value => {
+      console.log(value);
+    });
     this.tileWidth = this.tileHeight * 0.6;
     this.setupAspectRatio(this.gameCanvas.nativeElement.offsetWidth, this.gameCanvas.nativeElement.offsetHeight);
     this.canvasContext = this.gameCanvas.nativeElement.getContext('2d');
@@ -151,6 +156,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.drawingTimer);
+    this.metaSubscription.unsubscribe();
   }
 
   onResize(event) {

@@ -1,4 +1,5 @@
 import { RoomTypeEnum } from './enums/room-type.enum';
+import { GameStateEnum } from './enums/game-state.enum';
 
 export interface MetaInformation {
     // Codes enemies of room
@@ -10,4 +11,6 @@ export interface MetaInformation {
     // Codes extra info of room
     name: string;
     seed?: number; // If null, room is creating without random
+    // State
+    gameState: GameStateEnum;
 }

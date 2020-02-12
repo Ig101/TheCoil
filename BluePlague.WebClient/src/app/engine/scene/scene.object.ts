@@ -52,6 +52,10 @@ export class Scene {
         return this.player.id;
     }
 
+    get playerAlive() {
+        return !this.player.dead;
+    }
+
     get moveSpeedModifier() {
         return this.scale;
     }
@@ -59,6 +63,7 @@ export class Scene {
     get snapshot(): SceneSnapshot {
         return {
             global: this.global,
+            playerIsDead: this.player.dead,
             player: this.player.snapshot,
             turn: this.turn,
             width: this.width,
@@ -70,6 +75,7 @@ export class Scene {
     get savedData(): SceneSavedData {
         return {
             turn: this.turn,
+            playerIsDead: this.player.dead,
             idIncrementor: this.idIncrementor,
             changedActors: this.changedActors.map(x => x.savedData),
             deletedActors: this.deletedActors,

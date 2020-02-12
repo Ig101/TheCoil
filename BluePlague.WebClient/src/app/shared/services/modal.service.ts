@@ -12,16 +12,14 @@ export class ModalService {
   ) { }
 
   openModal<Tmodel, Tresult>(component: Type<ModalComponent<Tmodel, Tresult>>,
-                             model: Tmodel,
-                             closeOnOverlayClick: boolean = true): Observable<Tresult> {
-    const result = this.componentFactory.create(component, closeOnOverlayClick);
+                             model: Tmodel): Observable<Tresult> {
+    const result = this.componentFactory.create(component);
     result.model = model;
     return result.onCloseEvent();
   }
 
-  openModalNoModel<Tresult>(component: Type<ModalComponent<void, Tresult>>,
-                            closeOnOverlayClick: boolean = true): Observable<Tresult> {
-    const result = this.componentFactory.create(component, closeOnOverlayClick);
+  openModalNoModel<Tresult>(component: Type<ModalComponent<void, Tresult>>): Observable<Tresult> {
+    const result = this.componentFactory.create(component);
     return result.onCloseEvent();
   }
 }
