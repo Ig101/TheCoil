@@ -1,5 +1,5 @@
 export interface EnginePlayerAction {
-    name: string;
+    id: string;
     extraIdentifier?: number;
     x: number;
     y: number;

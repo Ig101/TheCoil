@@ -237,7 +237,7 @@ export class Scene {
         const dictionary: ActionValidationResultFull[] = [];
         for (const action of this.player.actions) {
             dictionary.push(this.parsePlayerAction({
-                name: action.name,
+                id: action.id,
                 x,
                 y
             }, false));
@@ -298,7 +298,7 @@ export class Scene {
             if (actor !== this.player) {
                 while (actor.remainedTurnTime <= 0) {
                     actor.act({
-                        name: 'wait',
+                        id: 'wait',
                         x: actor.x,
                         y: actor.y
                     } as EnginePlayerAction);

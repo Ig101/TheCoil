@@ -49,7 +49,8 @@ export function defaultAttackValidation(scene: Scene, actor: Actor, x: number, y
 export function registerDefaultAttackAction(): ActorAction {
   return {
     character: 'A',
-    name: 'defaultAttack',
+    name: $localize`:@@game.action.defaultAttack:attack`,
+    id: 'defaultAttack',
     reaction: 'physical',
     animation: 'attack',
     validator: defaultAttackValidation,

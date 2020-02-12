@@ -69,7 +69,8 @@ function actorSmartAction(scene: Scene, object: Actor, x: number, y: number): Ac
 export function registerSmartAction(): ActorAction {
   return {
     character: '@',
-    name: 'smart',
+    name: '',
+    id: 'smart',
     reaction: 'smart',
     animation: 'smart',
     validator: () => {

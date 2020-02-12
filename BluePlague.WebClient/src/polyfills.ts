@@ -65,6 +65,13 @@ import '@angular/localize/init';
 import { loadTranslations } from '@angular/localize';
 
 /*loadTranslations({
+  // ActionNames
+  'game.action.no': 'ничего',
+  'game.action.next': 'далее',
+  'game.action.previous': 'назад',
+  'game.action.defaultAttack': 'атака',
+  'game.action.move': 'двигаться',
+  'game.action.wait': 'ждать',
   // Actions
   'game.reaction.action.die': '{$name} умер.',
   'game.reaction.action.defaultAttack': '{$name} атакует {$target}.',

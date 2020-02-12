@@ -4,6 +4,6 @@
   (window:mouseup)="onMouseUp($event)" (window:mousemove)="onMouseMove($event)">
   Not working in your browser
 </canvas>
-<app-graphical-interface [logSubject]="logSubject"></app-graphical-interface>
+<app-graphical-interface [logSubject]="logSubject" (guiMouseLeaveEvent)="onMouseLeave()"></app-graphical-interface>
 <app-context-menu *ngIf="contextMenu" [textHeight]="tileHeight" [top]="contextY" [left]="contextX" [context]="contextMenu"
   (doAction)="doAction($event)"></app-context-menu>

@@ -21,6 +21,7 @@ import { AsciiAnimationsRegistryService } from '../services/ascii-animations-reg
 import { LogItem } from './models/log-item.model';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { AnimationTileReplacement } from './models/animation-tile-replacement.model';
+import { timestamp } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ascii-game',
@@ -242,6 +243,13 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
           };
         }
       }
+    }
+  }
+
+  onMouseLeave() {
+    for (const state of Object.values(this.mouseState.buttonsInfo)) {
+      state.pressed = false;
+      state.timeStamp = 0;
     }
   }
 

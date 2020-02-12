@@ -168,7 +168,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResultFull {
-        const chosenAction = this.actions.find(x => x.name === action.name);
+        const chosenAction = this.actions.find(x => x.id === action.id);
         if (!chosenAction) {
             return {
                 success: false,
@@ -177,10 +177,11 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         let validationResult: ActionValidationResultFull;
         const fullAction = {
-            name: action.name,
+            id: action.id,
             extraIdentifier: action.extraIdentifier,
             x: action.x,
             y: action.y,
+            name: chosenAction.name,
             character: chosenAction.character,
             reaction: chosenAction.reaction,
             animation: chosenAction.animation
@@ -197,7 +198,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         const tags = this.calculatedTags;
         for (const tag of tags) {
-            const chosenReaction = tag.outgoingReactions[action.name];
+            const chosenReaction = tag.outgoingReactions[action.id];
             if (chosenReaction && chosenReaction.validator) {
                 const result = chosenReaction.validator(this.parent, this, action.x, action.y);
                 if (result) {
@@ -239,7 +240,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     private doAction(action: EnginePlayerAction): ActorActionResult {
-        const chosenAction = this.calculatedActions.find(x => x.name === action.name);
+        const chosenAction = this.calculatedActions.find(x => x.id === action.id);
         if (!chosenAction) {
             return undefined;
         }
@@ -251,7 +252,7 @@ export class Actor implements IActiveObject, IReactiveObject {
             result.reaction = chosenAction.reaction;
         }
         if (!result.name) {
-            result.name = chosenAction.name;
+            result.name = chosenAction.id;
         }
         this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects, result.range,
             action.extraIdentifier, result.actor);

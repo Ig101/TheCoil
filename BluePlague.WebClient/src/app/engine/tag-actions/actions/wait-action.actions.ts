@@ -33,7 +33,8 @@ export function waitAction(scene: Scene, object: Actor, x: number, y: number, ex
 export function registerWaitAction(): ActorAction {
   return {
     character: 'W',
-    name: 'wait',
+    id: 'wait',
+    name: $localize`:@@game.action.wait:wait`,
     reaction: 'wait',
     animation: 'wait',
     action: waitAction,

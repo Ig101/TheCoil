@@ -44,7 +44,8 @@ export function moveValidation(scene: Scene, actor: Actor, x: number, y: number,
 export function registerMoveAction(): ActorAction {
   return {
     character: 'M',
-    name: 'move',
+    name: $localize`:@@game.action.move:move`,
+    id: 'move',
     reaction: 'move',
     animation: 'move',
     validator: moveValidation,

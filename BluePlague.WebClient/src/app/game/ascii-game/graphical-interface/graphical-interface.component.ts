@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { LogItem } from '../models/log-item.model';
 import { Observable } from 'rxjs';
 
@@ -20,12 +20,17 @@ export class GraphicalInterfaceComponent implements OnInit {
 
   maxLogItems = 10;
 
+  @Output() guiMouseLeaveEvent = new EventEmitter<any>();
+
   constructor(private changeDetector: ChangeDetectorRef) { }
+
+  stop(event: MouseEvent) {
+    event.preventDefault();
+  }
 
   getItemOpacity(item: LogItem) {
     return Math.max(0, item.opacity);
   }
-
   ngOnInit() {
     this.logSubject.subscribe((value) => {
       this.log = value.slice(Math.max(0, value.length - this.maxLogItems));

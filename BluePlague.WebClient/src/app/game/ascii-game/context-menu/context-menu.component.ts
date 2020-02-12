@@ -52,7 +52,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                 systemType: ContextMenuSystemTypesEnum.Previous,
                 action: {
                   character: '<',
-                  name: 'previous page'
+                  name: $localize`:@@game.action.previous:previous page`
                 },
                 left: previousShift.left,
                 top: previousShift.top,
@@ -67,7 +67,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
                 systemType: ContextMenuSystemTypesEnum.Next,
                 action: {
                   character: '>',
-                  name: 'next page'
+                  name: $localize`:@@game.action.next:next page`
                 },
                 left: moveItem.left,
                 top: moveItem.top,
@@ -106,7 +106,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy {
           systemType: ContextMenuSystemTypesEnum.Nothing,
           action: {
             character: 'X',
-            name: 'no actions'
+            name: $localize`:@@game.action.no:nothing`
           },
           left: shift.left,
           top: shift.top,

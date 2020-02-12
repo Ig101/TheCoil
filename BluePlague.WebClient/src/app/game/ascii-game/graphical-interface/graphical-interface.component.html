@@ -1,4 +1,4 @@
-<div class="overlay hud-container">
+<div class="overlay hud-container" (mouseleave)="guiMouseLeaveEvent.next()" (mousedown)="stop($event)" (mouseup)="stop($event)">
   <div class="part">
     <div class="filler"></div>
     <div class="log font" *ngFor="let item of log" [style.opacity]="getItemOpacity(item)" [style.color]="item.color">{{item.message}}</div>
