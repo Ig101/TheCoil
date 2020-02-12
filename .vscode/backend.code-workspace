@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "D:\\source\\BluePlague\\BluePlague.Api"
+		},
+		{
+			"path": "D:\\source\\BluePlague\\BluePlague.Domain"
+		},
+		{
+			"path": "D:\\source\\BluePlague\\BluePlague.Mediation"
+		}
+	],
+	"settings": {}
+}

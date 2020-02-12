@@ -332,11 +332,6 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
           color: '#ff0'
         };
         break;
-      case ReactionMessageLevelEnum.Trace:
-        info = {
-          color: '#999'
-        };
-        break;
     }
     if (info) {
       this.log.push({
@@ -380,7 +375,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         this.gameStateService.scene.player = actor;
         const newX = this.gameStateService.playerX;
         const newY = this.gameStateService.playerY;
-        if (Math.abs(newX - oldX) < 2 && Math.abs(newY - oldY) < 2) {
+        if (Math.abs(oldX - this.gameStateService.cameraX) <= 3 && Math.abs(oldY - this.gameStateService.cameraY) <= 3) {
           this.cameraMouseShift(newX - oldX, newY - oldY);
         }
       }
