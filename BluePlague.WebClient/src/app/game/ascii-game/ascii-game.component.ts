@@ -137,7 +137,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.metaSubscription = this.engineFacadeService.subscribeOnMetaInformationChange(value => {
-      console.log(value);
+      // TODO translate meta change for endturn
     });
     this.tileWidth = this.tileHeight * 0.6;
     this.setupAspectRatio(this.gameCanvas.nativeElement.offsetWidth, this.gameCanvas.nativeElement.offsetHeight);
@@ -311,6 +311,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     }
   }
 
+  private endAction() {
+    this.blocked = false;
+    this.animationsLoaded = false;
+    // TODO process status change
+  }
+
   private drawAnimationMessage(message: ReactionResult) {
     let info: {
       color: string;
@@ -369,7 +375,14 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         snapshotTile.objects.push(actor);
       }
       if (actor.id === this.gameStateService.scene.player.id) {
+        const oldX = this.gameStateService.playerX;
+        const oldY = this.gameStateService.playerY;
         this.gameStateService.scene.player = actor;
+        const newX = this.gameStateService.playerX;
+        const newY = this.gameStateService.playerY;
+        if (Math.abs(newX - oldX) < 2 && Math.abs(newY - oldY) < 2) {
+          this.cameraMouseShift(newX - oldX, newY - oldY);
+        }
       }
     }
     this.changed = true;
@@ -396,8 +409,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       }
     }
     if (this.animationsQueue.length === 0 && this.animationsLoaded && this.blocked) {
-      this.blocked = false;
-      this.animationsLoaded = false;
+      this.endAction();
     }
   }
 
