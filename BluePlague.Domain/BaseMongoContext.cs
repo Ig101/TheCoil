@@ -20,7 +20,7 @@ namespace BluePlague.Domain {
             }
             return result;
         }
-        public async Task Save(CancellationToken token = default) {
+        public async Task ApplyChanges(CancellationToken token = default) {
             using(var session = _connection.StartSession()) {
                 session.StartTransaction();
                 try {
