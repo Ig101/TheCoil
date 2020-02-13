@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BluePlague.Domain.Operations;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace BluePlague.Domain
 {

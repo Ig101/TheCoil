@@ -13,10 +13,6 @@ namespace BluePlague.Domain {
             _connection = connection;
             _operations = new LinkedList<IOperation>();
         }
-        public IRepository<T> InitializeRepository<T>(IMongoDatabase database) {
-            var result = new Repository<T>(_connection, database, _operations);
-            return result;
-        }
         public abstract Task ConfigureContext();
         public async Task ApplyChanges(CancellationToken token = default) {
             using(var session = _connection.StartSession()) {
@@ -35,5 +31,12 @@ namespace BluePlague.Domain {
                 }
             }
         }
+        protected IRepository<T> InitializeRepository<T>(IMongoDatabase database) {
+            var result = new Repository<T>(_connection, database, _operations);
+            return result;
+        }
+        protected async Task ApplyConfiguration<T>(IMongoDatabase database, IEntityConfiguration<T> configuration) {
+            await configuration.Configure(database.GetCollection<T>(nameof(T)));
+        } 
     }
 }
