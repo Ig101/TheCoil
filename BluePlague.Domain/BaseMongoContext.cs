@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BluePlague.Domain.Operations;
 using MongoDB.Driver;
+using System;
 
 namespace BluePlague.Domain {
     public class BaseMongoContext {
@@ -12,14 +13,18 @@ namespace BluePlague.Domain {
             _connection = connection;
             _operations = new LinkedList<IOperation>();
         }
-        public IRepository<T> InitializeRepository<T>(IMongoDatabase database) {
-            return new Repository<T>(_connection, database, _operations);
+        public async Task<IRepository<T>> InitializeRepository<T>(IMongoDatabase database, IEntityConfiguration<T> config) {
+            var result = new Repository<T>(_connection, database, _operations);
+            if (config != null) {
+                await result.Configure(config);
+            }
+            return result;
         }
         public async Task Save(CancellationToken token = default) {
             using(var session = _connection.StartSession()) {
                 session.StartTransaction();
                 try {
-                    LinkedListNode<IOperation> item = _operations.First;
+                    var item = _operations.First;
                     while(item != null) {
                         await item.Value.Process(session, token);
                         item = item.Next;

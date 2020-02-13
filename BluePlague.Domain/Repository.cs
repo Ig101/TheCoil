@@ -18,6 +18,9 @@ namespace BluePlague.Domain
             _operations = operationsCollection;
             _connection = connection;
         }
+        public async Task Configure(IEntityConfiguration<T> config) {
+            await config.Configure(_collection);
+        }
         public async Task<T> GetOne(Expression<Func<T, bool>> filter, CancellationToken token = default) {
             return await _collection.Find(filter).FirstOrDefaultAsync(token);
         }

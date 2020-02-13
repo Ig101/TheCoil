@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using BluePlague.Domain;
+using BluePlague.Domain.Game;
 
 namespace BluePlague.Api
 {
@@ -35,6 +37,11 @@ namespace BluePlague.Api
                         new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
+            services.Configure<MongoConnectionSettings>(
+                Configuration.GetSection("MongoConnection"));
+            services.Configure<MongoContextSettings<GameContext>>(
+                Configuration.GetSection("MongoConnection:Game"));
+            services.RegisterDomainLayer();
         }
 
         bool IsFrontendRoute(HttpContext context) {
