@@ -6,9 +6,6 @@
 #AppSettings
 appsettings.Development.json
 
-# Migrations
-[Mm]igrations/
-
 # User-specific files
 *.suo
 *.user

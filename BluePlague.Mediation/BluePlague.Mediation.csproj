@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\BluePlague.Domain\BluePlague.Domain.csproj"/>
+    <ProjectReference Include="..\BluePlague.Infrastructure\BluePlague.Infrastructure.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="8.0.0"/>
