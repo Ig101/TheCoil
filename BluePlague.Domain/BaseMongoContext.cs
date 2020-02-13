@@ -6,20 +6,18 @@ using MongoDB.Driver;
 using System;
 
 namespace BluePlague.Domain {
-    public class BaseMongoContext {
+    public abstract class BaseMongoContext {
         private readonly MongoConnection _connection;
         private LinkedList<IOperation> _operations;
         public BaseMongoContext(MongoConnection connection) {
             _connection = connection;
             _operations = new LinkedList<IOperation>();
         }
-        public async Task<IRepository<T>> InitializeRepository<T>(IMongoDatabase database, IEntityConfiguration<T> config) {
+        public IRepository<T> InitializeRepository<T>(IMongoDatabase database) {
             var result = new Repository<T>(_connection, database, _operations);
-            if (config != null) {
-                await result.Configure(config);
-            }
             return result;
         }
+        public abstract Task ConfigureContext();
         public async Task ApplyChanges(CancellationToken token = default) {
             using(var session = _connection.StartSession()) {
                 session.StartTransaction();
