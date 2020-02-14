@@ -11,7 +11,7 @@ using MongoDB.Driver;
 namespace BluePlague.Domain {
     public class MongoConnection {
         private readonly IMongoClient _client;
-        private readonly IDictionary<Type, object> _collections = new Dictionary<Type, object>();
+        private readonly IDictionary<string, object> _collections = new Dictionary<string, object>();
         public MongoConnection (IOptions<MongoConnectionSettings> connection, IServiceProvider provider, IOptions<MongoContextSettings<GameContext>> p) {
             _client = new MongoClient(connection.Value.ServerName);
             var types = Assembly
@@ -41,8 +41,8 @@ namespace BluePlague.Domain {
                 var database = _client.GetDatabase(config.DatabaseName);
                 foreach(var entity in entities) {
                     var method = database.GetType().GetMethod("GetCollection").MakeGenericMethod(entity);
-                    var collection = method.Invoke(database, new object[]{ nameof(entity), null });
-                    _collections.Add(entity, collection);
+                    var collection = method.Invoke(database, new object[]{ entity.Name, null });
+                    _collections.Add(entity.FullName, collection);
                     var entityConfigs = configTypes.Where(x => x.EntityType == entity).Select(x => x.Type).ToList();
                     foreach(var entityConfig in entityConfigs) {
                         var instance = Activator.CreateInstance(entityConfig);
@@ -76,7 +76,7 @@ namespace BluePlague.Domain {
         }
 
         public IMongoCollection<T> GetCollection<T>() {
-            return (IMongoCollection<T>)_collections[typeof(T)];
+            return (IMongoCollection<T>)_collections[typeof(T).FullName];
         }
 
         public IClientSessionHandle StartSession() {
