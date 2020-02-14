@@ -1,7 +1,5 @@
-namespace BluePlague.Domain
-{
-    public interface IMongoContextSettings
-    {
+namespace BluePlague.Domain {
+    public interface IMongoContextSettings {
         string DatabaseName { get; }
     }
 }

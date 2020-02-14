@@ -7,10 +7,8 @@ using BluePlague.Domain.Operations;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-namespace BluePlague.Domain
-{
-    class Repository<T>: IRepository<T>
-    {
+namespace BluePlague.Domain {
+    class Repository<T>: IRepository<T> {
         private readonly IMongoCollection<T> _collection;
         private readonly LinkedList<IOperation> _operations;
         public Repository(MongoConnection connection, LinkedList<IOperation> operationsCollection) {

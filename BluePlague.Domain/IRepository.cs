@@ -5,10 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
-namespace BluePlague.Domain
-{
-    public interface IRepository<T>
-    {
+namespace BluePlague.Domain {
+    public interface IRepository<T> {
         Task<T> GetOne(Expression<Func<T, bool>> filter, CancellationToken token = default);
         Task<IEnumerable<T>> Get(Expression<Func<T, bool>> filter, CancellationToken token = default);
         Task InsertOneAtomically(T document, CancellationToken token = default);

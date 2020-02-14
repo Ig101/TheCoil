@@ -15,24 +15,19 @@ using Newtonsoft.Json;
 using BluePlague.Domain;
 using BluePlague.Domain.Game;
 
-namespace BluePlague.Api
-{
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
+namespace BluePlague.Api {
+    public class Startup {
+        public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) {
             services
                 .AddControllers()
-                .AddNewtonsoftJson(options =>
-                {
+                .AddNewtonsoftJson(options => {
                     options.SerializerSettings.ContractResolver =
                         new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -51,13 +46,11 @@ namespace BluePlague.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                var action = new Action<IApplicationBuilder>(builder => builder.RunProxy(new ProxyOptions
-                {
+                var action = new Action<IApplicationBuilder>(builder => builder.RunProxy(new ProxyOptions {
                     Scheme = "http",
                     Host = "localhost",
                     Port = "4200"
@@ -68,8 +61,7 @@ namespace BluePlague.Api
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
         }
