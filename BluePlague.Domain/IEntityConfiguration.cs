@@ -3,8 +3,8 @@ using MongoDB.Driver;
 
 namespace BluePlague.Domain
 {
-    public interface IEntityConfiguration<T>
+    public interface IEntityConfiguration<Ttype>
     {
-        Task Configure(IMongoCollection<T> collection);
+        Task Configure(IMongoCollection<Ttype> collection);
     }
 }

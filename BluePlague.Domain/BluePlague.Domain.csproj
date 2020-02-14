@@ -6,10 +6,10 @@
     <ProjectReference Include="..\BluePlague.Infrastructure\BluePlague.Infrastructure.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.10.1"/>
     <PackageReference Include="Microsoft.AspNetCore.Identity.MongoDB" Version="1.0.2"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1"/>
-    <PackageReference Include="MongoDB.Bson" Version="2.10.1"/>
+    <PackageReference Include="MongoDB.Bson" Version="2.10.2"/>
     <PackageReference Include="Mongo.Migration" Version="3.0.73"/>
+    <PackageReference Include="MongoDB.Driver" Version="2.10.2"/>
   </ItemGroup>
 </Project>
