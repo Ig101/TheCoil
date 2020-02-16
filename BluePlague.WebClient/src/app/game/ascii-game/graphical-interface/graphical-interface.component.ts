@@ -28,6 +28,10 @@ export class GraphicalInterfaceComponent implements OnInit {
     event.preventDefault();
   }
 
+  stopPropagation(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
   getItemOpacity(item: LogItem) {
     return Math.max(0, item.opacity);
   }

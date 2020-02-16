@@ -281,7 +281,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     event.preventDefault();
   }
 
-  cameraMouseShift(xShift: number, yShift: number) {
+  cameraShift(xShift: number, yShift: number) {
+    this.mouseState.x += xShift;
+    this.mouseState.y += yShift;
     this.cameraX += xShift;
     this.cameraY += yShift;
     this.changed = true;
@@ -383,7 +385,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         const newX = this.gameStateService.playerX;
         const newY = this.gameStateService.playerY;
         if (Math.abs(oldX - this.gameStateService.cameraX) <= 3 && Math.abs(oldY - this.gameStateService.cameraY) <= 3) {
-          this.cameraMouseShift(newX - oldX, newY - oldY);
+          this.cameraShift(newX - oldX, newY - oldY);
         }
       }
     }

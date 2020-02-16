@@ -5,6 +5,14 @@
   .hud-container {
     display: flex;
     flex-direction: row;
+    .top-info {
+      background-color: black;
+      height: 50px;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+    }
     .part {
       padding: 6px;
       display: flex;

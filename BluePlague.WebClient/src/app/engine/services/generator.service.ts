@@ -45,9 +45,9 @@ export class GeneratorService {
       y: 0,
       native: this.nativeService.getTile('stoneWall')
     } as TileInitialization);
-    for (let x = 40; x < 60; x++) {
-      for (let y = 20; y < 30; y++) {
-        if (x === 40 || x === 59 || y === 20 || y === 29) {
+    for (let x = 20; x < 80; x++) {
+      for (let y = 10; y < 40; y++) {
+        if (x === 20 || x === 79 || y === 10 || y === 39) {
           ini.tiles.push({
             x,
             y,
