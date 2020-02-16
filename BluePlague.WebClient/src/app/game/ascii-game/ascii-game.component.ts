@@ -89,7 +89,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraX(value: number) {
-    const leftSide = this.defaultWidth / this.tileWidth / 2 - 3;
+    /*const leftSide = this.defaultWidth / this.tileWidth / 2 - 3;
     if (value < leftSide) {
       this.gameStateService.cameraX = leftSide;
       return;
@@ -98,7 +98,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     if (value > rightSide) {
       this.gameStateService.cameraX = rightSide;
       return;
-    }
+    }*/
     this.gameStateService.cameraX = value;
   }
 
@@ -107,7 +107,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   set cameraY(value: number) {
-    const topSide = this.defaultHeight / this.tileHeight / 2 - 7;
+    /*const topSide = this.defaultHeight / this.tileHeight / 2 - 7;
     if (value < topSide) {
       this.gameStateService.cameraY = topSide;
       return;
@@ -116,7 +116,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     if (value > bottomSide) {
       this.gameStateService.cameraY = bottomSide;
       return;
-    }
+    }*/
     this.gameStateService.cameraY = value;
   }
 
@@ -256,13 +256,11 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   private recalculateMouseMove(x: number, y: number, timeStamp?: number) {
     const leftKey = this.mouseState.buttonsInfo[0];
     const rightKey = this.mouseState.buttonsInfo[2];
-    const cameraLeft = this.gameStateService.cameraX - this.canvasWidth / 2 / this.tileWidth + 0.5;
-    const cameraTop = this.gameStateService.cameraY - this.canvasHeight / 2 / this.tileHeight + 0.5;
-    const newX = x / this.zoom / this.tileWidth + cameraLeft;
-    const newY = y / this.zoom / this.tileHeight + cameraTop;
-    if (leftKey.pressed && timeStamp && timeStamp - leftKey.timeStamp > 100) {
-      this.cameraMouseShift(this.mouseState.x - newX, this.mouseState.y - newY);
-    } else if (!rightKey.pressed) {
+    if (!rightKey.pressed && !leftKey.pressed) {
+      const cameraLeft = this.gameStateService.cameraX - this.canvasWidth / 2 / this.tileWidth + 0.5;
+      const cameraTop = this.gameStateService.cameraY - this.canvasHeight / 2 / this.tileHeight + 0.5;
+      const newX = x / this.zoom / this.tileWidth + cameraLeft;
+      const newY = y / this.zoom / this.tileHeight + cameraTop;
       this.mouseState.x = newX;
       this.mouseState.y = newY;
       this.changed = true;
