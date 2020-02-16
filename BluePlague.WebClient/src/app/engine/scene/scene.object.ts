@@ -44,6 +44,7 @@ export class Scene {
     private tiles: Tile[][];
 
     private gatheringCorpsesStarted = false;
+    private playerAliveInternal = true;
 
     readonly width: number;
     readonly height: number;
@@ -53,7 +54,7 @@ export class Scene {
     }
 
     get playerAlive() {
-        return !this.player.dead;
+        return this.playerAliveInternal;
     }
 
     get moveSpeedModifier() {
@@ -186,6 +187,9 @@ export class Scene {
     }
 
     registerActorDeath(actor: Actor) {
+        if (actor === this.player) {
+            this.playerAliveInternal = false;
+        }
         if (!this.deletedActors.includes(actor.id)) {
             removeFromArray(this.changedActors, actor);
             this.deletedActors.push(actor.id);
@@ -235,7 +239,7 @@ export class Scene {
 
     parseAllPlayerActions(x: number, y: number): ActionValidationResultFull[] {
         const dictionary: ActionValidationResultFull[] = [];
-        for (const action of this.player.actions) {
+        for (const action of this.player.calculatedActions) {
             dictionary.push(this.parsePlayerAction({
                 id: action.id,
                 x,
@@ -259,8 +263,8 @@ export class Scene {
         this.pushUnsettledActors(unsettledActors);
     }
 
-    finishAction(reaction: ReactionResult, animation: string, x: number, y: number, reachedObjects: IReactiveObject[], range?: number,
-                 extraIdentifier?: number, actor?: Actor) {
+    finishAction(reaction: ReactionResult, animation: string, x: number, y: number, reachedObjects: IReactiveObject[], important: boolean,
+                 range?: number, extraIdentifier?: number, actor?: Actor) {
         this.responseSubject.next({
             actor: actor.snapshot,
             animation,
@@ -270,6 +274,7 @@ export class Scene {
             changes: this.getSessionChanges(),
             result: reaction,
             range,
+            important,
             reachedTiles: reachedObjects.filter(o => o instanceof Tile).map((o: Tile) => {
                 return { x: o.x, y: o.y };
             })

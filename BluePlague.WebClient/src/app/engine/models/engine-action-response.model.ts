@@ -13,4 +13,5 @@ export interface EngineActionResponse {
     result: ReactionResult;
     range?: number;
     reachedTiles: {x: number, y: number}[];
+    important: boolean;
 }

@@ -3,7 +3,6 @@ import { SceneSnapshot } from 'src/app/engine/models/scene/scene-snapshot.model'
 import { EngineFacadeService } from 'src/app/engine/services/engine-facade.service';
 import { GameStateService } from '../services/game-state.service';
 import { EngineActionResponse } from 'src/app/engine/models/engine-action-response.model';
-import { SpriteSnapshot } from 'src/app/engine/models/scene/abstract/sprite-snapshot.model';
 import { KeyboardKeyEnum } from 'src/app/shared/models/enum/keyboard-key.enum';
 import { EventManager } from '@angular/platform-browser';
 import { MouseState } from 'src/app/shared/models/mouse-state.model';
@@ -22,6 +21,7 @@ import { LogItem } from './models/log-item.model';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { AnimationTileReplacement } from './models/animation-tile-replacement.model';
 import { timestamp } from 'rxjs/operators';
+import { VisualizationSnapshot } from 'src/app/engine/models/scene/abstract/visualization-snapshot.model';
 
 @Component({
   selector: 'app-ascii-game',
@@ -55,8 +55,9 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   zoom = 0;
   defaultManyActorsSprite = {
     character: '+',
+    description: $localize`:@@game.manyActors:A plenty of things.`,
     color: {r: 255, g: 255, b: 0, a: 1}
-  } as SpriteSnapshot;
+  } as VisualizationSnapshot;
   pressedKey: KeyState;
   mouseState: MouseState = {
     buttonsInfo: {},

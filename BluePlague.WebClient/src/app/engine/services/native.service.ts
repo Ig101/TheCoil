@@ -23,7 +23,6 @@ export class NativeService {
 
   private actors: { [id: string]: ActorNative; };
   private tiles: { [id: string]: TileNative; };
-  private sprites: { [id: string]: SpriteNative; };
   // Internal
   private actions: { [tag: string]: ActorAction; };
   private actorTags: { [tag: string]: ActionTag<Actor>; };
@@ -54,29 +53,15 @@ export class NativeService {
 
   // temporary
   private loadNativesFromNetworkMock() {
-    this.sprites = {
-      player: {
-        character: '@',
-        color: {r: 255, g: 255, b: 55, a: 1}
-      },
-      dummy: {
-        character: '&',
-        color: {r: 255, g: 80, b: 0, a: 1}
-      },
-      stoneFloor: {
-        character: '.',
-        color: {r: 120, g: 120, b: 120, a: 1}
-      },
-      stoneWall: {
-        character: '#',
-        color: {r: 200, g: 200, b: 200, a: 1}
-      }
-    };
     this.actors = {
       player: {
         id: 'player',
         name: 'player',
-        sprite: this.sprites.player,
+        sprite: {
+          character: '@',
+          description: '-',
+          color: {r: 255, g: 255, b: 55, a: 1}
+        },
         speedModificator: 5,
         weight: 100,
         maxDurability: 100,
@@ -88,7 +73,11 @@ export class NativeService {
       dummy: {
         id: 'dummy',
         name: $localize`:@@game.actor.dummy:Dummy`,
-        sprite: this.sprites.dummy,
+        sprite: {
+          character: '&',
+          description: '-',
+          color: {r: 255, g: 80, b: 0, a: 1}
+        },
         speedModificator: 10,
         weight: 100,
         maxDurability: 100,
@@ -109,7 +98,11 @@ export class NativeService {
       stoneWall: {
         id: 'stoneWall',
         name: $localize`:@@game.tile.stoneWall:Stone wall`,
-        sprite: this.sprites.stoneWall,
+        sprite: {
+          character: '#',
+          description: '-',
+          color: {r: 200, g: 200, b: 200, a: 1}
+        },
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],
@@ -118,7 +111,11 @@ export class NativeService {
       stoneFloor: {
         id: 'stoneFloor',
         name: $localize`:@@game.tile.stoneFloor:Stone floor`,
-        sprite: this.sprites.stoneFloor,
+        sprite: {
+          character: '.',
+          description: '-',
+          color: {r: 120, g: 120, b: 120, a: 1}
+        },
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],

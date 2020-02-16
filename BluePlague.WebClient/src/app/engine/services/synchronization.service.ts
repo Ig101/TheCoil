@@ -11,6 +11,7 @@ import { RoomTypeEnum } from '../models/enums/room-type.enum';
 import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { ActorSavedData } from '../models/scene/objects/actor-saved-data.model';
 import { GameStateEnum } from '../models/enums/game-state.enum';
+import { EngineAction } from '../models/engine-action.model';
 
 @Injectable()
 export class SynchronizationService {
@@ -20,7 +21,7 @@ export class SynchronizationService {
   ) { }
 
   sendSynchronizationInfo(scene: SceneSavedData, meta: MetaInformation,
-                          actions: EnginePlayerAction[]): Observable<ExternalResponse<EngineSnapshot>> {
+                          actions: EngineAction[]): Observable<ExternalResponse<EngineSnapshot>> {
     console.groupCollapsed('sceneSynchronization');
     console.log(scene);
     console.log(meta);
@@ -30,7 +31,8 @@ export class SynchronizationService {
       success: true,
       result: {
         meta,
-        scene
+        scene,
+        needRefresh: false
       } as EngineSnapshot
     } as ExternalResponse<EngineSnapshot>);
   }
@@ -76,7 +78,8 @@ export class SynchronizationService {
           deletedActors: [],
           changedTiles: [],
           unsettledActors: []
-        } as SceneSavedData
+        } as SceneSavedData,
+        needRefresh: false
       } as EngineSnapshot
     } as ExternalResponse<EngineSnapshot>);
   }

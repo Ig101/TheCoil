@@ -19,7 +19,7 @@ function explodeOnDeathDieOutgoing(scene: Scene, object: Actor, weight?: number,
     for (let y = object.y - range; y <= object.y + range; y++) {
       if (rangeBetween(x, y, object.x, object.y) <= range) {
         const tile = scene.getTile(x, y);
-        if (tile.passable) {
+        if (tile.native.passable) {
           reachedObjects.push(tile);
           reachedObjects.push(...tile.objects);
         }

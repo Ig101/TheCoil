@@ -12,7 +12,7 @@ export function attackAction(scene: Scene, object: Actor, x: number, y: number, 
   if (tile.objects.length === 1) {
     livingTarget = tile.objects[0];
   } else {
-    livingTarget = tile.objects.find(a => !a.passable);
+    livingTarget = tile.objects.find(a => !a.native.passable);
   }
   return {
     time: timeShift,

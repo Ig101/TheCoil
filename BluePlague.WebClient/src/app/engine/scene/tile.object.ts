@@ -1,6 +1,5 @@
 import { Scene } from './scene.object';
 import { Tag } from './models/tag.model';
-import { Sprite } from './abstract/sprite.object';
 import { TileNative } from '../models/natives/tile-native.model';
 import { Actor } from './objects/actor.object';
 import { TileSnapshot } from '../models/scene/tile-snapshot.model';
@@ -9,6 +8,7 @@ import { IReactiveObject } from './interfaces/reactive-object.interface';
 import { ActionValidationResult } from './models/action-validation-result.model';
 import { ReactionResult } from './models/reaction-result.model';
 import { AnotherLevelLink } from './models/another-level-link.model';
+import { VisualizationSnapshot } from '../models/scene/abstract/visualization-snapshot.model';
 
 export class Tile implements IReactiveObject {
 
@@ -17,25 +17,19 @@ export class Tile implements IReactiveObject {
 
     readonly x: number;
     readonly y: number;
-    sprite: Sprite; // native
-    name: string; // native
-    backgroundColor: {r: number, g: number, b: number}; // native
-    bright: boolean;
-    readonly nativeId: string;
-    readonly tags: Tag<Tile>[]; // native
-    readonly passable: boolean; // native
+    readonly native: TileNative;
     levelLink?: AnotherLevelLink;
 
     get snapshot(): TileSnapshot {
         return {
             x: this.x,
             y: this.y,
-            sprite: this.sprite ? this.sprite.snapshot : undefined,
-            name: this.name,
-            backgroundColor: this.backgroundColor,
-            bright: this.bright,
-            tags: this.tags,
-            passable: this.passable,
+            sprite: this.native.sprite ? this.native.sprite as VisualizationSnapshot : undefined,
+            name: this.native.name,
+            backgroundColor: this.native.backgroundColor,
+            bright: this.native.bright,
+            tags: this.native.tags,
+            passable: this.native.passable,
             levelLink: this.levelLink,
             objects: this.objects.map(x => x.snapshot)
         } as TileSnapshot;
@@ -45,12 +39,12 @@ export class Tile implements IReactiveObject {
         return {
             x: this.x,
             y: this.y,
-            sprite: this.sprite ? this.sprite.snapshot : undefined,
-            name: this.name,
-            backgroundColor: this.backgroundColor,
-            bright: this.bright,
-            tags: this.tags,
-            passable: this.passable,
+            sprite: this.native.sprite ? this.native.sprite as VisualizationSnapshot : undefined,
+            name: this.native.name,
+            backgroundColor: this.native.backgroundColor,
+            bright: this.native.bright,
+            tags: this.native.tags,
+            passable: this.native.passable,
             levelLink: this.levelLink
         } as TileSnapshot;
     }
@@ -59,7 +53,7 @@ export class Tile implements IReactiveObject {
         return {
             x: this.x,
             y: this.y,
-            nativeId: this.nativeId,
+            nativeId: this.native.id,
             levelLink: this.levelLink
         };
     }
@@ -68,19 +62,13 @@ export class Tile implements IReactiveObject {
         this.parent = parent;
         this.x = x;
         this.y = y;
-        this.sprite = tile.sprite ? new Sprite(tile.sprite) : undefined;
-        this.bright = tile.bright;
-        this.nativeId = tile.id;
-        this.passable = tile.passable;
-        this.tags = tile.tags;
-        this.name = tile.name;
-        this.backgroundColor = tile.backgroundColor;
+        this.native = tile;
         this.objects = [];
         this.levelLink = link;
     }
 
     react(reaction: string, initiator: Actor, time: number, strength?: number) {
-        const tags = this.tags;
+        const tags = this.native.tags;
         for (const tag of tags) {
             const chosenReaction = tag.reactions[reaction];
             if (chosenReaction) {
@@ -98,7 +86,7 @@ export class Tile implements IReactiveObject {
 
     doReactiveAction(animation: string, reaction: string, result: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1, range?: number) {
-        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, range);
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, false, range);
         for (const object of reachedObjects) {
             object.react(reaction, this, time, strength);
         }

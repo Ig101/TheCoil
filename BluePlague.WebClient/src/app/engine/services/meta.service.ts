@@ -13,14 +13,16 @@ import { TileInitialization } from '../models/scene/tile-initialization.model';
 import { GeneratorService } from './generator.service';
 import { RoomTypeEnum } from '../models/enums/room-type.enum';
 import { GameStateEnum } from '../models/enums/game-state.enum';
+import { EngineAction } from '../models/engine-action.model';
 
 @Injectable()
 export class MetaService {
 
   private readonly synchronizationTimer = 20000;
   private timer;
-  private currentActionsBanch: EnginePlayerAction[] = [];
-  private lastActionsBanch: EnginePlayerAction[] = [];
+  private currentActionsBanch: EngineAction[] = [];
+  private lastActionsBanch: EngineAction[] = [];
+  private sceneChanged = false;
 
   private metaInformationInternal: MetaInformation;
 
@@ -69,12 +71,16 @@ export class MetaService {
             .pipe(map(sceneInitialization => {
               this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
               this.sceneService.subscribe(action => {
-                this.currentActionsBanch.push({
-                  id: action.animation,
-                  extraIdentifier: action.extraIdentifier,
-                  x: action.x,
-                  y: action.y
-                } as EnginePlayerAction);
+                this.sceneChanged = true;
+                if (action.important) {
+                  this.currentActionsBanch.push({
+                    id: action.animation,
+                    extraIdentifier: action.extraIdentifier,
+                    actorId: action.actor ? action.actor.id : undefined,
+                    x: action.x,
+                    y: action.y
+                  } as EngineAction);
+                }
                 if (!this.sceneService.isPlayerAlive() && this.metaInformation.gameState !== GameStateEnum.Defeat) {
                   this.changeState(GameStateEnum.Defeat);
                 }
@@ -103,19 +109,22 @@ export class MetaService {
   }
 
   synchronization() {
-    this.lastActionsBanch.push(...this.currentActionsBanch);
-    this.currentActionsBanch.length = 0;
-    this.synchronizationService.sendSynchronizationInfo(this.sceneService.getSceneSavedData(),
-                                                        this.metaInformation, this.lastActionsBanch)
-      .subscribe(result => {
-        if (result.success) {
-          this.lastActionsBanch = [];
-          this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
-          // TODO register changes
-        } else {
-          // TODO ExitGame
-        }
-      });
+    if (this.sceneChanged) {
+      this.sceneChanged = false;
+      this.lastActionsBanch.push(...this.currentActionsBanch);
+      this.currentActionsBanch.length = 0;
+      this.synchronizationService.sendSynchronizationInfo(this.sceneService.getSceneSavedData(),
+                                                          this.metaInformation, this.lastActionsBanch)
+        .subscribe(result => {
+          if (result.success) {
+            this.lastActionsBanch = [];
+            this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
+            // TODO register changes
+          } else {
+            // TODO ExitGame
+          }
+        });
+    }
 
   }
 

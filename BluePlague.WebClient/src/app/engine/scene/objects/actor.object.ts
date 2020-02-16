@@ -4,7 +4,6 @@ import { Tile } from '../tile.object';
 import { ActionTag } from '../models/action-tag.model';
 import { ActorSnapshot } from '../../models/scene/objects/actor-snapshot.model';
 import { ActorSavedData } from '../../models/scene/objects/actor-saved-data.model';
-import { SpriteSnapshot } from '../../models/scene/abstract/sprite-snapshot.model';
 import { EnginePlayerAction } from '../../models/engine-player-action.model';
 import { Tag } from '../models/tag.model';
 import { ActorAction } from '../models/actor-action.model';
@@ -13,11 +12,11 @@ import { ActorActionResult } from '../models/actor-action-result.model';
 import { IActiveObject } from '../interfaces/active-object.interface';
 import { ActionValidationResult } from '../models/action-validation-result.model';
 import { IReactiveObject } from '../interfaces/reactive-object.interface';
-import { Sprite } from '../abstract/sprite.object';
 import { ActionValidationResultFull } from '../models/action-validation-result-full.model';
 import { EnginePlayerActionFull } from '../../models/engine-player-action-full.model';
 import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
+import { VisualizationSnapshot } from '../../models/scene/abstract/visualization-snapshot.model';
 
 export class Actor implements IActiveObject, IReactiveObject {
 
@@ -29,16 +28,8 @@ export class Actor implements IActiveObject, IReactiveObject {
     x: number;
     y: number;
     name: string;
-    passable: boolean;
-    sprite: Sprite; // native
 
-    readonly nativeId: string;
-    readonly speedModification: number; // native
-    readonly weight: number; // native
-    readonly maxDurability: number; // native
-    readonly maxEnergy: number; // native
-    readonly tags: ActionTag<Actor>[]; // native
-    readonly actions: ActorAction[]; // native
+    readonly native: ActorNative;
 
     dead = false;
 
@@ -60,13 +51,13 @@ export class Actor implements IActiveObject, IReactiveObject {
             y: this.y,
             name: this.name,
             weight: this.calculatedWeight,
-            sprite: this.sprite.snapshot,
+            sprite: this.native.sprite as VisualizationSnapshot,
             speedModificator: this.calculatedSpeedModification,
             maxDurability: this.calculatedMaxDurability,
             maxEnergy: this.calculatedMaxEnergy,
             actions: this.calculatedActions,
             tags: this.calculatedTags,
-            passable: this.passable,
+            passable: this.native.passable,
             durability: this.durability,
             energy: this.energy,
             remainedTurnTime: this.remainedTurnTime
@@ -80,7 +71,7 @@ export class Actor implements IActiveObject, IReactiveObject {
             x: this.x,
             y: this.y,
             name: this.name,
-            nativeId: this.nativeId,
+            nativeId: this.native.id,
             durability: this.durability,
             energy: this.energy,
             remainedTurnTime: this.remainedTurnTime
@@ -93,25 +84,18 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.y = y;
         this.id = id;
         this.parent = parent;
-        this.passable = native.passable;
-        this.sprite = new Sprite(native.sprite);
-        this.nativeId = native.id;
-        this.speedModification = native.speedModificator;
-        this.maxDurability = native.maxDurability;
-        this.weight = native.weight;
-        this.durability = this.maxDurability;
-        this.maxEnergy = native.maxEnergy;
-        this.energy = this.maxEnergy;
-        this.tags = native.tags;
-        this.actions = native.actions;
+        this.native = native;
         this.remainedTurnTime = 0;
 
-        this.calculatedWeight = this.weight;
-        this.calculatedActions = this.actions;
-        this.calculatedMaxDurability = this.maxDurability;
-        this.calculatedMaxEnergy = this.maxEnergy;
-        this.calculatedSpeedModification = this.speedModification;
-        this.calculatedTags = this.tags.sort((a, b) => a.priority - b.priority);
+        this.calculatedWeight = this.native.weight;
+        this.calculatedActions = this.native.actions;
+        this.calculatedMaxDurability = this.native.maxDurability;
+        this.calculatedMaxEnergy = this.native.maxEnergy;
+        this.calculatedSpeedModification = this.native.speedModificator;
+        this.calculatedTags = this.native.tags.sort((a, b) => a.priority - b.priority);
+
+        this.durability = this.calculatedMaxDurability;
+        this.energy = this.calculatedMaxEnergy;
 
         this.tile = parent.getTile(x, y);
         this.tile.objects.push(this);
@@ -168,7 +152,7 @@ export class Actor implements IActiveObject, IReactiveObject {
     }
 
     validateAction(action: EnginePlayerAction, deep: boolean = true): ActionValidationResultFull {
-        const chosenAction = this.actions.find(x => x.id === action.id);
+        const chosenAction = this.calculatedActions.find(x => x.id === action.id);
         if (!chosenAction) {
             return {
                 success: false,
@@ -239,6 +223,13 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
     }
 
+    isActionImportant(name: string): boolean {
+        switch (name) {
+            default:
+                return false;
+        }
+    }
+
     private doAction(action: EnginePlayerAction): ActorActionResult {
         const chosenAction = this.calculatedActions.find(x => x.id === action.id);
         if (!chosenAction) {
@@ -254,8 +245,8 @@ export class Actor implements IActiveObject, IReactiveObject {
         if (!result.name) {
             result.name = chosenAction.id;
         }
-        this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects, result.range,
-            action.extraIdentifier, result.actor);
+        this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects,
+            this.isActionImportant(action.id), result.range, action.extraIdentifier, result.actor);
         if (result.reaction === 'move') {
             result.time *= this.parent.moveSpeedModifier;
         }
@@ -264,7 +255,7 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     // Reactions
     react(reaction: string, initiator: Actor, time: number, strength?: number) {
-        const tags = this.tags;
+        const tags = this.calculatedTags;
         for (const tag of tags) {
             const chosenReaction = tag.reactions[reaction];
             if (chosenReaction) {
@@ -285,7 +276,7 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.parent.finishAction(                    {
             level: ReactionMessageLevelEnum.Information,
             message: $localize`:@@game.reaction.action.die:${this.name}:name: is dead.`
-        } as ReactionResult, 'die', this.x, this.y, reachedObjects, undefined, undefined, this);
+        } as ReactionResult, 'die', this.x, this.y, reachedObjects, true, undefined, undefined, this);
         this.reactOnOutgoingAction('die', 0);
         for (const object of reachedObjects) {
             object.react('die', this, 0);
@@ -294,7 +285,7 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     doReactiveAction(animation: string, reaction: string, result: ReactionResult,
                      reachedObjects: IReactiveObject[], time: number, strength: number = 1, range?: number) {
-        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, range, undefined, this);
+        this.parent.finishAction(result, animation, this.x, this.y, reachedObjects, false, range, undefined, this);
         for (const object of reachedObjects) {
             object.react(reaction, this, time, strength);
         }

@@ -30,7 +30,7 @@ export function moveValidation(scene: Scene, actor: Actor, x: number, y: number,
     };
   }
   const tile = scene.getTile(x, y);
-  if (!tile.passable || tile.objects.filter(o => !o.passable).length > 0) {
+  if (!tile.native.passable || tile.objects.filter(o => !o.native.passable).length > 0) {
     return {
       success: false,
       reason: $localize`:@@game.reaction.validation.move:${actor.name}:name: faces obstacle.`

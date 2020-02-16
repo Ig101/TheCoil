@@ -20,7 +20,7 @@ function getActionType(scene: Scene, object: Actor, x: number, y: number): Smart
   }
   const tile = scene.getTile(x, y);
   if ((x - object.x) <= 1 && (x - object.x) >= -1 && (y - object.y) <= 1 && (y - object.y) >= -1) {
-    if (tile.objects.filter(a => !a.passable).length > 0) {
+    if (tile.objects.filter(a => !a.native.passable).length > 0) {
       return SmartActionEnum.Attack;
     }
     return SmartActionEnum.Move;

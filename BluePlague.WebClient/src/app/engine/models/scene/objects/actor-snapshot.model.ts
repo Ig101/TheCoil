@@ -2,7 +2,7 @@ import { ActionTag } from 'src/app/engine/scene/models/action-tag.model';
 import { Tag } from 'src/app/engine/scene/models/tag.model';
 import { Actor } from 'src/app/engine/scene/objects/actor.object';
 import { ActorAction } from 'src/app/engine/scene/models/actor-action.model';
-import { SpriteSnapshot } from '../abstract/sprite-snapshot.model';
+import { VisualizationSnapshot } from '../abstract/visualization-snapshot.model';
 
 export interface ActorSnapshot {
     id: number;
@@ -10,7 +10,7 @@ export interface ActorSnapshot {
     y: number;
     name: string;
     passable: boolean;
-    sprite: SpriteSnapshot;
+    sprite: VisualizationSnapshot;
     speedModificator: number;
     weight: number;
     maxDurability: number;
