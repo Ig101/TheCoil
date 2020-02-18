@@ -13,7 +13,7 @@ namespace BluePlague.Domain
   public class MongoConnection
   {
         private readonly IMongoClient _client;
-        private readonly IDictionary<int, object> _collections = new Dictionary<int, object>();
+        private readonly IDictionary<Type, object> _collections = new Dictionary<Type, object>();
 
         public MongoConnection(IOptions<MongoConnectionSettings> connection, IServiceProvider provider)
         {
@@ -49,7 +49,7 @@ namespace BluePlague.Domain
                 {
                     var method = database.GetType().GetMethod("GetCollection").MakeGenericMethod(entity);
                     var collection = method.Invoke(database, new object[] { entity.Name, null });
-                    _collections.Add(entity.GetHashCode(), collection);
+                    _collections.Add(entity, collection);
                     var entityConfigs = configTypes.Where(x => x.EntityType == entity).Select(x => x.Type).ToList();
                     foreach (var entityConfig in entityConfigs)
                     {
@@ -96,7 +96,7 @@ namespace BluePlague.Domain
 
         public IMongoCollection<T> GetCollection<T>()
         {
-            return (IMongoCollection<T>)_collections[typeof(T).GetHashCode()];
+            return (IMongoCollection<T>)_collections[typeof(T)];
         }
 
         public IClientSessionHandle StartSession()
