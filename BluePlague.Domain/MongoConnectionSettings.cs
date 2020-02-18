@@ -1,5 +1,7 @@
-namespace BluePlague.Domain {
-    public class MongoConnectionSettings {
+namespace BluePlague.Domain
+{
+    public class MongoConnectionSettings
+    {
         public string ServerName { get; set; }
     }
 }

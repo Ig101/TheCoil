@@ -1,56 +1,65 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BluePlague.Domain;
+using BluePlague.Domain.Game;
+using BluePlague.Mediation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using BluePlague.Domain;
-using BluePlague.Domain.Game;
 
-namespace BluePlague.Api {
-    public class Startup {
-        public Startup(IConfiguration configuration) {
+namespace BluePlague.Api
+{
+  public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services)
+        {
             services
                 .AddControllers()
-                .AddNewtonsoftJson(options => {
+                .AddNewtonsoftJson(options =>
+                {
                     options.SerializerSettings.ContractResolver =
                         new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                })
+                .AddFluentValidation(options =>
+                {
+                    options.RegisterValidatorsFromAssembly(MediationRegistry.GetAssembly());
                 });
             services.Configure<MongoConnectionSettings>(
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(
                 Configuration.GetSection("MongoConnection:Game"));
-            services.RegisterDomainLayer();
+            services.RegisterDomainLayer($"{Configuration["MongoConnection:ServerName"]}/{Configuration["MongoConnection:Identity:DatabaseName"]}");
+            services.RegisterMediationLayer();
         }
 
-        bool IsFrontendRoute(HttpContext context) {
+        private bool IsFrontendRoute(HttpContext context)
+        {
             var path = context.Request.Path;
             return path.HasValue &&
                 !path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                var action = new Action<IApplicationBuilder>(builder => builder.RunProxy(new ProxyOptions {
+                var action = new Action<IApplicationBuilder>(builder => builder.RunProxy(new ProxyOptions
+                {
                     Scheme = "http",
                     Host = "localhost",
                     Port = "4200"
@@ -58,10 +67,13 @@ namespace BluePlague.Api {
                 app.MapWhen(IsFrontendRoute, action);
                 app.UseStaticFiles();
             }
+
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => {
+            app.UseAuthentication();
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapControllers();
             });
         }
