@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BluePlague.Domain.Identity.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -17,9 +18,9 @@ namespace BluePlague.Mediation.Users.Commands.Register
 
         private class Handler : IRequestHandler<RegisterCommand>
         {
-            private readonly UserManager<IdentityUser> _userManager;
+            private readonly UserManager<User> _userManager;
 
-            public Handler(UserManager<IdentityUser> userManager)
+            public Handler(UserManager<User> userManager)
             {
                 _userManager = userManager;
             }
@@ -27,7 +28,7 @@ namespace BluePlague.Mediation.Users.Commands.Register
             public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
             {
                 var result = await _userManager.CreateAsync(
-                    new IdentityUser()
+                    new User()
                     {
                     UserName = request.Login,
                     Email = request.Email

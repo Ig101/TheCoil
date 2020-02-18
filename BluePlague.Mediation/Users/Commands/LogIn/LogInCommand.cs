@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using BluePlague.Domain.Identity.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,9 +14,9 @@ namespace BluePlague.Mediation.Users.Commands.LogIn
 
         private class Handler : IRequestHandler<LogInCommand>
         {
-            private readonly SignInManager<IdentityUser> _signInManager;
+            private readonly SignInManager<User> _signInManager;
 
-            public Handler(SignInManager<IdentityUser> signInManager)
+            public Handler(SignInManager<User> signInManager)
             {
                 _signInManager = signInManager;
             }
