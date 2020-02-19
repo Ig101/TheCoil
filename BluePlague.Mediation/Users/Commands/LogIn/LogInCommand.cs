@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Identity.Entities;
+using BluePlague.Infrastructure.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -24,6 +25,14 @@ namespace BluePlague.Mediation.Users.Commands.LogIn
             public async Task<Unit> Handle(LogInCommand request, CancellationToken cancellationToken)
             {
                 var result = await _signInManager.PasswordSignInAsync(request.Login, request.Password, true, false);
+                if (!result.Succeeded)
+                {
+                    throw new HttpException()
+                    {
+                        StatusCode = result.IsNotAllowed ? 403 : 401
+                    };
+                }
+
                 return Unit.Value;
             }
         }

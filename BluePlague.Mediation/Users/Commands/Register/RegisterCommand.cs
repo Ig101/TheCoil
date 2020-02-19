@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Identity.Entities;
+using BluePlague.Infrastructure.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -35,7 +36,15 @@ namespace BluePlague.Mediation.Users.Commands.Register
                     }, request.Password).ConfigureAwait(false);
                 if (!result.Succeeded)
                 {
-                    // TODO Exception
+                    throw new HttpException()
+                    {
+                        StatusCode = 500,
+                        Errors = result.Errors.Select(x => new HttpErrorInfo()
+                        {
+                            Key = x.Code,
+                            Description = x.Description
+                        })
+                    };
                 }
 
                 return Unit.Value;

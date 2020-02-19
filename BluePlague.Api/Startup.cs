@@ -1,4 +1,5 @@
 using System;
+using BluePlague.Api.Filters;
 using BluePlague.Domain;
 using BluePlague.Domain.Game;
 using BluePlague.Mediation;
@@ -26,7 +27,11 @@ namespace BluePlague.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddControllers()
+                .AddControllers(options =>
+                {
+                    options.Filters.Add(typeof(ValidationFilter));
+                    options.Filters.Add(typeof(ExceptionFilter));
+                })
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver =
