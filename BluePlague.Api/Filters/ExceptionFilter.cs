@@ -1,42 +1,48 @@
+using System.Collections.Generic;
 using System.Linq;
-using BluePlague.Infrastructure.Models;
+using BluePlague.Infrastructure.Models.ErrorHandling;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace BluePlague.Api.Filters
 {
-  public class ExceptionFilter : IExceptionFilter
-  {
-    public void OnException(ExceptionContext context)
+    public class ExceptionFilter : IExceptionFilter
     {
-        if (context.Exception is HttpException httpException)
+        public void OnException(ExceptionContext context)
         {
-            if (httpException.Errors == null || httpException.Errors.Count() == 0)
+            if (context.Exception is HttpException httpException)
             {
                 context.Result = new StatusCodeResult(httpException.StatusCode);
             }
-            else
+            else if (context.Exception is ValidationErrorsException validationException)
             {
-                foreach (var error in httpException.Errors)
+                foreach (var error in validationException.Errors)
                 {
                     context.ModelState.AddModelError(error.Key, error.Description);
                 }
 
-                context.Result = new ObjectResult(context.ModelState)
+                var factory = context.HttpContext.RequestServices?.GetRequiredService<ProblemDetailsFactory>();
+                var details = factory.CreateValidationProblemDetails(context.HttpContext, context.ModelState, 400);
+                context.Result = new ObjectResult(details)
                 {
-                    StatusCode = httpException.StatusCode
+                    StatusCode = 400
                 };
             }
-
-            return;
+            else
+            {
+                var factory = context.HttpContext.RequestServices?.GetRequiredService<ProblemDetailsFactory>();
+                context.Result = new ObjectResult(factory.CreateProblemDetails(context.HttpContext, 500, null, null, context.Exception.Message))
+                    {
+                        StatusCode = 500
+                    };
+            }
         }
-
-        context.ModelState.AddModelError("unhandled", context.Exception.Message);
-        context.Result = new ObjectResult(context.ModelState)
-        {
-            StatusCode = 500
-        };
     }
-  }
 }

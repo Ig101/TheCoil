@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Identity.Entities;
-using BluePlague.Infrastructure.Models;
+using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 

@@ -15,10 +15,11 @@ namespace BluePlague.Domain
                 identityOptions =>
                 {
                     identityOptions.Password.RequiredLength = 8;
-                    identityOptions.Password.RequireLowercase = false;
-                    identityOptions.Password.RequireUppercase = false;
-                    identityOptions.Password.RequireNonAlphanumeric = false;
-                    identityOptions.Password.RequireDigit = false;
+                    identityOptions.Password.RequireLowercase = true;
+                    identityOptions.Password.RequireUppercase = true;
+                    identityOptions.Password.RequireNonAlphanumeric = true;
+                    identityOptions.Password.RequireDigit = true;
+                    identityOptions.User.RequireUniqueEmail = true;
                 }, mongoIdentityOptions =>
                 {
                     mongoIdentityOptions.ConnectionString = identityUrl;

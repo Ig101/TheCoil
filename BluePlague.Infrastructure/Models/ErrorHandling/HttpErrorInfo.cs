@@ -1,4 +1,4 @@
-namespace BluePlague.Infrastructure.Models
+namespace BluePlague.Infrastructure.Models.ErrorHandling
 {
     public class HttpErrorInfo
     {
