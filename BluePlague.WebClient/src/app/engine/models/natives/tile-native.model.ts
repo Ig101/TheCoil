@@ -11,4 +11,5 @@ export interface TileNative {
     bright: boolean;
     tags: Tag<Tile>[];
     passable: boolean;
+    viewable: boolean;
 }

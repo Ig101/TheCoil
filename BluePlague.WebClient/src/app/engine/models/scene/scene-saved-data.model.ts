@@ -6,7 +6,6 @@ export interface SceneSavedData {
     turn: number;
     idIncrementor?: number;
     changedActors: ActorSavedData[];
-    deletedActors: number[];
     changedTiles: TileSavedData[];
     unsettledActors: UnsettledActorSavedData[];
 }

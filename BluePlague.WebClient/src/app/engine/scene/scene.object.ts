@@ -25,7 +25,6 @@ export class Scene {
     private responseSubject = new Subject<EngineActionResponse>();
 
     private changedActors: Actor[] = [];
-    private deletedActors: number[] = [];
     private changedTiles: Tile[] = [];
     private unsettledActors: UnsettledActorSavedData[] = [];
 
@@ -79,7 +78,6 @@ export class Scene {
             playerIsDead: this.player.dead,
             idIncrementor: this.idIncrementor,
             changedActors: this.changedActors.map(x => x.savedData),
-            deletedActors: this.deletedActors,
             changedTiles: this.changedTiles.map(x => x.savedData),
             unsettledActors: this.unsettledActors
         } as SceneSavedData;
@@ -122,7 +120,6 @@ export class Scene {
                 this.player = newActor;
             }
         }
-        this.deletedActors = savedData.deletedActors;
         if (savedData.idIncrementor) {
             this.idIncrementor = savedData.idIncrementor;
         }
@@ -190,9 +187,8 @@ export class Scene {
         if (actor === this.player) {
             this.playerAliveInternal = false;
         }
-        if (!this.deletedActors.includes(actor.id)) {
+        if (this.changedActors.includes(actor)) {
             removeFromArray(this.changedActors, actor);
-            this.deletedActors.push(actor.id);
         }
         if (!this.sessionDeletedActors.find(x => x.id === actor.id)) {
             this.sessionDeletedActors.push({

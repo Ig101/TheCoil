@@ -30,6 +30,7 @@ export class Tile implements IReactiveObject {
             bright: this.native.bright,
             tags: this.native.tags,
             passable: this.native.passable,
+            viewable: this.native.viewable,
             levelLink: this.levelLink,
             objects: this.objects.map(x => x.snapshot)
         } as TileSnapshot;

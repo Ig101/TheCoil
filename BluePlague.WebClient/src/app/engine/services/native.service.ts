@@ -93,7 +93,8 @@ export class NativeService {
         name: 'nothing',
         bright: false,
         tags: [],
-        passable: false
+        passable: false,
+        viewable: false
       },
       stoneWall: {
         id: 'stoneWall',
@@ -106,7 +107,8 @@ export class NativeService {
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],
-        passable: false
+        passable: false,
+        viewable: false
       },
       stoneFloor: {
         id: 'stoneFloor',
@@ -119,7 +121,8 @@ export class NativeService {
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
         tags: [],
-        passable: true
+        passable: true,
+        viewable: true
       },
     };
   }
