@@ -7,26 +7,26 @@ using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BluePlague.Mediation.Users.Commands.SendEmailVerificationToken
+namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
 {
-    public class SendEmailVerificationTokenCommand : IRequest
+    public class SendEmailVerificationByEmailCommand : IRequest
     {
         public string Email { get; set; }
 
-        private class Handler : IRequestHandler<SendEmailVerificationTokenCommand>
+        private class Handler : IRequestHandler<SendEmailVerificationByEmailCommand>
         {
             private readonly UserManager<User> _userManager;
-            private readonly EmailSender _emailSender;
+            private readonly IMediator _mediator;
 
             public Handler(
                 UserManager<User> userManager,
-                EmailSender emailSender)
+                IMediator mediator)
             {
-                _emailSender = emailSender;
+                _mediator = mediator;
                 _userManager = userManager;
             }
 
-            public async Task<Unit> Handle(SendEmailVerificationTokenCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(SendEmailVerificationByEmailCommand request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
@@ -44,12 +44,9 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerificationToken
                     };
                 }
 
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                await _emailSender.SendAsync(new EmailMessage()
+                await _mediator.Send(new SendEmailVerificationCommand()
                 {
-                    ToAdresses = new[] { request.Email },
-                    Subject = "Email verification required",
-                    Body = $"Your token is {token}"
+                    User = user
                 });
                 return Unit.Value;
             }

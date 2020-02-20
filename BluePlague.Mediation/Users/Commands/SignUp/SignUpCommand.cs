@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity.Entities;
 using BluePlague.Infrastructure.Models.ErrorHandling;
-using BluePlague.Mediation.Users.Commands.SendEmailVerificationToken;
+using BluePlague.Mediation.Users.Commands.SendEmailVerification;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -57,9 +57,9 @@ namespace BluePlague.Mediation.Users.Commands.SignUp
                     };
                 }
 
-                await _mediator.Send(new SendEmailVerificationTokenCommand()
+                await _mediator.Send(new SendEmailVerificationCommand()
                 {
-                    Email = user.Email
+                    User = user
                 });
                 return Unit.Value;
             }

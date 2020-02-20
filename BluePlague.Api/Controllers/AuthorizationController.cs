@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using BluePlague.Mediation.Users.Commands.SendEmailVerificationToken;
+using BluePlague.Mediation.Users.Commands.SendEmailVerification;
 using BluePlague.Mediation.Users.Commands.SignIn;
 using BluePlague.Mediation.Users.Commands.SignUp;
 using BluePlague.Mediation.Users.Commands.VerifyEmail;
@@ -39,7 +39,7 @@ namespace BluePlague.Api.Controllers
         }
 
         [HttpPost("send-verification")]
-        public async Task<IActionResult> SendEmailVerificationTokenCommandAsync([FromBody]SendEmailVerificationTokenCommand model)
+        public async Task<IActionResult> SendEmailVerificationTokenCommandAsync([FromBody]SendEmailVerificationByEmailCommand model)
         {
             await Mediator.Send(model);
             return NoContent();
