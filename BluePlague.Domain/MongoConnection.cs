@@ -43,7 +43,11 @@ namespace BluePlague.Domain
                 var entities = type
                     .GetProperties()
                     .Where(x => x.PropertyType.IsGenericType && x.PropertyType.GetGenericTypeDefinition() == typeof(IRepository<>))
-                    .Select(x => x.PropertyType.GetGenericArguments().First())
+                    .Select(x => new
+                    {
+                        Type = x.PropertyType.GetGenericArguments().First(),
+                        x.Name
+                    })
                     .ToList();
                 var settingsType = typeof(MongoContextSettings<>).MakeGenericType(type);
                 var optionsType = typeof(IOptions<>).MakeGenericType(settingsType);
@@ -52,10 +56,10 @@ namespace BluePlague.Domain
                 var database = _client.GetDatabase(config.DatabaseName);
                 foreach (var entity in entities)
                 {
-                    var method = database.GetType().GetMethod("GetCollection").MakeGenericMethod(entity);
+                    var method = database.GetType().GetMethod("GetCollection").MakeGenericMethod(entity.Type);
                     var collection = method.Invoke(database, new object[] { entity.Name, null });
-                    _collections.Add(entity, collection);
-                    var entityConfigs = configTypes.Where(x => x.EntityType == entity).Select(x => x.Type).ToList();
+                    _collections.Add(entity.Type, collection);
+                    var entityConfigs = configTypes.Where(x => x.EntityType == entity.Type).Select(x => x.Type).ToList();
                     foreach (var entityConfig in entityConfigs)
                     {
                         var instance = Activator.CreateInstance(entityConfig);
