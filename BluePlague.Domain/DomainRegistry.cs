@@ -1,4 +1,5 @@
 using AspNetCore.Identity.Mongo;
+using BluePlague.Domain.Email;
 using BluePlague.Domain.Game;
 using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
@@ -21,6 +22,7 @@ namespace BluePlague.Domain
                     identityOptions.Password.RequireNonAlphanumeric = false;
                     identityOptions.Password.RequireDigit = true;
                     identityOptions.User.RequireUniqueEmail = true;
+                    identityOptions.SignIn.RequireConfirmedEmail = true;
                 }, mongoIdentityOptions =>
                 {
                     mongoIdentityOptions.ConnectionString = identityUrl;
@@ -37,6 +39,7 @@ namespace BluePlague.Domain
             });
             services.AddSingleton<MongoConnection>();
             services.AddTransient<GameContext>();
+            services.AddTransient<EmailSender>();
             return services;
         }
     }

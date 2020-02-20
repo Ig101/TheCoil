@@ -1,6 +1,7 @@
 using System;
 using BluePlague.Api.Filters;
 using BluePlague.Domain;
+using BluePlague.Domain.Email;
 using BluePlague.Domain.Game;
 using BluePlague.Mediation;
 using FluentValidation.AspNetCore;
@@ -51,6 +52,8 @@ namespace BluePlague.Api
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(
                 Configuration.GetSection("MongoConnection:Game"));
+            services.Configure<EmailSenderSettings>(
+                Configuration.GetSection("SmtpServer"));
             services.RegisterDomainLayer($"{Configuration["MongoConnection:ServerName"]}/{Configuration["MongoConnection:Identity:DatabaseName"]}");
             services.RegisterMediationLayer();
         }

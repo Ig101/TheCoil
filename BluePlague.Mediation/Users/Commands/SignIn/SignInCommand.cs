@@ -38,6 +38,21 @@ namespace BluePlague.Mediation.Users.Commands.SignIn
           };
         }
 
+        if (!user.EmailConfirmed)
+        {
+          throw new ValidationErrorsException()
+          {
+            Errors = new[]
+            {
+              new HttpErrorInfo()
+              {
+                Key = "email",
+                Description = "'Email' is not verified."
+              }
+            }
+          };
+        }
+
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, true, false);
         if (!result.Succeeded)
         {
