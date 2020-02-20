@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BluePlague.Domain.Game;
+using BluePlague.Domain.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -15,9 +16,13 @@ namespace BluePlague.Domain
         private readonly IMongoClient _client;
         private readonly IDictionary<Type, object> _collections = new Dictionary<Type, object>();
 
-        public MongoConnection(IOptions<MongoConnectionSettings> connection, IServiceProvider provider)
+        public MongoConnection(IOptions<MongoConnectionSettings> connection,  IServiceProvider provider)
         {
             _client = new MongoClient(connection.Value.ServerName);
+
+            var identityConfig = provider.GetRequiredService<IOptions<IdentityContextSettings>>();
+            _client.ConfigureIdentity(identityConfig.Value);
+
             var types = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
@@ -54,7 +59,7 @@ namespace BluePlague.Domain
                     foreach (var entityConfig in entityConfigs)
                     {
                         var instance = Activator.CreateInstance(entityConfig);
-                        ((Task)entityConfig.GetMethod("Configure").Invoke(instance, new object[] { collection })).Wait();
+                        ((Task)entityConfig.GetMethod("ConfigureAsync").Invoke(instance, new object[] { collection })).Wait();
                     }
                 }
             }

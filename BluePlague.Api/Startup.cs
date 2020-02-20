@@ -3,11 +3,15 @@ using BluePlague.Api.Filters;
 using BluePlague.Domain;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Game;
+using BluePlague.Domain.Identity;
+using BluePlague.Domain.Identity.Entities;
+using BluePlague.Domain.Identity.EntityConfigurations;
 using BluePlague.Mediation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,6 +56,8 @@ namespace BluePlague.Api
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(
                 Configuration.GetSection("MongoConnection:Game"));
+            services.Configure<IdentityContextSettings>(
+                Configuration.GetSection("MongoConnection:Identity"));
             services.Configure<EmailSenderSettings>(
                 Configuration.GetSection("SmtpServer"));
             services.RegisterDomainLayer($"{Configuration["MongoConnection:ServerName"]}/{Configuration["MongoConnection:Identity:DatabaseName"]}");
@@ -68,6 +74,8 @@ namespace BluePlague.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.ApplicationServices.GetRequiredService<MongoConnection>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
