@@ -2,6 +2,7 @@ using AspNetCore.Identity.Mongo;
 using BluePlague.Domain.Game;
 using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +18,7 @@ namespace BluePlague.Domain
                     identityOptions.Password.RequiredLength = 8;
                     identityOptions.Password.RequireLowercase = true;
                     identityOptions.Password.RequireUppercase = true;
-                    identityOptions.Password.RequireNonAlphanumeric = true;
+                    identityOptions.Password.RequireNonAlphanumeric = false;
                     identityOptions.Password.RequireDigit = true;
                     identityOptions.User.RequireUniqueEmail = true;
                 }, mongoIdentityOptions =>
@@ -27,6 +28,13 @@ namespace BluePlague.Domain
                 .AddUserManager<IdentityUserManager>()
                 .AddRoleManager<IdentityRoleManager>()
                 .AddDefaultTokenProviders();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = "Authorization";
+                options.Cookie.HttpOnly = true;
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                options.SlidingExpiration = true;
+            });
             services.AddSingleton<MongoConnection>();
             services.AddTransient<GameContext>();
             return services;

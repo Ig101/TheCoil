@@ -5,5 +5,6 @@ namespace BluePlague.Domain.Identity.Entities
 {
     public class User : MongoUser
     {
+        public string ViewName { get; set; }
     }
 }

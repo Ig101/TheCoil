@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using BluePlague.Mediation.Users.Commands.LogIn;
-using BluePlague.Mediation.Users.Commands.Register;
+using BluePlague.Mediation.Users.Commands.SignIn;
+using BluePlague.Mediation.Users.Commands.SignUp;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +15,15 @@ namespace BluePlague.Api.Controllers
         {
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody]LogInCommand model)
+        [HttpPost("signin")]
+        public async Task<IActionResult> LoginAsync([FromBody]SignInCommand model)
         {
             await Mediator.Send(model);
             return NoContent();
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterCommand model)
+        [HttpPost("signup")]
+        public async Task<IActionResult> RegisterAsync([FromBody]SignUpCommand model)
         {
             await Mediator.Send(model);
             return NoContent();

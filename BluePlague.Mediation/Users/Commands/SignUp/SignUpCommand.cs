@@ -7,33 +7,32 @@ using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BluePlague.Mediation.Users.Commands.Register
+namespace BluePlague.Mediation.Users.Commands.SignUp
 {
-    public class RegisterCommand : IRequest
+    public class SignUpCommand : IRequest
     {
-        public string Login { get; set; }
+        public string Name { get; set; }
 
         public string Email { get; set; }
 
         public string Password { get; set; }
 
-        private class Handler : IRequestHandler<RegisterCommand>
+        private class Handler : IRequestHandler<SignUpCommand>
         {
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> roleManager;
 
-        public Handler(UserManager<User> userManager, RoleManager<Role> roleManager)
+        public Handler(UserManager<User> userManager)
         {
-            this.roleManager = roleManager;
             _userManager = userManager;
         }
 
-        public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
         {
             var user = new User()
                 {
-                    UserName = request.Login,
-                    Email = request.Email
+                    UserName = Guid.NewGuid().ToString(),
+                    Email = request.Email,
+                    ViewName = request.Name
                 };
             var result = await _userManager.CreateAsync(
                 user, request.Password).ConfigureAwait(false);
@@ -48,6 +47,7 @@ namespace BluePlague.Mediation.Users.Commands.Register
                     })
                 };
             }
+
             return Unit.Value;
         }
         }
