@@ -18,14 +18,14 @@ namespace BluePlague.Api.Controllers
         }
 
         [HttpPost("signin")]
-        public async Task<IActionResult> LoginAsync([FromBody]SignInCommand model)
+        public async Task<IActionResult> SignInAsync([FromBody]SignInCommand model)
         {
             await Mediator.Send(model);
             return NoContent();
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> RegisterAsync([FromBody]SignUpCommand model)
+        public async Task<IActionResult> SignUpAsync([FromBody]SignUpCommand model)
         {
             await Mediator.Send(model);
             return NoContent();
