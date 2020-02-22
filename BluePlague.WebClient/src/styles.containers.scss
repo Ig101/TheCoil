@@ -8,6 +8,12 @@
   flex-direction: row;
 }
 
-.modal {
+.filler {
+  flex: 1
+}
 
+.modal {
+  border: double #fff;
+  border-width: 5px;
+  background-color: black;
 }

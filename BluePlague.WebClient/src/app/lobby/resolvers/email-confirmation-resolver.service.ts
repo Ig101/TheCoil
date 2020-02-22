@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class EmailConfirmationResolverService {
+@Injectable()
+export class EmailConfirmationResolverService implements Resolve<boolean> {
+  constructor(
+    private webCommunicationService: WebCommunicationService
+    ) { }
 
-  constructor() { }
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+    return true;
+  }
 }

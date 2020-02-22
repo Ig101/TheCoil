@@ -6,6 +6,8 @@ import { RandomService } from './services/random.service';
 import { ModalShellComponent } from './modal/modal-shell/modal-shell.component';
 import { ModalService } from './services/modal.service';
 import { ModalComponentFactory } from './modal/modal-component-factory';
+import { UserResolverService } from './resolvers/user-resolver.service';
+import { UserService } from './services/user.service';
 @NgModule({
   declarations: [ModalShellComponent],
   imports: [
@@ -16,7 +18,9 @@ import { ModalComponentFactory } from './modal/modal-component-factory';
     LoadingService,
     RandomService,
     ModalService,
-    ModalComponentFactory
+    ModalComponentFactory,
+    UserResolverService,
+    UserService
   ],
   exports: [
     CommonModule

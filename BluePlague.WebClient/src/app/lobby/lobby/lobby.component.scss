@@ -1,3 +1,20 @@
 :host {
   @import '../lobby.module.scss';
+
+  .lobby-panel {
+    width: 360px;
+    height: 460px;
+    margin: 0 32px;
+    background: #000;
+  }
+
+  .lobby-container {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+  }
+
+  .lobby-panels-container {
+    justify-content: center;
+  }
 }

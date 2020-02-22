@@ -1,7 +1,11 @@
 .lobby-background {
   position: fixed;
-  background-color: black;
+  background-color: #000;
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+
+.lobby-footer {
+  height: 32px;
 }

@@ -1,4 +1,15 @@
 <div class="lobby-background"></div>
-<div class="column">
-  <p class="title-font-inactive">lobby works!</p>
+<div class="lobby-container column">
+  <div class="filler"></div>
+  <div class="lobby-panels-container row">
+    <div>
+      <div [ngSwitch]="userState" class="lobby-panel">
+        <app-sign-in *ngSwitchCase="userManagementWindowEnum.SignIn"></app-sign-in>
+        <app-sign-up *ngSwitchCase="userManagementWindowEnum.SignUp"></app-sign-up>
+        <app-email-confirmation *ngSwitchCase="userManagementWindowEnum.EmailConfirmation"></app-email-confirmation>
+        <app-user *ngSwitchCase="userManagementWindowEnum.User"></app-user>
+      </div>
+    </div>
+  </div>
+  <div class="lobby-footer"></div>
 </div>
