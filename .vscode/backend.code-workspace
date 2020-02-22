@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "D:\\source\\BluePlague\\BluePlague.Api"
+			"path": "..\\BluePlague.Api"
 		},
 		{
-			"path": "D:\\source\\BluePlague\\BluePlague.Domain"
+			"path": "..\\BluePlague.Domain"
 		},
 		{
-			"path": "D:\\source\\BluePlague\\BluePlague.Mediation"
+			"path": "..\\BluePlague.Mediation"
 		}
 	],
 	"settings": {}

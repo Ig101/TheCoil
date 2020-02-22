@@ -1,7 +1,4 @@
 :host {
-  @import '../../../app.module.scss';
-  @import '../ascii-game.module.scss';
-
   .hud-container {
     display: flex;
     flex-direction: row;

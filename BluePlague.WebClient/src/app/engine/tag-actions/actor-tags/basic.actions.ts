@@ -18,7 +18,7 @@ export function receiveDamagePhysicalIncoming(scene: Scene, object: Actor, initi
     animation: 'hurt',
     reaction: 'hurt',
     result: reaction,
-    reachedObjects: [object.tile]
+    reachedObjects: [object.tile, object]
   };
 }
 
@@ -36,6 +36,6 @@ export function receiveDamageFireIncoming(scene: Scene, object: Actor, initiator
     animation: 'hurt',
     reaction: 'hurt',
     result: reaction,
-    reachedObjects: [object.tile]
+    reachedObjects: [object.tile, object]
   };
 }

@@ -2,6 +2,6 @@
   <div class="top-info" (mousedown)="stopPropagation($event)" (mouseup)="stopPropagation($event)"></div>
   <div class="part">
     <div class="filler"></div>
-    <div class="log font" *ngFor="let item of log" [style.opacity]="getItemOpacity(item)" [style.color]="item.color">{{item.message}}</div>
+    <div class="log text-font-inactive" *ngFor="let item of log" [style.opacity]="getItemOpacity(item)" [style.color]="item.color">{{item.message}}</div>
   </div>
 </div>

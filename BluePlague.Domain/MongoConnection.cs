@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using BluePlague.Domain.Game;
 using BluePlague.Domain.Identity;
+using BluePlague.Domain.Identity.Entities;
+using BluePlague.Domain.Identity.EntityConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -19,9 +21,6 @@ namespace BluePlague.Domain
         public MongoConnection(IOptions<MongoConnectionSettings> connection,  IServiceProvider provider)
         {
             _client = new MongoClient(connection.Value.ServerName);
-
-            var identityConfig = provider.GetRequiredService<IOptions<IdentityContextSettings>>();
-            _client.ConfigureIdentity(identityConfig.Value);
 
             var types = Assembly
                 .GetExecutingAssembly()
@@ -67,6 +66,12 @@ namespace BluePlague.Domain
                     }
                 }
             }
+
+            // Identity
+            var usersCollection = provider.GetRequiredService<IMongoCollection<User>>();
+            new UserConfiguration().ConfigureAsync(usersCollection).Wait();
+            var rolesCollection = provider.GetRequiredService<IMongoCollection<Role>>();
+            new RoleConfiguration().ConfigureAsync(rolesCollection).Wait();
         }
 
         private bool IsMongoContext(Type type)

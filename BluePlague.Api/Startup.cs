@@ -53,8 +53,6 @@ namespace BluePlague.Api
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(
                 Configuration.GetSection("MongoConnection:Game"));
-            services.Configure<IdentityContextSettings>(
-                Configuration.GetSection("MongoConnection:Identity"));
             services.Configure<EmailSenderSettings>(
                 Configuration.GetSection("SmtpServer"));
             services.RegisterDomainLayer($"{Configuration["MongoConnection:ServerName"]}/{Configuration["MongoConnection:Identity:DatabaseName"]}");
