@@ -4,5 +4,7 @@
 			"path": "..\\BluePlague.WebClient"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.tabSize": 2
+	}
 }

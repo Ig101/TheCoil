@@ -8,10 +8,13 @@ import { ModalService } from './services/modal.service';
 import { ModalComponentFactory } from './modal/modal-component-factory';
 import { UserResolverService } from './resolvers/user-resolver.service';
 import { UserService } from './services/user.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TextInputComponent } from './components/text-input/text-input.component';
 @NgModule({
-  declarations: [ModalShellComponent],
+  declarations: [ModalShellComponent, TextInputComponent],
   imports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule
   ],
   providers: [
     WebCommunicationService,
@@ -23,7 +26,10 @@ import { UserService } from './services/user.service';
     UserService
   ],
   exports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule,
+    ModalShellComponent,
+    TextInputComponent
   ]
 })
 export class SharedModule { }

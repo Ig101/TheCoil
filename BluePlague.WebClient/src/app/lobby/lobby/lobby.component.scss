@@ -2,16 +2,18 @@
   @import '../lobby.module.scss';
 
   .lobby-panel {
-    width: 360px;
-    height: 460px;
-    margin: 0 32px;
+    height: 560px;
+    margin: 32px;
+    border: double #fff 5px;
     background: #000;
+    display: block;
   }
 
   .lobby-container {
     height: 100%;
     width: 100%;
     position: absolute;
+    overflow: hidden;
   }
 
   .lobby-panels-container {

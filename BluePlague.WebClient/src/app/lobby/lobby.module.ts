@@ -7,6 +7,8 @@ import { UserComponent } from './user-management/user/user.component';
 import { EmailConfirmationResolverService } from './resolvers/email-confirmation-resolver.service';
 import { SignInComponent } from './user-management/sign-in/sign-in.component';
 import { SignUpComponent } from './user-management/sign-up/sign-up.component';
+import { UserManagementComponent } from './user-management/user-management.component';
+import { UserManagementLoadingComponent } from './user-management/user-management-loading/user-management-loading.component';
 
 
 @NgModule({
@@ -15,7 +17,9 @@ import { SignUpComponent } from './user-management/sign-up/sign-up.component';
     LobbyComponent,
     UserComponent,
     SignInComponent,
-    SignUpComponent
+    SignUpComponent,
+    UserManagementComponent,
+    UserManagementLoadingComponent
   ],
   imports: [
     SharedModule,

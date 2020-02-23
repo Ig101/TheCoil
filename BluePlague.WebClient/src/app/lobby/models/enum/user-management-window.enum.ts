@@ -2,6 +2,7 @@ export enum UserManagementWindowEnum {
   SignIn,
   SignUp,
   EmailConfirmation,
-  User
+  User,
+  Loading
 }
 

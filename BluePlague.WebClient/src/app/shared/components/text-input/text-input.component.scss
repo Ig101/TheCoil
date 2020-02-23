@@ -1,0 +1,14 @@
+:host {
+  input {
+    border: none;
+    background: none;
+    border-bottom: solid 2px;
+    flex: 1;
+    outline: none;
+  }
+  p {
+    margin: inherit;
+    width: 100%;
+    display: flex;
+  }
+}

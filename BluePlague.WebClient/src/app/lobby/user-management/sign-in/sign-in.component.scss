@@ -1,0 +1,15 @@
+:host {
+  @import '../../lobby.module.scss';
+
+  .typing-text:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .form-info {
+    animation-delay: 1s;
+  }
+
+  app-text-input {
+    max-width: 380px;
+  }
+}

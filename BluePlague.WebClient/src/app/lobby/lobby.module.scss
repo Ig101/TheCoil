@@ -6,6 +6,27 @@
   z-index: -1;
 }
 
-.lobby-footer {
-  height: 32px;
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 0.5s steps(20, end);
+  animation-fill-mode: forwards;
+  opacity: 0;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: row;
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
 }
