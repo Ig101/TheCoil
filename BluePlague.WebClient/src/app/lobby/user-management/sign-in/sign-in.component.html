@@ -1,6 +1,9 @@
-<span class="text-font" [formGroup]="form">
-<p class="typing-text">Welcome to the Blue Plague</p>
-<p class="typing-text">Authorization...</p>
-<app-text-input class="typing-text form-info" formControlName="email">Email:</app-text-input>
-<app-text-input class="typing-text form-info" formControlName="password">Password:</app-text-input>
-</span>
+<form class="text-font form" [formGroup]="form" (ngSubmit)="signIn()">
+<p class="form-text">Welcome to the Blue Plague.</p>
+<p class="form-text">Authorization required...</p>
+<app-text-input class="form-text form-info" formControlName="email">Email:</app-text-input>
+<app-text-input class="form-text form-info" formControlName="password" type="password">Password:</app-text-input>
+<p></p>
+<app-button class="form-info form-button">Sign in</app-button>
+<app-button class="form-info form-button">Sign up</app-button>
+</form>

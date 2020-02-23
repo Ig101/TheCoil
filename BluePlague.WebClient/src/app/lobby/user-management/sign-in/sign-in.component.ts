@@ -20,4 +20,15 @@ export class SignInComponent implements OnInit {
     });
   }
 
+  signIn() {
+
+  }
+
+  toSignUp() {
+
+  }
+
+  forgotPassword() {
+
+  }
 }

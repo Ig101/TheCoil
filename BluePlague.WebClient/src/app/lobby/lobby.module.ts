@@ -9,6 +9,10 @@ import { SignInComponent } from './user-management/sign-in/sign-in.component';
 import { SignUpComponent } from './user-management/sign-up/sign-up.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { UserManagementLoadingComponent } from './user-management/user-management-loading/user-management-loading.component';
+import { ForgotPasswordComponent } from './user-management/forgot-password/forgot-password.component';
+import { NewPasswordComponent } from './user-management/new-password/new-password.component';
+import { UserSettingsComponent } from './user-management/user-settings/user-settings.component';
+import { NewGameStartComponent } from './user-management/new-game-start/new-game-start.component';
 
 
 @NgModule({
@@ -19,7 +23,11 @@ import { UserManagementLoadingComponent } from './user-management/user-managemen
     SignInComponent,
     SignUpComponent,
     UserManagementComponent,
-    UserManagementLoadingComponent
+    UserManagementLoadingComponent,
+    ForgotPasswordComponent,
+    NewPasswordComponent,
+    UserSettingsComponent,
+    NewGameStartComponent
   ],
   imports: [
     SharedModule,

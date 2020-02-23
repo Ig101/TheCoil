@@ -10,8 +10,10 @@ import { UserResolverService } from './resolvers/user-resolver.service';
 import { UserService } from './services/user.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './components/text-input/text-input.component';
+import { ButtonComponent } from './components/button/button.component';
+import { LinkComponent } from './components/link/link.component';
 @NgModule({
-  declarations: [ModalShellComponent, TextInputComponent],
+  declarations: [ModalShellComponent, TextInputComponent, ButtonComponent, LinkComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule
@@ -29,7 +31,9 @@ import { TextInputComponent } from './components/text-input/text-input.component
     CommonModule,
     ReactiveFormsModule,
     ModalShellComponent,
-    TextInputComponent
+    TextInputComponent,
+    ButtonComponent,
+    LinkComponent
   ]
 })
 export class SharedModule { }

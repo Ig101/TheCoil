@@ -1,14 +1,22 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ControlValueAccessor, FormControl } from '@angular/forms';
+import { Component, OnInit, Input, forwardRef } from '@angular/core';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-text-input',
   templateUrl: './text-input.component.html',
-  styleUrls: ['./text-input.component.scss']
+  styleUrls: ['./text-input.component.scss'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => TextInputComponent),
+      multi: true
+    }
+  ]
 })
 export class TextInputComponent implements OnInit, ControlValueAccessor {
 
   @Input() disabled = false;
+  @Input() type = 'text';
   @Input() control: FormControl;
 
   onChange: any = () => {};

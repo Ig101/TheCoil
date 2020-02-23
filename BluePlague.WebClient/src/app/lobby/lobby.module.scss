@@ -6,15 +6,52 @@
   z-index: -1;
 }
 
-.typing-text {
+.form-text {
   overflow: hidden;
   white-space: nowrap;
-  animation: typing 0.5s steps(20, end);
-  animation-fill-mode: forwards;
-  opacity: 0;
   margin: 10px 0;
   display: flex;
   flex-direction: row;
+}
+
+.typing-text {
+  animation: typing 0.5s steps(20, end) forwards;
+  opacity: 0;
+}
+
+.appear-text {
+  animation: appear 0.1s steps(20, end) forwards;
+  opacity: 0;
+}
+
+.form-button {
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+p {
+  margin: 6px 0;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes typing {

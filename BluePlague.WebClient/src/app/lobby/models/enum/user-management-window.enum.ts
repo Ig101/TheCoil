@@ -3,6 +3,10 @@ export enum UserManagementWindowEnum {
   SignUp,
   EmailConfirmation,
   User,
-  Loading
+  Loading,
+  ForgotPassword,
+  NewPassword,
+  UserSettings,
+  NewGameStart
 }
 
