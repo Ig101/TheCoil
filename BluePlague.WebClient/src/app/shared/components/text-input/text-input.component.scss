@@ -5,10 +5,12 @@
     border-bottom: solid 2px;
     flex: 1;
     outline: none;
+    margin-left: 4px;
   }
   p {
     margin: inherit;
     width: 100%;
     display: flex;
+    margin: 0;
   }
 }
