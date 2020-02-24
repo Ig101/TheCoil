@@ -22,7 +22,8 @@ export class ForgotPasswordComponent implements OnInit {
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
     private router: Router
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.form = new AppFormGroup({
@@ -30,6 +31,7 @@ export class ForgotPasswordComponent implements OnInit {
         emailValidator($localize`:@@controls.email:Email`)
       ])
     });
+    setTimeout(() => this.userManagementService.loadingEnd());
   }
 
   forgotPassword() {

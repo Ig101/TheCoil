@@ -26,6 +26,13 @@ namespace BluePlague.Api.Controllers
             return NoContent();
         }
 
+        [HttpPost("signout")]
+        public IActionResult SignOut()
+        {
+            Response.Cookies.Delete("Authorization");
+            return NoContent();
+        }
+
         [HttpPost("signup")]
         public async Task<IActionResult> SignUpAsync([FromBody]SignUpCommand model)
         {

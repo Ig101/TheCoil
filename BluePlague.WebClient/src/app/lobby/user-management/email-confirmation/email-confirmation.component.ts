@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
 import { UserManagementService } from '../../services/user-management.service';
 import { Router } from '@angular/router';
@@ -17,9 +17,11 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
     private router: Router
-    ) { }
+    ) {
+    }
 
   ngOnInit(): void {
+    setTimeout(() => this.userManagementService.loadingEnd());
   }
 
   ngOnDestroy(): void {

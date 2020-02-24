@@ -1,5 +1,6 @@
 export interface ExternalResponse<T> {
     success: boolean;
-    errors: string[];
-    result: T;
+    statusCode: number;
+    errors?: string[];
+    result?: T;
 }

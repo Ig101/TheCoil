@@ -12,8 +12,9 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { ButtonComponent } from './components/button/button.component';
 import { LinkComponent } from './components/link/link.component';
+import { FocusRemoverDirective } from './components/directives/focus-remover.directive';
 @NgModule({
-  declarations: [ModalShellComponent, TextInputComponent, ButtonComponent, LinkComponent],
+  declarations: [ModalShellComponent, TextInputComponent, ButtonComponent, LinkComponent, FocusRemoverDirective],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -35,7 +36,8 @@ import { LinkComponent } from './components/link/link.component';
     ModalShellComponent,
     TextInputComponent,
     ButtonComponent,
-    LinkComponent
+    LinkComponent,
+    FocusRemoverDirective
   ]
 })
 export class SharedModule { }

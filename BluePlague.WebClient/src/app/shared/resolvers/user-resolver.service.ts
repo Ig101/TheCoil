@@ -4,16 +4,24 @@ import { WebCommunicationService } from 'src/app/shared/services/web-communicati
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ActiveUser } from '../models/active-user.model';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class UserResolverService implements Resolve<ActiveUser> {
   constructor(
-    private webCommunicationService: WebCommunicationService,
     private userService: UserService
     ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): ActiveUser | Observable<ActiveUser> | Promise<ActiveUser> {
-    console.log('UserResolver');
-    return undefined;
+    if (this.userService.user) {
+      return this.userService.user;
+    }
+    if (!document.cookie.includes('Authorization')) {
+      return null;
+    }
+    return this.userService.getActiveUser()
+      .pipe(map(result => {
+        return result.result;
+      }));
   }
 }

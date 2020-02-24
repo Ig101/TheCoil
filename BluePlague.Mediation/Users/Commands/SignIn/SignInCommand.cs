@@ -34,22 +34,17 @@ namespace BluePlague.Mediation.Users.Commands.SignIn
         {
           throw new HttpException()
           {
-            StatusCode = 401
+            StatusCode = 401,
+            Error = "Wrong email or password."
           };
         }
 
         if (!user.EmailConfirmed)
         {
-          throw new ValidationErrorsException()
+          throw new HttpException()
           {
-            Errors = new[]
-            {
-              new HttpErrorInfo()
-              {
-                Key = "email",
-                Description = "'Email' is not verified."
-              }
-            }
+            StatusCode = 403,
+            Error = "email"
           };
         }
 
@@ -58,7 +53,8 @@ namespace BluePlague.Mediation.Users.Commands.SignIn
         {
           throw new HttpException()
           {
-            StatusCode = 403
+            StatusCode = 401,
+            Error = "Wrong email or password."
           };
         }
 

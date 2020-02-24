@@ -19,6 +19,12 @@ namespace BluePlague.Api.Filters
         {
             if (context.Exception is HttpException httpException)
             {
+                var factory = context.HttpContext.RequestServices?.GetRequiredService<ProblemDetailsFactory>();
+                var details = factory.CreateProblemDetails(context.HttpContext, httpException.StatusCode, httpException.Error);
+                context.Result = new ObjectResult(details)
+                {
+                    StatusCode = httpException.StatusCode
+                };
                 context.Result = new StatusCodeResult(httpException.StatusCode);
             }
             else if (context.Exception is ValidationErrorsException validationException)

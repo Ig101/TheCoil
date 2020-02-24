@@ -5,6 +5,6 @@
   <div *ngIf="errors">
     <p class="form-text text-font form-info" *ngFor="let item of errors">* {{item}}</p>
     <p></p>
-    <app-button class="form-info form-button" (buttonClick)="loadingEnd()">Ok</app-button>
+    <app-button #loadingOk class="form-info form-button" (buttonClick)="loadingEnd()" buttonId="loadingOk">Ok</app-button>
   </div>
 </div>

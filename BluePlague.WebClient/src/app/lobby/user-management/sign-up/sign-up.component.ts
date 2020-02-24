@@ -27,7 +27,8 @@ export class SignUpComponent implements OnInit {
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
     private router: Router
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.form = new AppFormGroup({
@@ -49,6 +50,7 @@ export class SignUpComponent implements OnInit {
         confirmPasswordValidator($localize`:@@controls.confirm-password:Confirm password`)
       ])
     });
+    setTimeout(() => this.userManagementService.loadingEnd());
   }
 
   signUp() {
