@@ -3,6 +3,18 @@
   color: white;
 }
 
+.article-font-inactive {
+  font: 18px PT Mono;
+  color: white;
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .text-font {
   font: 22px PT Mono;
   font-weight: 500;

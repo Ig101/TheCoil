@@ -1,0 +1,18 @@
+:host {
+  a {
+    cursor: pointer;
+    color: #ccc;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  a:active {
+    text-decoration: underline;
+    color: #cc4;
+  }
+
+  a:focus {
+    text-decoration: underline;
+  }
+}

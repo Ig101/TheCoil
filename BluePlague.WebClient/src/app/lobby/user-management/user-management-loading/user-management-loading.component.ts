@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { UserManagementService } from '../../services/user-management.service';
 
 @Component({
   selector: 'app-user-management-loading',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserManagementLoadingComponent implements OnInit {
 
-  constructor() { }
+  get errors() {
+    return this.userManagementService.errors;
+  }
+
+  constructor(private userManagementService: UserManagementService) { }
 
   ngOnInit(): void {
   }
 
+  loadingEnd() {
+    this.userManagementService.loadingEnd();
+  }
 }

@@ -8,7 +8,7 @@ import { ModalService } from './services/modal.service';
 import { ModalComponentFactory } from './modal/modal-component-factory';
 import { UserResolverService } from './resolvers/user-resolver.service';
 import { UserService } from './services/user.service';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { ButtonComponent } from './components/button/button.component';
 import { LinkComponent } from './components/link/link.component';
@@ -16,7 +16,8 @@ import { LinkComponent } from './components/link/link.component';
   declarations: [ModalShellComponent, TextInputComponent, ButtonComponent, LinkComponent],
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [
     WebCommunicationService,
@@ -30,6 +31,7 @@ import { LinkComponent } from './components/link/link.component';
   exports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     ModalShellComponent,
     TextInputComponent,
     ButtonComponent,

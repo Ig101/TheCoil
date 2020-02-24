@@ -1,1 +1,10 @@
-<p>sign-up works!</p>
+<form class="text-font form" [formGroup]="form" (ngSubmit)="signUp()">
+  <p class="form-text">Please sign up...</p>
+  <app-text-input class="form-text form-info" formControlName="name" [validations]="form.controls.name.errors">Name:</app-text-input>
+  <app-text-input class="form-text form-info" formControlName="email" [validations]="form.controls.email.errors">Email:</app-text-input>
+  <app-text-input class="form-text form-info" formControlName="password" type="password" [validations]="form.controls.password.errors" (textChange)="form.controls.confirmPassword.updateValueAndValidity()">Password:</app-text-input>
+  <app-text-input class="form-text form-info" formControlName="confirmPassword" type="password" [validations]="form.controls.confirmPassword.errors">Confirm password:</app-text-input>
+  <p></p>
+  <app-button class="form-info form-button" type="submit">Sign up</app-button>
+  <app-button class="form-info form-button" type="button" (buttonClick)="toSignIn()">To lobby</app-button>
+</form>

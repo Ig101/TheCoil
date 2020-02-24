@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserManagementWindowEnum } from '../models/enum/user-management-window.enum';
+import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
+import { FormGroup } from '@angular/forms';
+import { UserManagementService } from '../services/user-management.service';
 
 @Component({
   selector: 'app-user-management',
@@ -11,9 +14,14 @@ export class UserManagementComponent implements OnInit {
   userManagementWindowEnum = UserManagementWindowEnum;
   userState: UserManagementWindowEnum = this.userManagementWindowEnum.SignIn;
 
-  constructor() { }
+  get loading() {
+    return this.userManagementService.loading;
+  }
+
+  constructor(
+    private userManagementService: UserManagementService
+    ) { }
 
   ngOnInit(): void {
   }
-
 }

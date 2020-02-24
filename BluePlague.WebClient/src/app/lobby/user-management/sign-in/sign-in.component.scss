@@ -1,7 +1,11 @@
 :host {
   @import '../../lobby.module.scss';
 
-  app-text-input {
-    max-width: 440px;
+  .password {
+    margin-bottom: 4px;
+  }
+
+  .password-link {
+    margin-bottom: 10px;
   }
 }

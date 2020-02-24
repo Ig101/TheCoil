@@ -1,1 +1,10 @@
-<p>user-management-loading works!</p>
+<div class="form">
+  <div *ngIf="!errors">
+    <p class="form-text form-info text-font-inactive typing-text form-info">...</p>
+  </div>
+  <div *ngIf="errors">
+    <p class="form-text text-font form-info" *ngFor="let item of errors">* {{item}}</p>
+    <p></p>
+    <app-button class="form-info form-button" (buttonClick)="loadingEnd()">Ok</app-button>
+  </div>
+</div>

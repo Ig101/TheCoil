@@ -1,4 +1,4 @@
-<div><button class="text-font-inactive" (focus)="focused=true" (mouseenter)="entered=true" (blur)="focused=false" (mouseleave)="entered=false" (click)="click()">
+<div><button class="text-font-inactive" [type]="type" (focus)="focused=true" (mouseenter)="entered=true" (blur)="focused=false" (mouseleave)="entered=false" (click)="click()">
   <span [hidden]="focused || entered">&lt; </span>
   <span [hidden]="!(focused || entered)">&gt; </span>
   <ng-content></ng-content>

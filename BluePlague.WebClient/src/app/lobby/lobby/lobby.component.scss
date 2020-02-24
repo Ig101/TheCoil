@@ -2,7 +2,8 @@
   @import '../lobby.module.scss';
 
   .lobby-panel {
-    height: 560px;
+    position: relative;
+    height: 610px;
     margin: 32px;
     border: double #fff 5px;
     background: #000;

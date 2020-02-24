@@ -1,1 +1,4 @@
-<p><ng-content></ng-content><input class="text-font" [disabled]="disabled" [type]="type"/></p>
+<div>
+  <p><ng-content></ng-content><input class="text-font" [disabled]="disabled" [type]="type" [(ngModel)]="tempValue" (input)="textChange.emit(tempValue)"/></p>
+  <p *ngFor="let item of extra" class="article-font extra" [ngStyle]="{color: item.color}">* {{item.text}}</p>
+</div>

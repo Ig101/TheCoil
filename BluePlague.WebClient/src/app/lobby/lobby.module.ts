@@ -13,6 +13,8 @@ import { ForgotPasswordComponent } from './user-management/forgot-password/forgo
 import { NewPasswordComponent } from './user-management/new-password/new-password.component';
 import { UserSettingsComponent } from './user-management/user-settings/user-settings.component';
 import { NewGameStartComponent } from './user-management/new-game-start/new-game-start.component';
+import { UserManagementService } from './services/user-management.service';
+import { PasswordChangeResolverService } from './resolvers/password-change-resolver.service';
 
 
 @NgModule({
@@ -34,7 +36,9 @@ import { NewGameStartComponent } from './user-management/new-game-start/new-game
     LobbyRoutingModule
   ],
   providers: [
-    EmailConfirmationResolverService
+    EmailConfirmationResolverService,
+    UserManagementService,
+    PasswordChangeResolverService
   ]
 })
 export class LobbyModule { }

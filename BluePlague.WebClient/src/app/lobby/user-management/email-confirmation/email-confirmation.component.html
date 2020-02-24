@@ -1,0 +1,8 @@
+<div class="text-font form">
+  <p class="form-text">Email is not confirmed!</p>
+  <p class="form-text">Check your email for confirmation code.</p>
+  <p></p>
+  <app-button *ngIf="time <= 0" class="form-info form-button" type="button" (buttonClick)="sendAgain()">Send again</app-button>
+  <p *ngIf="time > 0" class="form-text button-filler">{{time}} seconds untill next attempt.</p>
+  <app-button class="form-info form-button" type="button" (buttonClick)="toSignIn()">To lobby</app-button>
+</div>

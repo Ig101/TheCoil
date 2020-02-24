@@ -1,4 +1,7 @@
 :host {
+  div {
+    width: 100%;
+  }
   input {
     border: none;
     background: none;
@@ -6,11 +9,18 @@
     flex: 1;
     outline: none;
     margin-left: 4px;
+    width: 100%;
   }
   p {
     margin: inherit;
     width: 100%;
     display: flex;
+    white-space: nowrap;
     margin: 0;
+  }
+  .extra {
+    margin-top: 4px;
+    margin-left: 12px;
+    white-space: initial;
   }
 }

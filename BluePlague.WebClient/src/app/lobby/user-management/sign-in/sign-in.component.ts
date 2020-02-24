@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { controlRequiredSilentValidator } from 'src/app/shared/validators/control-required-silent.validator';
+import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
+import { Router } from '@angular/router';
+import { UserManagementService } from '../../services/user-management.service';
+import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-group';
 
 @Component({
   selector: 'app-sign-in',
@@ -9,26 +13,35 @@ import { controlRequiredSilentValidator } from 'src/app/shared/validators/contro
 })
 export class SignInComponent implements OnInit {
 
-  form: FormGroup;
+  form: AppFormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private webCommunicationService: WebCommunicationService,
+    private userManagementService: UserManagementService,
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
-      email: this.formBuilder.control('', [controlRequiredSilentValidator]),
-      password: this.formBuilder.control('', [controlRequiredSilentValidator]),
+    this.form = new AppFormGroup({
+      email: this.formBuilder.control('', [controlRequiredSilentValidator($localize`:@@controls.email:Email`)]),
+      password: this.formBuilder.control('', [controlRequiredSilentValidator($localize`:@@controls.password:Password`)]),
     });
   }
 
   signIn() {
-
+    const errors = this.form.appErrors;
+    if (errors.length > 0) {
+      this.userManagementService.loadingStart(errors);
+    } else {
+      console.log('signin');
+    }
   }
 
   toSignUp() {
-
+    this.router.navigate(['lobby/signup']);
   }
 
-  forgotPassword() {
-
+  toForgotPassword() {
+    this.router.navigate(['lobby/signin/forgot-password']);
   }
 }

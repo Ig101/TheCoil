@@ -7,14 +7,21 @@
 }
 
 .form-text {
-  overflow: hidden;
-  white-space: nowrap;
   margin: 10px 0;
   display: flex;
   flex-direction: row;
 }
 
 .typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 1s infinite;
+  opacity: 0;
+}
+
+.typing-text-forward {
+  overflow: hidden;
+  white-space: nowrap;
   animation: typing 0.5s steps(20, end) forwards;
   opacity: 0;
 }
@@ -31,6 +38,10 @@
   margin: 6px 0;
   display: flex;
   flex-direction: row;
+}
+
+.form-sub-link {
+  margin-left: 12px;
 }
 
 .form {
