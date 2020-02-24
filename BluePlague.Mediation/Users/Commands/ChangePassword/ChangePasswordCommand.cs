@@ -2,20 +2,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Identity;
-using BluePlague.Domain.Identity.Entities;
 using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
-namespace BluePlague.Mediation.Users.Commands.VerifyEmail
+namespace BluePlague.Mediation.Users.Commands.ChangePassword
 {
-    public class VerifyEmailCommand : IRequest
+    public class ChangePasswordCommand : IRequest
     {
         public string UserId { get; set; }
 
         public string Code { get; set; }
 
-        private class Handler : IRequestHandler<VerifyEmailCommand>
+        public string Password { get; set; }
+
+        private class Handler : IRequestHandler<ChangePasswordCommand>
         {
             private readonly IdentityUserManager _userManager;
 
@@ -24,7 +24,7 @@ namespace BluePlague.Mediation.Users.Commands.VerifyEmail
                 _userManager = userManager;
             }
 
-            public async Task<Unit> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null)
@@ -42,15 +42,15 @@ namespace BluePlague.Mediation.Users.Commands.VerifyEmail
                     };
                 }
 
-                var result = await _userManager.ConfirmEmailAsync(user, request.Code);
+                var result = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
                 if (!result.Succeeded)
                 {
                     throw new ValidationErrorsException()
                     {
                         Errors = result.Errors.Select(x => new HttpErrorInfo()
                         {
-                        Key = x.Code,
-                        Description = x.Description
+                            Key = x.Code,
+                            Description = x.Description
                         })
                     };
                 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Email;
+using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
 using BluePlague.Infrastructure.Models.ErrorHandling;
 using BluePlague.Mediation.Users.Commands.SendEmailVerification;
@@ -21,16 +22,13 @@ namespace BluePlague.Mediation.Users.Commands.SignUp
 
         private class Handler : IRequestHandler<SignUpCommand>
         {
-            private readonly UserManager<User> _userManager;
-            private readonly EmailSender _emailSender;
+            private readonly IdentityUserManager _userManager;
             private readonly IMediator _mediator;
 
             public Handler(
-                UserManager<User> userManager,
-                EmailSender emailSender,
+                IdentityUserManager userManager,
                 IMediator mediator)
             {
-                _emailSender = emailSender;
                 _mediator = mediator;
                 _userManager = userManager;
             }

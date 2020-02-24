@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
+using BluePlague.Mediation.Users.Commands.ChangePassword;
 using BluePlague.Mediation.Users.Commands.SendEmailVerification;
+using BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification;
 using BluePlague.Mediation.Users.Commands.SignIn;
 using BluePlague.Mediation.Users.Commands.SignUp;
 using BluePlague.Mediation.Users.Commands.VerifyEmail;
@@ -40,6 +42,20 @@ namespace BluePlague.Api.Controllers
 
         [HttpPost("send-verification")]
         public async Task<IActionResult> SendEmailVerificationTokenCommandAsync([FromBody]SendEmailVerificationByEmailCommand model)
+        {
+            await Mediator.Send(model);
+            return NoContent();
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePasswordAsync([FromBody]ChangePasswordCommand model)
+        {
+            await Mediator.Send(model);
+            return NoContent();
+        }
+
+        [HttpPost("send-change-password")]
+        public async Task<IActionResult> SendChangePasswordAsync([FromBody]SendPasswordChangeVerificationCommand model)
         {
             await Mediator.Send(model);
             return NoContent();

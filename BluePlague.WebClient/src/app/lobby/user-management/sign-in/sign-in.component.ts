@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { controlRequiredSilentValidator } from 'src/app/shared/validators/control-required-silent.validator';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, ActivatedRoute } from '@angular/router';
 import { UserManagementService } from '../../services/user-management.service';
 import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-group';
 
@@ -15,11 +15,14 @@ export class SignInComponent implements OnInit {
 
   form: AppFormGroup;
 
+  showConfirmationMessage = true;
+
   constructor(
     private formBuilder: FormBuilder,
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
-    private router: Router) { }
+    private router: Router,
+    private routeSnapshot: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.form = new AppFormGroup({

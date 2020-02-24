@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Email;
+using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
 using BluePlague.Infrastructure.Models.Email;
 using BluePlague.Infrastructure.Models.ErrorHandling;
@@ -15,11 +16,11 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
 
         private class Handler : IRequestHandler<SendEmailVerificationCommand>
         {
-            private readonly UserManager<User> _userManager;
+            private readonly IdentityUserManager _userManager;
             private readonly EmailSender _emailSender;
 
             public Handler(
-                UserManager<User> userManager,
+                IdentityUserManager userManager,
                 EmailSender emailSender)
             {
                 _emailSender = emailSender;

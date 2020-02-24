@@ -2,32 +2,31 @@ using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity;
-using BluePlague.Domain.Identity.Entities;
 using BluePlague.Infrastructure.Models.Email;
 using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
+namespace BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification
 {
-    public class SendEmailVerificationByEmailCommand : IRequest
+    public class SendPasswordChangeVerificationCommand : IRequest
     {
         public string Email { get; set; }
 
-        private class Handler : IRequestHandler<SendEmailVerificationByEmailCommand>
+        private class Handler : IRequestHandler<SendPasswordChangeVerificationCommand>
         {
             private readonly IdentityUserManager _userManager;
-            private readonly IMediator _mediator;
+            private readonly EmailSender _emailSender;
 
             public Handler(
                 IdentityUserManager userManager,
-                IMediator mediator)
+                EmailSender emailSender)
             {
-                _mediator = mediator;
+                _emailSender = emailSender;
                 _userManager = userManager;
             }
 
-            public async Task<Unit> Handle(SendEmailVerificationByEmailCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(SendPasswordChangeVerificationCommand request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
@@ -45,9 +44,12 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
                     };
                 }
 
-                await _mediator.Send(new SendEmailVerificationCommand()
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                await _emailSender.SendAsync(new EmailMessage()
                 {
-                    User = user
+                    ToAdresses = new[] { request.Email },
+                    Subject = "Password change",
+                    Body = $"Your token is {token}"
                 });
                 return Unit.Value;
             }
