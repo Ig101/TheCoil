@@ -9,7 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1"/>
-    <PackageReference Include="Microsoft.AspNetCore.Proxy" Version="0.2.0"/>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1"/>
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1"/>

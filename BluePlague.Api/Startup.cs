@@ -63,7 +63,8 @@ namespace BluePlague.Api
         {
             var path = context.Request.Path;
             return path.HasValue &&
-                !path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase);
+                !path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase) &&
+                !path.Value.StartsWith("/account", StringComparison.OrdinalIgnoreCase);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,14 +75,6 @@ namespace BluePlague.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                var action = new Action<IApplicationBuilder>(builder => builder.RunProxy(new ProxyOptions
-                {
-                    Scheme = "http",
-                    Host = "localhost",
-                    Port = "4200"
-                }));
-                app.MapWhen(IsFrontendRoute, action);
-                app.UseStaticFiles();
             }
 
             app.UseHttpsRedirection();

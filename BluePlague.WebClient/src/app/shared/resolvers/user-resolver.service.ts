@@ -13,12 +13,6 @@ export class UserResolverService implements Resolve<ActiveUser> {
     ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): ActiveUser | Observable<ActiveUser> | Promise<ActiveUser> {
-    if (this.userService.user) {
-      return this.userService.user;
-    }
-    if (!document.cookie.includes('Authorization')) {
-      return null;
-    }
     return this.userService.getActiveUser()
       .pipe(map(result => {
         return result.result;
