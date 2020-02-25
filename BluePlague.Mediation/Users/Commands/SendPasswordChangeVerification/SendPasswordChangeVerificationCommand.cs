@@ -2,10 +2,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity;
+using BluePlague.Infrastructure;
 using BluePlague.Infrastructure.Models.Email;
 using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification
 {
@@ -17,12 +19,15 @@ namespace BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification
         {
             private readonly IdentityUserManager _userManager;
             private readonly EmailSender _emailSender;
+            private readonly ServerSettings _serverSettings;
 
             public Handler(
                 IdentityUserManager userManager,
-                EmailSender emailSender)
+                EmailSender emailSender,
+                IOptions<ServerSettings> serverSettings)
             {
                 _emailSender = emailSender;
+                _serverSettings = serverSettings.Value;
                 _userManager = userManager;
             }
 
@@ -48,8 +53,8 @@ namespace BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification
                 await _emailSender.SendAsync(new EmailMessage()
                 {
                     ToAdresses = new[] { request.Email },
-                    Subject = "Password change",
-                    Body = $"Your token is {token}"
+                    Subject = "Change password request",
+                    Body = $"<p>Hello!</p><p>If you want to change you password in Blue Plague, follow the link https://{_serverSettings.Site}/lobby/signin/new-password/{user.Id}/{token}.</p><p>If you didn't request this message, just ignore it.</p>"
                 });
                 return Unit.Value;
             }

@@ -1,15 +1,43 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute, Router } from '@angular/router';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
 import { Observable } from 'rxjs';
+import { VerifyEmailRequest } from '../models/verify-email-request.model';
+import { map } from 'rxjs/operators';
+import { UserManagementService } from '../services/user-management.service';
 
 @Injectable()
 export class EmailConfirmationResolverService implements Resolve<boolean> {
+
+  id: string;
+  code: string;
+
   constructor(
-    private webCommunicationService: WebCommunicationService
-    ) { }
+    private webCommunicationService: WebCommunicationService,
+    private router: Router,
+    private userManagementService: UserManagementService,
+    activatedRoute: ActivatedRoute
+    ) {
+    this.code = activatedRoute.snapshot.params.token;
+    this.id = activatedRoute.snapshot.params.id;
+  }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
-    return true;
+    // TODO GlobalLoadingStart
+    return this.webCommunicationService.post<VerifyEmailRequest, void>('api/auth/verify', {
+      userId: this.id,
+      code: this.code,
+    })
+    .pipe(map(result => {
+      if (result.success) {
+        this.userManagementService.emailWasConfirmed = true;
+        this.router.navigate(['lobby/signin']);
+        return true;
+      } else {
+        this.userManagementService.loadingStart(result.errors);
+        this.router.navigate(['lobby/signin']);
+        return false;
+      }
+    }));
   }
 }

@@ -3,7 +3,7 @@ using BluePlague.Api.Filters;
 using BluePlague.Domain;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Game;
-using BluePlague.Domain.Identity;
+using BluePlague.Infrastructure;
 using BluePlague.Mediation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -49,6 +49,8 @@ namespace BluePlague.Api
                 {
                     options.RegisterValidatorsFromAssembly(MediationRegistry.GetAssembly());
                 });
+            services.Configure<ServerSettings>(
+                Configuration.GetSection("Server"));
             services.Configure<MongoConnectionSettings>(
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(

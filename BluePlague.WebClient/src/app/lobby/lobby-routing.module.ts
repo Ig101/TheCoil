@@ -12,7 +12,6 @@ import { NewGameStartComponent } from './user-management/new-game-start/new-game
 import { NewPasswordComponent } from './user-management/new-password/new-password.component';
 import { UserComponent } from './user-management/user/user.component';
 import { UserSettingsComponent } from './user-management/user-settings/user-settings.component';
-import { PasswordChangeResolverService } from './resolvers/password-change-resolver.service';
 
 const loginRoutes: Routes = [
   {
@@ -33,8 +32,7 @@ const loginRoutes: Routes = [
   },
   {
     path: 'signin/new-password/:id/:token',
-    component: NewPasswordComponent,
-    resolve: { passwordConfirmed: PasswordChangeResolverService }
+    component: NewPasswordComponent
   },
   {
     path: '',

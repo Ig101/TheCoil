@@ -5,12 +5,12 @@ import { WebCommunicationService } from 'src/app/shared/services/web-communicati
 import { Router, ActivatedRouteSnapshot, ActivatedRoute } from '@angular/router';
 import { UserManagementService } from '../../services/user-management.service';
 import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-group';
-import { SignInForm } from '../../models/sign-in-form.model';
 import { switchMap } from 'rxjs/operators';
 import { UserService } from 'src/app/shared/services/user.service';
 import { ExternalResponse } from 'src/app/shared/models/external-response.model';
 import { ActiveUser } from 'src/app/shared/models/active-user.model';
 import { of } from 'rxjs';
+import { SignInRequest } from '../../models/sign-in-request.model';
 
 @Component({
   selector: 'app-sign-in',
@@ -22,6 +22,7 @@ export class SignInComponent implements OnInit {
   form: AppFormGroup;
 
   showConfirmationMessage = false;
+  showPasswordWasChangedMessage = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,16 +38,23 @@ export class SignInComponent implements OnInit {
       email: this.formBuilder.control('', [controlRequiredSilentValidator($localize`:@@controls.email:Email`)]),
       password: this.formBuilder.control('', [controlRequiredSilentValidator($localize`:@@controls.password:Password`)]),
     });
-    setTimeout(() => this.userManagementService.loadingEnd());
+    setTimeout(() => {
+      this.showPasswordWasChangedMessage = this.userManagementService.passwordWasChanged;
+      this.showConfirmationMessage = this.userManagementService.emailWasConfirmed;
+      this.userManagementService.passwordWasChanged = false;
+      this.userManagementService.emailWasConfirmed = false;
+      this.userManagementService.loadingEnd();
+    });
   }
 
   signIn() {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
+      this.form.controls.password.setValue('');
       this.userManagementService.loadingStart(errors);
     } else {
       this.userManagementService.loadingStart();
-      this.webCommunicationService.post<SignInForm, void>('api/auth/signin', {
+      this.webCommunicationService.post<SignInRequest, void>('api/auth/signin', {
         email: this.form.controls.email.value,
         password: this.form.controls.password.value
       })
@@ -59,11 +67,12 @@ export class SignInComponent implements OnInit {
       }))
       .subscribe(result => {
         if (result.success) {
-          this.userManagementService.loadingEnd();
+          this.router.navigate(['lobby']);
         } else if (result.statusCode === 403) {
           this.userService.email = this.form.controls.email.value;
           this.router.navigate(['lobby/signup/confirmation']);
         } else {
+          this.form.controls.password.setValue('');
           this.userManagementService.loadingEnd(result.errors);
         }
       });

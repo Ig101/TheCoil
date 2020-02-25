@@ -6,6 +6,10 @@ export class UserManagementService {
   loadingInternal = false;
   errors: string[];
 
+  zeroTimer = false;
+  passwordWasChanged = false;
+  emailWasConfirmed = false;
+
   timer;
 
   get loading() {

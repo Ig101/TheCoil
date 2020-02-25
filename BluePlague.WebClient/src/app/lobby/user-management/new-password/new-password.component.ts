@@ -3,12 +3,13 @@ import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-grou
 import { FormBuilder } from '@angular/forms';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
 import { UserManagementService } from '../../services/user-management.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { passwordDigitsValidator } from 'src/app/shared/validators/password-digits.validator';
 import { passwordLowercaseValidator } from 'src/app/shared/validators/password-lowercase.validator';
 import { passwordUppercaseValidator } from 'src/app/shared/validators/password-uppercase.validator';
 import { controlMinLengthValidator } from 'src/app/shared/validators/control-min-length.validator';
 import { confirmPasswordValidator } from 'src/app/shared/validators/confirm-password.validator';
+import { ChangePasswordRequest } from '../../models/change-password-request.model';
 
 @Component({
   selector: 'app-new-password',
@@ -18,13 +19,18 @@ import { confirmPasswordValidator } from 'src/app/shared/validators/confirm-pass
 export class NewPasswordComponent implements OnInit {
 
   form: AppFormGroup;
+  code: string;
+  id: string;
 
   constructor(
     private formBuilder: FormBuilder,
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
-    private router: Router
+    private router: Router,
+    activatedRoute: ActivatedRoute
   ) {
+    this.code = activatedRoute.snapshot.params.token;
+    this.id = activatedRoute.snapshot.params.id;
   }
 
   ngOnInit(): void {
@@ -46,8 +52,25 @@ export class NewPasswordComponent implements OnInit {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
       this.userManagementService.loadingStart(errors);
+      this.form.controls.password.setValue('');
+      this.form.controls.confirmPassword.setValue('');
     } else {
-      console.log('pchange');
+      this.userManagementService.loadingStart();
+      this.webCommunicationService.post<ChangePasswordRequest, void>('api/auth/change-password', {
+        userId: this.id,
+        code: this.code,
+        password: this.form.controls.password.value
+      })
+      .subscribe(result => {
+        if (result.success) {
+          this.userManagementService.passwordWasChanged = true;
+          this.router.navigate(['lobby/signin']);
+        } else {
+          this.form.controls.password.setValue('');
+          this.form.controls.confirmPassword.setValue('');
+          this.userManagementService.loadingEnd(result.errors);
+        }
+      });
     }
   }
 

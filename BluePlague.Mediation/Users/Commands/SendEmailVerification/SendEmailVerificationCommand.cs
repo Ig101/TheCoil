@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
+using BluePlague.Infrastructure;
 using BluePlague.Infrastructure.Models.Email;
 using BluePlague.Infrastructure.Models.ErrorHandling;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
 {
@@ -18,12 +20,15 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
         {
             private readonly IdentityUserManager _userManager;
             private readonly EmailSender _emailSender;
+            private readonly ServerSettings _serverSettings;
 
             public Handler(
                 IdentityUserManager userManager,
-                EmailSender emailSender)
+                EmailSender emailSender,
+                IOptions<ServerSettings> serverSettings)
             {
                 _emailSender = emailSender;
+                _serverSettings = serverSettings.Value;
                 _userManager = userManager;
             }
 
@@ -34,7 +39,7 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
                 {
                     ToAdresses = new[] { request.User.Email },
                     Subject = "Email verification required",
-                    Body = $"Your token is {token}"
+                    Body = $"<p>Hello!</p><p>To confirm your account in Blue Plague follow the link https://{_serverSettings.Site}/lobby/signup/confirmation/{request.User.Id}/{token}.</p><p>If you didn't request this message, just ignore it.</p>"
                 });
                 return Unit.Value;
             }

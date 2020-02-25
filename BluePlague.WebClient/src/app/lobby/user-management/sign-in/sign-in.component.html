@@ -1,6 +1,7 @@
 <form class="text-font form" [formGroup]="form" (ngSubmit)="signIn()">
   <p class="form-text">Welcome to the Blue Plague.</p>
   <p *ngIf="showConfirmationMessage" class="form-text">Email is successfully confirmed!</p>
+  <p *ngIf="showPasswordWasChangedMessage" class="form-text">Password was changed.</p>
   <p class="form-text">Authorization required...</p>
   <app-text-input class="form-text form-info" formControlName="email">Email:</app-text-input>
   <app-text-input class="form-text form-info password" formControlName="password" type="password">Password:</app-text-input>

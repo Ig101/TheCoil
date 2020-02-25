@@ -16,7 +16,7 @@ export class UserService {
   ) { }
 
   getActiveUser() {
-   /* if (!document.cookie.includes('Authorization')) {
+    if (!document.cookie.includes('Authorization')) {
       of({
         success: false,
         statusCode: 401,
@@ -29,7 +29,7 @@ export class UserService {
         statusCode: 200,
         result: this.user
       } as ExternalResponse<ActiveUser>);
-    }*/
+    }
     return this.webCommunicationService.get<ActiveUser>('api/user')
     .pipe(tap(result => {
       this.user = result.result;

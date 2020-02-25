@@ -12,6 +12,8 @@ import { WebCommunicationService } from 'src/app/shared/services/web-communicati
 import { UserManagementService } from '../../services/user-management.service';
 import { Router } from '@angular/router';
 import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-group';
+import { SignUpRequest } from '../../models/sign-up-request.model';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -26,6 +28,7 @@ export class SignUpComponent implements OnInit {
     private formBuilder: FormBuilder,
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
+    private userService: UserService,
     private router: Router
   ) {
   }
@@ -57,8 +60,26 @@ export class SignUpComponent implements OnInit {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
       this.userManagementService.loadingStart(errors);
+      this.form.controls.password.setValue('');
+      this.form.controls.confirmPassword.setValue('');
     } else {
-      console.log('signup');
+      this.userManagementService.loadingStart();
+      this.webCommunicationService.post<SignUpRequest, void>('api/auth/signup', {
+        name: this.form.controls.name.value,
+        email: this.form.controls.email.value,
+        password: this.form.controls.password.value
+      })
+      .subscribe(result => {
+        if (result.success) {
+          this.userService.email = this.form.controls.email.value;
+          this.userManagementService.zeroTimer = true;
+          this.router.navigate(['signup/confirmation']);
+        } else {
+          this.form.controls.password.setValue('');
+          this.form.controls.confirmPassword.setValue('');
+          this.userManagementService.loadingEnd(result.errors);
+        }
+      });
     }
   }
 
