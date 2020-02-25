@@ -14,7 +14,9 @@ import { NewPasswordComponent } from './user-management/new-password/new-passwor
 import { UserSettingsComponent } from './user-management/user-settings/user-settings.component';
 import { NewGameStartComponent } from './user-management/new-game-start/new-game-start.component';
 import { UserManagementService } from './services/user-management.service';
-import { PasswordChangeResolverService } from './resolvers/password-change-resolver.service';
+import { UserMenuResolverService } from './resolvers/user-menu-resolver.service';
+import { EmailMenuResolverService } from './resolvers/email-menu-resolver.service';
+import { AuthorizationMenuResolverService } from './resolvers/authorization-menu-resolver.service';
 
 
 @NgModule({
@@ -38,7 +40,9 @@ import { PasswordChangeResolverService } from './resolvers/password-change-resol
   providers: [
     EmailConfirmationResolverService,
     UserManagementService,
-    PasswordChangeResolverService
+    AuthorizationMenuResolverService,
+    EmailMenuResolverService,
+    UserMenuResolverService
   ]
 })
 export class LobbyModule { }

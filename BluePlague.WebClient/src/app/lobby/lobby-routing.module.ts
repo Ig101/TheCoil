@@ -12,39 +12,50 @@ import { NewGameStartComponent } from './user-management/new-game-start/new-game
 import { NewPasswordComponent } from './user-management/new-password/new-password.component';
 import { UserComponent } from './user-management/user/user.component';
 import { UserSettingsComponent } from './user-management/user-settings/user-settings.component';
+import { UserMenuResolverService } from './resolvers/user-menu-resolver.service';
+import { AuthorizationMenuResolverService } from './resolvers/authorization-menu-resolver.service';
+import { EmailMenuResolverService } from './resolvers/email-menu-resolver.service';
 
 const loginRoutes: Routes = [
   {
     path: 'signin',
-    component: SignInComponent
+    component: SignInComponent,
+    resolve: { AuthorizationMenuResolverService }
   },
   {
     path: 'signup',
-    component: SignUpComponent
+    component: SignUpComponent,
+    resolve: { AuthorizationMenuResolverService }
   },
   {
     path: 'signup/confirmation',
-    component: EmailConfirmationComponent
+    component: EmailConfirmationComponent,
+    resolve: { EmailMenuResolverService }
   },
   {
     path: 'signin/forgot-password',
-    component: ForgotPasswordComponent
+    component: ForgotPasswordComponent,
+    resolve: { AuthorizationMenuResolverService }
   },
   {
     path: 'signin/new-password/:id/:token',
-    component: NewPasswordComponent
+    component: NewPasswordComponent,
+    resolve: { AuthorizationMenuResolverService }
   },
   {
     path: '',
-    component: UserComponent
+    component: UserComponent,
+    resolve: { UserMenuResolverService }
   },
   {
     path: 'new',
-    component: NewGameStartComponent
+    component: NewGameStartComponent,
+    resolve: { UserMenuResolverService }
   },
   {
     path: 'settings',
-    component: UserSettingsComponent
+    component: UserSettingsComponent,
+    resolve: { UserMenuResolverService }
   }
 ];
 

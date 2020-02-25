@@ -9,24 +9,18 @@ import { UserManagementService } from '../services/user-management.service';
 @Injectable()
 export class EmailConfirmationResolverService implements Resolve<boolean> {
 
-  id: string;
-  code: string;
-
   constructor(
     private webCommunicationService: WebCommunicationService,
     private router: Router,
-    private userManagementService: UserManagementService,
-    activatedRoute: ActivatedRoute
+    private userManagementService: UserManagementService
     ) {
-    this.code = activatedRoute.snapshot.params.token;
-    this.id = activatedRoute.snapshot.params.id;
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
     // TODO GlobalLoadingStart
     return this.webCommunicationService.post<VerifyEmailRequest, void>('api/auth/verify', {
-      userId: this.id,
-      code: this.code,
+      userId: route.params.id,
+      code: route.params.token,
     })
     .pipe(map(result => {
       if (result.success) {

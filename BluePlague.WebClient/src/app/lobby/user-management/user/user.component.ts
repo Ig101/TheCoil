@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserManagementService } from '../../services/user-management.service';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-user',
@@ -9,10 +10,12 @@ import { UserManagementService } from '../../services/user-management.service';
 export class UserComponent implements OnInit {
 
   constructor(
-    private userManagementService: UserManagementService
+    private userManagementService: UserManagementService,
+    private userservice: UserService
   ) { }
 
   ngOnInit(): void {
+    console.log(this.userservice.user);
     setTimeout(() => this.userManagementService.loadingEnd());
   }
 
