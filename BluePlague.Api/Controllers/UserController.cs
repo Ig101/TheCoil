@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BluePlague.Mediation.Users.Queries.GetActiveUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,9 +17,9 @@ namespace BluePlague.Api.Controllers
 
     [HttpGet]
     [Authorize]
-    public IActionResult GetActiveUser()
+    public async Task<IActionResult> GetActiveUserAsync()
     {
-        return Ok(Mediator.Send(new GetActiveUserQuery()
+        return Ok(await Mediator.Send(new GetActiveUserQuery()
         {
             UserName = User.Identity.Name
         }));

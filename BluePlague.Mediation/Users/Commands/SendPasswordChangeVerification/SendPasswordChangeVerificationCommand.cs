@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity;
 using BluePlague.Infrastructure;
@@ -54,7 +55,7 @@ namespace BluePlague.Mediation.Users.Commands.SendPasswordChangeVerification
                 {
                     ToAdresses = new[] { request.Email },
                     Subject = "Change password request",
-                    Body = $"<p>Hello!</p><p>If you want to change you password in Blue Plague, follow the link https://{_serverSettings.Site}/lobby/signin/new-password/{user.Id}/{token}.</p><p>If you didn't request this message, just ignore it.</p>"
+                    Body = $"<p>Hello!</p><p>If you want to change you password in Blue Plague, follow the link <a href=\"{_serverSettings.Site}/lobby/signin/new-password/{user.Id}/{HttpUtility.UrlEncode(token)}\">link</a>.</p><p>If you didn't request this message, just ignore it.</p>"
                 });
                 return Unit.Value;
             }

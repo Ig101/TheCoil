@@ -8,6 +8,7 @@ import { ExternalResponse } from '../models/external-response.model';
 @Injectable()
 export class UserService {
 
+  unauthorized = false;
   user: ActiveUser;
   email: string;
 
@@ -16,13 +17,6 @@ export class UserService {
   ) { }
 
   getActiveUser() {
-    if (!document.cookie.includes('Authorization')) {
-      of({
-        success: false,
-        statusCode: 401,
-        result: undefined
-      } as ExternalResponse<ActiveUser>);
-    }
     if (this.user) {
       return of({
         success: true,
@@ -33,6 +27,11 @@ export class UserService {
     return this.webCommunicationService.get<ActiveUser>('api/user')
     .pipe(tap(result => {
       this.user = result.result;
+      if (this.user) {
+        this.email = this.user.email;
+      } else {
+        this.unauthorized = true;
+      }
     }));
   }
 }

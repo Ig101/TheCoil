@@ -17,7 +17,7 @@ export class EmailConfirmationResolverService implements Resolve<boolean> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
-    // TODO GlobalLoadingStart
+    this.userManagementService.loadingStart();
     return this.webCommunicationService.post<VerifyEmailRequest, void>('api/auth/verify', {
       userId: route.params.id,
       code: route.params.token,
@@ -28,7 +28,7 @@ export class EmailConfirmationResolverService implements Resolve<boolean> {
         this.router.navigate(['lobby/signin']);
         return true;
       } else {
-        this.userManagementService.loadingStart(result.errors);
+        this.userManagementService.loadingError(result.errors);
         this.router.navigate(['lobby/signin']);
         return false;
       }

@@ -12,8 +12,9 @@ import { EmailRequest } from '../../models/email-request.model';
 })
 export class EmailConfirmationComponent implements OnInit, OnDestroy {
 
-  private timer: any;
-  time = 0;
+  get time() {
+    return this.userManagementService.emailTime;
+  }
 
   constructor(
     private webCommunicationService: WebCommunicationService,
@@ -26,28 +27,10 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.userManagementService.loadingEnd();
-      if (!this.userManagementService.zeroTimer) {
-        this.resetTimer();
-      } else {
-        this.userManagementService.zeroTimer = false;
-      }
     });
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.timer);
-  }
-
-  resetTimer() {
-    this.time = 120;
-    clearInterval(this.timer);
-    this.timer = setInterval(() => {
-      this.time--;
-      if (this.time <= 0) {
-        clearInterval(this.timer);
-      }
-    }, 1000);
-  }
+  ngOnDestroy(): void { }
 
   sendAgain() {
     this.userManagementService.loadingStart();
@@ -56,10 +39,10 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
     })
     .subscribe(result => {
       if (result.success) {
+        this.userManagementService.startEmailTimer(60);
         this.userManagementService.loadingEnd();
-        this.resetTimer();
       } else {
-        this.userManagementService.loadingEnd(result.errors);
+        this.userManagementService.loadingError(result.errors);
       }
     });
   }

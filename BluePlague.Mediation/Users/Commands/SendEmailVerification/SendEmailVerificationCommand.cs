@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using BluePlague.Domain.Email;
 using BluePlague.Domain.Identity;
 using BluePlague.Domain.Identity.Entities;
@@ -39,7 +40,7 @@ namespace BluePlague.Mediation.Users.Commands.SendEmailVerification
                 {
                     ToAdresses = new[] { request.User.Email },
                     Subject = "Email verification required",
-                    Body = $"<p>Hello!</p><p>To confirm your account in Blue Plague follow the link https://{_serverSettings.Site}/lobby/signup/confirmation/{request.User.Id}/{token}.</p><p>If you didn't request this message, just ignore it.</p>"
+                    Body = $"<p>Hello!</p><p>To confirm your account in Blue Plague follow the <a href=\"{_serverSettings.Site}/lobby/signup/confirmation/{request.User.Id}/{HttpUtility.UrlEncode(token)}\">link</a>.</p><p>If you didn't request this message, just ignore it.</p>"
                 });
                 return Unit.Value;
             }

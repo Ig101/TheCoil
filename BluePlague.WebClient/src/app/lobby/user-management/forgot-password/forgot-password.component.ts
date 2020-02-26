@@ -17,10 +17,11 @@ export class ForgotPasswordComponent implements OnInit {
 
   form: AppFormGroup;
 
-  private timer: any;
-  time = 0;
-
   sent = false;
+
+  get time() {
+    return this.userManagementService.emailTime;
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,21 +46,10 @@ export class ForgotPasswordComponent implements OnInit {
     });
   }
 
-  resetTimer() {
-    this.time = 120;
-    clearInterval(this.timer);
-    this.timer = setInterval(() => {
-      this.time--;
-      if (this.time <= 0) {
-        clearInterval(this.timer);
-      }
-    }, 1000);
-  }
-
   forgotPassword() {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
-      this.userManagementService.loadingStart(errors);
+      this.userManagementService.loadingError(errors);
     } else {
       this.userManagementService.loadingStart();
       this.webCommunicationService.post<EmailRequest, void>('api/auth/send-change-password', {
@@ -68,10 +58,10 @@ export class ForgotPasswordComponent implements OnInit {
       .subscribe(result => {
         if (result.success) {
           this.sent = true;
+          this.userManagementService.startEmailTimer(60);
           this.userManagementService.loadingEnd();
-          this.resetTimer();
         } else {
-          this.userManagementService.loadingEnd(result.errors);
+          this.userManagementService.loadingError(result.errors);
         }
       });
     }

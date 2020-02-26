@@ -43,6 +43,9 @@ export class SignInComponent implements OnInit {
       this.showConfirmationMessage = this.userManagementService.emailWasConfirmed;
       this.userManagementService.passwordWasChanged = false;
       this.userManagementService.emailWasConfirmed = false;
+      if (this.userService.email) {
+        this.form.controls.email.setValue(this.userService.email);
+      }
       this.userManagementService.loadingEnd();
     });
   }
@@ -51,7 +54,7 @@ export class SignInComponent implements OnInit {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
       this.form.controls.password.setValue('');
-      this.userManagementService.loadingStart(errors);
+      this.userManagementService.loadingError(errors);
     } else {
       this.userManagementService.loadingStart();
       this.webCommunicationService.post<SignInRequest, void>('api/auth/signin', {
@@ -67,13 +70,14 @@ export class SignInComponent implements OnInit {
       }))
       .subscribe(result => {
         if (result.success) {
+          this.userService.unauthorized = false;
           this.router.navigate(['lobby']);
         } else if (result.statusCode === 403) {
           this.userService.email = this.form.controls.email.value;
           this.router.navigate(['lobby/signup/confirmation']);
         } else {
           this.form.controls.password.setValue('');
-          this.userManagementService.loadingEnd(result.errors);
+          this.userManagementService.loadingError(result.errors);
         }
       });
     }

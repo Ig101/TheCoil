@@ -52,6 +52,7 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
     if (typeof obj !== 'string') {
       return;
     }
+    this.tempValueInternal = obj;
     this.onChange(obj);
   }
   registerOnChange(fn: any): void {

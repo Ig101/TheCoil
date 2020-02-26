@@ -56,6 +56,11 @@ const loginRoutes: Routes = [
     path: 'settings',
     component: UserSettingsComponent,
     resolve: { UserMenuResolverService }
+  },
+  {
+    path: 'signup/confirmation/:id/:token',
+    component: SignInComponent,
+    resolve: { EmailConfirmationResolverService }
   }
 ];
 
@@ -65,11 +70,6 @@ const routes: Routes = [
     component: LobbyComponent,
     resolve: { user: UserResolverService },
     children: loginRoutes
-  },
-  {
-    path: 'signup/confirmation/:id/:token',
-    redirectTo: '',
-    resolve: { emailConfirmed: EmailConfirmationResolverService }
   },
   {
     path: '**',

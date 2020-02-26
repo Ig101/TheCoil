@@ -27,6 +27,6 @@ export class UserManagementLoadingComponent implements OnInit, AfterViewInit {
   }
 
   loadingEnd() {
-    this.userManagementService.loadingEnd();
+    this.userManagementService.loadingEnd(true);
   }
 }

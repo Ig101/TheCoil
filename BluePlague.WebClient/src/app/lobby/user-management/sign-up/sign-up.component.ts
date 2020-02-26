@@ -53,13 +53,18 @@ export class SignUpComponent implements OnInit {
         confirmPasswordValidator($localize`:@@controls.confirm-password:Confirm password`)
       ])
     });
-    setTimeout(() => this.userManagementService.loadingEnd());
+    setTimeout(() => {
+      if (this.userService.email) {
+        this.form.controls.email.setValue(this.userService.email);
+      }
+      this.userManagementService.loadingEnd();
+    });
   }
 
   signUp() {
     const errors = this.form.appErrors;
     if (errors.length > 0) {
-      this.userManagementService.loadingStart(errors);
+      this.userManagementService.loadingError(errors);
       this.form.controls.password.setValue('');
       this.form.controls.confirmPassword.setValue('');
     } else {
@@ -72,12 +77,12 @@ export class SignUpComponent implements OnInit {
       .subscribe(result => {
         if (result.success) {
           this.userService.email = this.form.controls.email.value;
-          this.userManagementService.zeroTimer = true;
-          this.router.navigate(['signup/confirmation']);
+          this.userManagementService.startEmailTimer(60);
+          this.router.navigate(['lobby/signup/confirmation']);
         } else {
           this.form.controls.password.setValue('');
           this.form.controls.confirmPassword.setValue('');
-          this.userManagementService.loadingEnd(result.errors);
+          this.userManagementService.loadingError(result.errors);
         }
       });
     }

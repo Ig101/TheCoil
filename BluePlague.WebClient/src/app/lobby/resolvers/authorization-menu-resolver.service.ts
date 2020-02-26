@@ -4,7 +4,7 @@ import { UserService } from 'src/app/shared/services/user.service';
 import { EMPTY, of } from 'rxjs';
 
 @Injectable()
-export class AuthorizationMenuResolverService implements Resolve<any> {
+export class AuthorizationMenuResolverService implements Resolve<boolean> {
 
   constructor(
     private userService: UserService,
@@ -17,6 +17,6 @@ export class AuthorizationMenuResolverService implements Resolve<any> {
       this.router.navigate(['lobby']);
       return EMPTY;
     }
-    return of();
+    return true;
   }
 }

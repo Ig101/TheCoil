@@ -36,6 +36,8 @@ namespace BluePlague.Domain
                 options.Cookie.HttpOnly = true;
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
+                options.LoginPath = "/api/Account/Login";
+                options.AccessDeniedPath = "/api/Account/AccessDenied";
             });
             services.AddSingleton<MongoConnection>();
             services.AddTransient<GameContext>();
