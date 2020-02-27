@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "..\\BluePlague.Api"
+			"path": "..\\TheCoil.Api"
 		},
 		{
-			"path": "..\\BluePlague.Domain"
+			"path": "..\\TheCoil.Domain"
 		},
 		{
-			"path": "..\\BluePlague.Mediation"
+			"path": "..\\TheCoil.Mediation"
 		}
 	],
 	"settings": {}

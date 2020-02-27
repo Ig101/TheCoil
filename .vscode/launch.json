@@ -9,9 +9,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/BluePlague.Api/bin/Debug/netcoreapp3.1/BluePlague.Api.dll",
+      "program": "${workspaceFolder}/TheCoil.Api/bin/Debug/netcoreapp3.1/TheCoil.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/BluePlague.Api",
+      "cwd": "${workspaceFolder}/TheCoil.Api",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
