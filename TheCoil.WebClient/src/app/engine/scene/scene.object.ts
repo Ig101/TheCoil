@@ -129,12 +129,14 @@ export class Scene {
     }
 
     // Creation
-    createActor(native: ActorNative, x: number, y: number, name?: string, newActor: boolean = true): Actor {
-        const id = this.idIncrementor;
+    createActor(native: ActorNative, x: number, y: number, name?: string, id?: number): Actor {
+        if (!id) {
+            id = this.idIncrementor;
+        }
         this.idIncrementor++;
         const actor = new Actor(this, id, native, x, y, name);
         this.aiActors.push(actor);
-        if (newActor) {
+        if (!id) {
             this.registerActorChange(actor);
         }
         return actor;
@@ -248,11 +250,10 @@ export class Scene {
                     tilePosition.y,
                     sceneSegment.id);
             for (const actor of levelTile.objects) {
-                const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, false);
+                const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, actor.id);
                 sceneActor.durability = actor.durability;
                 sceneActor.energy = actor.energy;
                 sceneActor.remainedTurnTime = actor.remainedTurnTime;
-                sceneActor.id = actor.id;
             }
         }
     }
