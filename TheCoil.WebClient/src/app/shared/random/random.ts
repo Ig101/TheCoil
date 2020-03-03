@@ -1,10 +1,5 @@
-import { Injectable } from '@angular/core';
-import { WebCommunicationService } from './web-communication.service';
-
 // Algorithm from .NET for compatibility with backend (c) .NET Foundation and Contributors
-@Injectable()
-export class RandomService {
-
+export class Random {
   private seed: number;
 
   private inext: number;
@@ -14,11 +9,7 @@ export class RandomService {
   private readonly maxValue = 2147483647;
   private readonly maxSeed = 161803398;
 
-  constructor() {
-    this.setupNewSeed(0);
-  }
-
-  setupNewSeed(seed: number) {
+  constructor(seed: number) {
     let ii: number;
     let mj: number;
     let mk: number;
@@ -47,10 +38,6 @@ export class RandomService {
     this.inext = 0;
     this.inextp = 21;
     this.seed = seed;
-  }
-
-  reset() {
-    this.setupNewSeed(this.seed);
   }
 
   private sample() {

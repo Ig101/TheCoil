@@ -1,16 +1,11 @@
-import { RoomTypeEnum } from './enums/room-type.enum';
+import { ActorSavedData } from './scene/objects/actor-saved-data.model';
 import { GameStateEnum } from './enums/game-state.enum';
 
 export interface MetaInformation {
-    // Codes enemies of room
-    difficulty: number;
-    roomType: RoomTypeEnum;
-    // Codes position of room
-    dungeon: string;
-    depth: number;
-    // Codes extra info of room
-    name: string;
-    seed?: number; // If null, room is creating without random
-    // State
-    gameState: GameStateEnum;
+  session: string;
+  incrementor: number;
+  height: number;
+  width: number;
+  turn: number;
+  gameState: GameStateEnum;
 }

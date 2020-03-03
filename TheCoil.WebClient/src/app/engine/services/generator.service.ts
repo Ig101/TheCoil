@@ -2,66 +2,76 @@ import { Injectable } from '@angular/core';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
 import { RoomTypeEnum } from '../models/enums/room-type.enum';
 import { Observable, of } from 'rxjs';
-import { SceneInitialization } from '../models/scene/scene-initialization.model';
-import { RandomService } from 'src/app/shared/services/random.service';
-import { TileInitialization } from '../models/scene/tile-initialization.model';
 import { NativeService } from './native.service';
+import { SceneSegment } from '../scene/scene-segment.object';
+import { SceneSegmentSavedData } from '../models/scene-segment-saved-data.model';
+import { TileSavedData } from '../models/scene/tile-saved-data.model';
+import { Random } from 'src/app/shared/random/random';
+import { TileStorage } from '../models/scene/tile-storage.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class GeneratorService {
 
-  constructor(
-    private randomService: RandomService,
-    private nativeService: NativeService
-  ) { }
+  constructor() { }
 
-  generateScene(roomType: RoomTypeEnum, seed?: number): Observable<SceneInitialization> {
-    const ini = {
-      global: false,
-      scale: 1,
-      tiles: [],
-      width: 101,
-      height: 51
-    } as SceneInitialization;
-    ini.tiles.push({
+  generateScene(data: SceneSegmentSavedData, width: number, height: number): SceneSegment {
+    const type = data.roomType;
+    const difficulty = data.difficulty;
+    const random = new Random(data.seed);
+    const tiles = [];
+    for (let x = 0; x < width; x++) {
+      tiles[x] = [];
+    }
+    tiles[0][50] = {
       x: 0,
       y: 50,
-      native: this.nativeService.getTile('stoneWall')
-    } as TileInitialization);
-    ini.tiles.push({
+      nativeId: 'stoneWall',
+      changed: true,
+      objects: []
+    } as TileStorage;
+    tiles[0][0] = {
       x: 0,
       y: 0,
-      native: this.nativeService.getTile('stoneWall')
-    } as TileInitialization);
-    ini.tiles.push({
+      nativeId: 'stoneWall',
+      changed: true,
+      objects: []
+    } as TileStorage;
+    tiles[100][50] = {
       x: 100,
       y: 50,
-      native: this.nativeService.getTile('stoneWall')
-    } as TileInitialization);
-    ini.tiles.push({
+      nativeId: 'stoneWall',
+      changed: true,
+      objects: []
+    } as TileStorage;
+    tiles[100][0] = {
       x: 100,
       y: 0,
-      native: this.nativeService.getTile('stoneWall')
-    } as TileInitialization);
+      nativeId: 'stoneWall',
+      changed: true,
+      objects: []
+    } as TileStorage;
     for (let x = 20; x < 80; x++) {
       for (let y = 10; y < 40; y++) {
         if (x === 20 || x === 79 || y === 10 || y === 39) {
-          ini.tiles.push({
+          tiles[x][y] = {
             x,
             y,
-            native: this.nativeService.getTile('stoneWall')
-          } as TileInitialization);
+            nativeId: 'stoneWall',
+            changed: true,
+            objects: []
+          } as TileStorage;
         } else {
-          ini.tiles.push({
+          tiles[x][y] = {
             x,
             y,
-            native: this.nativeService.getTile('stoneFloor')
-          } as TileInitialization);
+            nativeId: 'stoneFloor',
+            changed: true,
+            objects: []
+          } as TileStorage;
         }
       }
     }
-    return of(ini);
+    const ini = new SceneSegment(tiles, random, data);
+    return ini;
   }
 }

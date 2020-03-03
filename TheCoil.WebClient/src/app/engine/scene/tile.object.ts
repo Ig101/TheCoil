@@ -7,18 +7,19 @@ import { TileSavedData } from '../models/scene/tile-saved-data.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
 import { ActionValidationResult } from './models/action-validation-result.model';
 import { ReactionResult } from './models/reaction-result.model';
-import { AnotherLevelLink } from './models/another-level-link.model';
 import { VisualizationSnapshot } from '../models/scene/abstract/visualization-snapshot.model';
+import { TileStorage } from '../models/scene/tile-storage.model';
 
 export class Tile implements IReactiveObject {
 
     parent: Scene;
     objects: Actor[];
+    segmentId: number;
+    changed: true;
 
     readonly x: number;
     readonly y: number;
     readonly native: TileNative;
-    levelLink?: AnotherLevelLink;
 
     get snapshot(): TileSnapshot {
         return {
@@ -31,7 +32,6 @@ export class Tile implements IReactiveObject {
             tags: this.native.tags,
             passable: this.native.passable,
             viewable: this.native.viewable,
-            levelLink: this.levelLink,
             objects: this.objects.map(x => x.snapshot)
         } as TileSnapshot;
     }
@@ -45,27 +45,26 @@ export class Tile implements IReactiveObject {
             backgroundColor: this.native.backgroundColor,
             bright: this.native.bright,
             tags: this.native.tags,
-            passable: this.native.passable,
-            levelLink: this.levelLink
+            passable: this.native.passable
         } as TileSnapshot;
     }
 
-    get savedData(): TileSavedData {
+    get savedData(): TileStorage {
         return {
             x: this.x,
             y: this.y,
             nativeId: this.native.id,
-            levelLink: this.levelLink
+            objects: this.objects.map(x => x.savedData)
         };
     }
 
-    constructor(parent: Scene, tile: TileNative, x: number, y: number, link?: AnotherLevelLink) {
+    constructor(parent: Scene, tile: TileNative, x: number, y: number, segmentId: number) {
         this.parent = parent;
         this.x = x;
         this.y = y;
         this.native = tile;
         this.objects = [];
-        this.levelLink = link;
+        this.segmentId = segmentId;
     }
 
     react(reaction: string, initiator: Actor, time: number, strength?: number) {

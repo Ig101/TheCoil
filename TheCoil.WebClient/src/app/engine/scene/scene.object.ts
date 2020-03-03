@@ -1,11 +1,9 @@
 import { Tile } from './tile.object';
-import { SceneInitialization } from '../models/scene/scene-initialization.model';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { Actor } from './objects/actor.object';
 import { SceneChanges } from '../models/scene/scene-changes.model';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
 import { EngineActionResponse } from '../models/engine-action-response.model';
-import { SceneSavedData } from '../models/scene/scene-saved-data.model';
 import { EngineAction } from '../models/engine-action.model';
 import { NativeService } from '../services/native.service';
 import { ActorNative } from '../models/natives/actor-native.model';
@@ -18,14 +16,17 @@ import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 import { actorSmartValidation } from '../tag-actions/actor-smart-action.actions';
 import { ActionValidationResult } from './models/action-validation-result.model';
 import { IReactiveObject } from './interfaces/reactive-object.interface';
+import { SceneSegment } from './scene-segment.object';
+import { PlayerSavedData } from '../models/player-saved-data.model';
+import { SceneSegmentInformation } from '../models/scene/scene-segment-information.model';
+import { MetaInformation } from '../models/meta-information.model';
 export class Scene {
 
-    private global = false;
-    private scale = 1;
+    private segmentsCount = 8;
+
     private responseSubject = new Subject<EngineActionResponse>();
 
-    private changedActors: Actor[] = [];
-    private changedTiles: Tile[] = [];
+    private segments: SceneSegmentInformation[] = [];
     private unsettledActors: UnsettledActorSavedData[] = [];
 
     private sessionChangedActors: Actor[] = [];
@@ -35,11 +36,13 @@ export class Scene {
     private corpsesPool: Actor[] = [];
 
     private player: Actor;
+    private currentSegment: number;
     private turn: number;
 
     private idIncrementor = 0;
 
-    private actors: Actor[] = [];
+    private aiActors: Actor[] = []; // TODO Temporal
+
     private tiles: Tile[][];
 
     private gatheringCorpsesStarted = false;
@@ -56,13 +59,8 @@ export class Scene {
         return this.playerAliveInternal;
     }
 
-    get moveSpeedModifier() {
-        return this.scale;
-    }
-
     get snapshot(): SceneSnapshot {
         return {
-            global: this.global,
             playerIsDead: this.player.dead,
             player: this.player.snapshot,
             turn: this.turn,
@@ -72,58 +70,54 @@ export class Scene {
         } as SceneSnapshot;
     }
 
-    get savedData(): SceneSavedData {
-        return {
-            turn: this.turn,
-            playerIsDead: this.player.dead,
-            idIncrementor: this.idIncrementor,
-            changedActors: this.changedActors.map(x => x.savedData),
-            changedTiles: this.changedTiles.map(x => x.savedData),
-            unsettledActors: this.unsettledActors
-        } as SceneSavedData;
-    }
-
     constructor(
-        initialization: SceneInitialization,
-        savedData: SceneSavedData,
+        sceneSegment: SceneSegment,
+        playerData: PlayerSavedData,
+        meta: MetaInformation,
+        unsettledActors: UnsettledActorSavedData[],
         private nativeService: NativeService
     ) {
-        this.global = initialization.global;
-        this.scale = initialization.scale;
-        this.turn = savedData.turn;
-        this.width = initialization.width;
-        this.height = initialization.height;
+        const tileNumbers: { x: number; y: number; }[] = [];
+        for (let x = 0; x < meta.width; x++) {
+            this.tiles[x] = [];
+            for (let y = 0; y < meta.height; y++) {
+                tileNumbers.push({
+                    x,
+                    y
+                });
+            }
+        }
+        const playerAngle = Math.atan2(playerData.actor.y - this.height / 2, playerData.actor.x - this.width / 2) + Math.PI;
+        const playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        let emptySegment = playerSegment + this.segmentsCount / 2;
+        if (emptySegment >= this.segmentsCount) {
+            emptySegment -= this.segmentsCount;
+        }
+        for (let i = 0; i < this.segmentsCount; i++) {
+            const start = i * Math.PI * 2 / this.segmentsCount;
+            const end = (i + 1) * Math.PI * 2 / this.segmentsCount;
+            const segment = {
+                segmentTiles: tileNumbers.filter(tile => {
+                    const angle = Math.atan2(tile.y - this.height / 2, tile.x - this.width / 2) + Math.PI;
+                    return angle >= start && angle < end;
+                })
+            } as SceneSegmentInformation;
+            const level = emptySegment > playerSegment && i > emptySegment ? (sceneSegment.previousSegment || sceneSegment) :
+            emptySegment < playerSegment && i < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
+            i !== emptySegment ? sceneSegment : undefined;
+            this.segments.push(segment);
+            this.loadSegment(segment, level);
+        }
+        this.currentSegment = playerSegment;
+        this.turn = meta.turn;
+        this.width = meta.width;
+        this.height = meta.height;
         this.tiles = new Array(this.width);
         for (let x = 0; x < this.width; x++) {
             this.tiles[x] = new Array(this.height);
         }
-        for (const tile of initialization.tiles) {
-            const savedTile = savedData.changedTiles.find(x => x.x === tile.x && x.y === tile.y);
-            if (savedTile) {
-                const newTile = new Tile(this,
-                    this.nativeService.getTile(savedTile.nativeId), tile.x, tile.y);
-                this.tiles[tile.x][tile.y] = newTile;
-                this.changedTiles.push(newTile);
-                continue;
-            }
-            this.tiles[tile.x][tile.y] = new Tile(this,
-                tile.native, tile.x, tile.y);
-        }
-        for (const actor of savedData.changedActors) {
-            const newActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, false);
-            this.changedActors.push(newActor);
-            newActor.id = actor.id;
-            newActor.durability = actor.durability;
-            newActor.energy = actor.energy;
-            newActor.remainedTurnTime = actor.remainedTurnTime;
-            if (actor.player) {
-                this.player = newActor;
-            }
-        }
-        if (savedData.idIncrementor) {
-            this.idIncrementor = savedData.idIncrementor;
-        }
-        this.pushUnsettledActors(savedData.unsettledActors);
+        this.idIncrementor = meta.incrementor;
+        this.pushUnsettledActors(unsettledActors);
     }
 
     subscribe(next: (value: EngineActionResponse) => void) {
@@ -139,7 +133,7 @@ export class Scene {
         const id = this.idIncrementor;
         this.idIncrementor++;
         const actor = new Actor(this, id, native, x, y, name);
-        this.actors.push(actor);
+        this.aiActors.push(actor);
         if (newActor) {
             this.registerActorChange(actor);
         }
@@ -149,7 +143,7 @@ export class Scene {
     // ChangesRegistration
     pushUnsettledActors(actors: UnsettledActorSavedData[]) {
         for (const actor of actors) {
-            if (!this.global || actor.player) {
+            if (actor.player) {
 
             }
             // TODO SetupUnsettledActors
@@ -161,9 +155,6 @@ export class Scene {
     }
 
     registerActorPositionChange(oldX: number, oldY: number, actor: Actor) {
-        if (!this.changedActors.includes(actor)) {
-            this.changedActors.push(actor);
-        }
         if (!this.sessionChangedActors.includes(actor)) {
             this.sessionChangedActors.push(actor);
         }
@@ -175,9 +166,6 @@ export class Scene {
     }
 
     registerActorChange(actor: Actor) {
-        if (!this.changedActors.includes(actor)) {
-            this.changedActors.push(actor);
-        }
         if (!this.sessionChangedActors.includes(actor)) {
             this.sessionChangedActors.push(actor);
         }
@@ -186,9 +174,6 @@ export class Scene {
     registerActorDeath(actor: Actor) {
         if (actor === this.player) {
             this.playerAliveInternal = false;
-        }
-        if (this.changedActors.includes(actor)) {
-            removeFromArray(this.changedActors, actor);
         }
         if (!this.sessionDeletedActors.find(x => x.id === actor.id)) {
             this.sessionDeletedActors.push({
@@ -200,21 +185,76 @@ export class Scene {
         if (this.sessionChangedActors.includes(actor)) {
             removeFromArray(this.sessionChangedActors, actor);
         }
-        removeFromArray(this.actors, actor);
+        removeFromArray(this.aiActors, actor);
     }
 
     registerTileChange(tile: Tile) {
-        if (!this.changedTiles.includes(tile)) {
-            this.changedTiles.push(tile);
-        }
+        tile.changed = true;
         if (!this.sessionChangedTiles.includes(tile)) {
             this.sessionChangedTiles.push(tile);
         }
     }
 
+    registerPlayerPositionChange() {
+        const playerAngle = Math.atan2(this.player.y - this.height / 2, this.player.x - this.width / 2) + Math.PI;
+        const playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        let difference = this.currentSegment - playerSegment;
+        while (difference !== 0) {
+            const sceneSegment = this.segments[playerSegment].sceneSegment;
+            let newSegment = playerSegment + this.segmentsCount / 2;
+            if (newSegment >= this.segmentsCount) {
+                newSegment -= this.segmentsCount;
+            }
+            let emptySegment = newSegment;
+            if (difference > 0) {
+                emptySegment++;
+                difference--;
+            } else {
+                emptySegment--;
+                difference++;
+            }
+            const level = emptySegment > playerSegment && newSegment > emptySegment ? (sceneSegment.previousSegment || sceneSegment) :
+                emptySegment < playerSegment && newSegment < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
+                sceneSegment;
+            this.loadSegment(this.segments[newSegment], level);
+            this.unloadSegment(this.segments[emptySegment]);
+        }
+    }
+
+    saveAllSegments() {
+        for (const segment of this.segments) {
+            if (segment.sceneSegment) {
+                segment.sceneSegment.saveData(segment.segmentTiles, this.tiles);
+            }
+        }
+    }
+
     // Technic
-    getActor(id: number) {
-        return this.actors[id];
+    unloadSegment(segment: SceneSegmentInformation) {
+        segment.sceneSegment.saveData(segment.segmentTiles, this.tiles);
+        segment.sceneSegment = undefined;
+        for (const tilePosition of segment.segmentTiles) {
+            segment.sceneSegment.tiles[tilePosition.x][tilePosition.y] = undefined;
+        }
+    }
+
+    loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {
+        segment.sceneSegment = sceneSegment;
+        for (const tilePosition of segment.segmentTiles) {
+            const levelTile = sceneSegment.tiles[tilePosition.x][tilePosition.y];
+            this.tiles[tilePosition.x][tilePosition.y] =
+                new Tile(this, this.nativeService.getTile(levelTile.nativeId),
+                    tilePosition.x,
+                    tilePosition.y,
+                    sceneSegment.id);
+            for (const actor of levelTile.objects) {
+                const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, false);
+                sceneActor.durability = actor.durability;
+                sceneActor.energy = actor.energy;
+                sceneActor.remainedTurnTime = actor.remainedTurnTime;
+                sceneActor.id = actor.id;
+            }
+        }
     }
 
     getObjectsByTile(x: number, y: number) {
@@ -287,7 +327,7 @@ export class Scene {
     }
 
     private getActorsForAction() {
-        return this.actors.sort((a, b) => (a.calculatedSpeedModification + a.remainedTurnTime) -
+        return this.aiActors.sort((a, b) => (a.calculatedSpeedModification + a.remainedTurnTime) -
             (b.calculatedSpeedModification + b.remainedTurnTime));
     }
 

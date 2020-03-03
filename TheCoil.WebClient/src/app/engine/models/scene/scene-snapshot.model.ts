@@ -2,7 +2,6 @@ import { TileSnapshot } from './tile-snapshot.model';
 import { ActorSnapshot } from './objects/actor-snapshot.model';
 
 export interface SceneSnapshot {
-    global: boolean;
     playerIsDead: boolean;
     player: ActorSnapshot;
     turn: number;

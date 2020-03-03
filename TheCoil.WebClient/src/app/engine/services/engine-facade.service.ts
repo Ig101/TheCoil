@@ -1,21 +1,17 @@
 import { Injectable, OnInit } from '@angular/core';
-import { MetaService } from './meta.service';
 import { SceneService } from './scene.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
 import { SynchronizationService } from './synchronization.service';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
-import { EngineSnapshot } from '../models/engine-snapshot.model';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { NativeService } from './native.service';
 import { switchMap } from 'rxjs/operators';
-import { MetaInformation } from '../models/meta-information.model';
 
 @Injectable()
 export class EngineFacadeService {
 
   constructor(
-    private readonly metaService: MetaService,
     private readonly sceneService: SceneService,
     private readonly nativeService: NativeService
   ) { }
@@ -25,7 +21,7 @@ export class EngineFacadeService {
       .pipe(switchMap(result => {
         if (result.success) {
           if (newLoad || !this.sceneService.sceneLoaded) {
-            return this.metaService.loadGame();
+            return this.sceneService.setupScene();
           } else {
             return of(this.sceneService.getSceneSnapshot());
           }
@@ -57,10 +53,6 @@ export class EngineFacadeService {
       x,
       y
     }]);
-  }
-
-  subscribeOnMetaInformationChange(next: (value: MetaInformation) => void) {
-    return this.metaService.subscribe(next);
   }
 
   subscribeOnActionsResult(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {

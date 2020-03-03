@@ -18,7 +18,7 @@ import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
 import { VisualizationSnapshot } from '../../models/scene/abstract/visualization-snapshot.model';
 
-export class Actor implements IActiveObject, IReactiveObject {
+export class Actor implements IActiveObject {
 
     tile: Tile;
 
@@ -66,7 +66,6 @@ export class Actor implements IActiveObject, IReactiveObject {
 
     get savedData(): ActorSavedData {
         return {
-            player: this.parent.playerId === this.id,
             id: this.id,
             x: this.x,
             y: this.y,
@@ -111,6 +110,9 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.tile = this.parent.getTile(x, y);
         this.tile.objects.push(this);
         this.parent.registerActorPositionChange(oldX, oldY, this);
+        if (this.parent.playerId === this.id) {
+            this.parent.registerPlayerPositionChange();
+        }
     }
 
     changePositionToTile(tile: Tile) {
@@ -122,6 +124,9 @@ export class Actor implements IActiveObject, IReactiveObject {
         this.tile = tile;
         this.tile.objects.push(this);
         this.parent.registerActorPositionChange(oldX, oldY, this);
+        if (this.parent.playerId === this.id) {
+            this.parent.registerPlayerPositionChange();
+        }
     }
 
     changeDurability(amount: number) {
@@ -247,9 +252,6 @@ export class Actor implements IActiveObject, IReactiveObject {
         }
         this.parent.finishAction(result.result, result.animation, this.x, this.y, result.reachedObjects,
             this.isActionImportant(action.id), result.range, action.extraIdentifier, result.actor);
-        if (result.reaction === 'move') {
-            result.time *= this.parent.moveSpeedModifier;
-        }
         return result;
     }
 

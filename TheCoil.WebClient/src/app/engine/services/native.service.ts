@@ -14,8 +14,6 @@ import { getActionsRegistry } from '../tag-actions/actions/actions-registry';
 import { getActorTagsRegistry } from '../tag-actions/actor-tags/actor-tags-registry';
 import { getTileTagsRegistry } from '../tag-actions/tile-tags/tile-tags-registry';
 import { ActorAction } from '../scene/models/actor-action.model';
-import { SceneInitialization } from '../models/scene/scene-initialization.model';
-
 @Injectable()
 export class NativeService {
 
@@ -88,14 +86,6 @@ export class NativeService {
       }
     };
     this.tiles = {
-      defaultDemo: {
-        id: 'defaultDemo',
-        name: 'nothing',
-        bright: false,
-        tags: [],
-        passable: false,
-        viewable: false
-      },
       stoneWall: {
         id: 'stoneWall',
         name: $localize`:@@game.tile.stoneWall:Stone wall`,
