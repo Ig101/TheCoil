@@ -218,7 +218,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
         const x = Math.floor(this.mouseState.x);
         const y = Math.floor(this.mouseState.y);
         if (x < this.gameStateService.scene.width && y < this.gameStateService.scene.height && x >= 0 && y >= 0 &&
-            this.gameStateService.scene.tiles[x][y].sprite) {
+            this.gameStateService.scene.tiles[x][y]) {
           const actions = this.engineFacadeService.validateAndGetAllActions(x, y);
           this.blocked = true;
           this.mouseBlocked = true;
@@ -458,7 +458,7 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   private drawPoint(scene: SceneSnapshot, x: number, y: number, cameraLeft: number, cameraTop: number, mouseX: number, mouseY: number):
     {canvasX: number, canvasY: number, bright: boolean} {
     const tile = scene.tiles[x][y];
-    if (tile.sprite) {
+    if (tile) {
       const canvasX = (x - cameraLeft) * this.tileWidth;
       const canvasY = (y - cameraTop) * this.tileHeight;
       const symbolY = canvasY + this.tileHeight * 0.7;
