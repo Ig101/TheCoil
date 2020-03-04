@@ -82,7 +82,7 @@ export class Scene {
             turn: this.turn,
             width: this.width,
             height: this.height,
-            tiles: this.tiles.map(x => x.map(y => y.snapshot))
+            tiles: this.tiles.map(x => x.map(y => y ? y.snapshot : undefined))
         } as SceneSnapshot;
     }
 
@@ -150,12 +150,17 @@ export class Scene {
             id = this.idIncrementor;
         }
         this.idIncrementor++;
-        const actor = new Actor(this, id, native, x, y, name);
-        this.aiActors.push(actor);
-        if (!id) {
-            this.registerActorChange(actor);
+        const tile = this.getTile(x, y);
+        if (tile) {
+            const actor = new Actor(this, id, native, tile, name);
+            this.aiActors.push(actor);
+            if (!id) {
+                this.registerActorChange(actor);
+            }
+            return actor;
+        } else {
+            return undefined;
         }
-        return actor;
     }
 
     // ChangesRegistration
@@ -275,7 +280,8 @@ export class Scene {
     }
 
     getObjectsByTile(x: number, y: number) {
-        return this.tiles[x][y].objects;
+        const tile = this.tiles[x][y];
+        return tile ? tile.objects : [];
     }
 
     getTile(x: number, y: number) {

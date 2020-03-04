@@ -77,10 +77,10 @@ export class Actor implements IActiveObject {
         } as ActorSavedData;
     }
 
-    constructor(parent: Scene, id: number, native: ActorNative, x: number, y: number, name?: string) {
+    constructor(parent: Scene, id: number, native: ActorNative, tile: Tile, name?: string) {
         this.name = name ? name : native.name;
-        this.x = x;
-        this.y = y;
+        this.x = tile.x;
+        this.y = tile.y;
         this.id = id;
         this.parent = parent;
         this.native = native;
@@ -96,7 +96,7 @@ export class Actor implements IActiveObject {
         this.durability = this.calculatedMaxDurability;
         this.energy = this.calculatedMaxEnergy;
 
-        this.tile = parent.getTile(x, y);
+        this.tile = tile;
         this.tile.objects.push(this);
     }
 
@@ -175,6 +175,12 @@ export class Actor implements IActiveObject {
             reaction: chosenAction.reaction,
             animation: chosenAction.animation
         } as EnginePlayerActionFull;
+        if (!this.parent.getTile(action.x, action.y)) {
+            return {
+                success: false,
+                action: fullAction
+            };
+        }
         if (chosenAction.validator) {
             validationResult =
                 chosenAction.validator(this.parent, this, action.x, action.y, deep, action.extraIdentifier) as ActionValidationResultFull;
