@@ -5,6 +5,6 @@ import { PlayerSavedData } from './player-saved-data.model';
 
 export interface GameStateSavedData {
   needRefresh: boolean;
-  sceneSegments: { [level: number]: SceneSegmentSavedData };
+  sceneSegments: SceneSegmentSavedData[];
   unsettledActors: UnsettledActorSavedData[];
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject, PartialObserver, Subscription, Observable } from 'rxjs';
+import { BehaviorSubject, Subject, PartialObserver, Subscription, Observable, of } from 'rxjs';
 import { Scene } from '../scene/scene.object';
 import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { EnginePlayerAction } from '../models/engine-player-action.model';
@@ -15,6 +15,7 @@ import { GameStateEnum } from '../models/enums/game-state.enum';
 import { MetaInformation } from '../models/meta-information.model';
 import { EngineAction } from '../models/engine-action.model';
 import { SynchronizationService } from './synchronization.service';
+import { switchMap, map } from 'rxjs/operators';
 
 @Injectable()
 export class SceneService {
@@ -55,59 +56,55 @@ export class SceneService {
     return this.scene.subscribe(next);
   }
 
+  subscribeOnMeta(next: (value: MetaInformation) => void) {
+    return this.metaSubject.subscribe(next);
+  }
+
+  adjournScene() {
+    if (this.scene) {
+      this.scene.unsubscribe();
+      this.unsubscribeSubject.next();
+      this.synchronization();
+      this.scene = null;
+    }
+  }
+
   setupScene(): Observable<SceneSnapshot> {
-    this.scene.unsubscribe();
-    this.unsubscribeSubject.next();
-    // TODO LoadScene
-        /*return this.synchronizationService.loadGame()
-      .pipe(switchMap(response => {
-        if (response.success) {
-          this.metaInformationInternal = response.result.meta;
-          this.registerMetaInformationChange();
-          return this.initializeScene()
-            .pipe(map(sceneInitialization => {
-              this.sceneService.setupNewScene(sceneInitialization, response.result.scene);
-              this.sceneService.subscribe(action => {
-                this.sceneChanged = true;
-                if (action.important) {
-                  this.currentActionsBanch.push({
-                    id: action.animation,
-                    extraIdentifier: action.extraIdentifier,
-                    actorId: action.actor ? action.actor.id : undefined,
-                    x: action.x,
-                    y: action.y
-                  } as EngineAction);
-                }
-                if (!this.sceneService.isPlayerAlive() && this.metaInformation.gameState !== GameStateEnum.Defeat) {
-                  this.changeState(GameStateEnum.Defeat);
-                }
-              });
-              this.startSynchronizationTimer();
-              return this.sceneService.getSceneSnapshot();
-            }));
-        } else {
-          return of(null);
-        }
-      }));*/
-      
-  /*private initializeScene(): Observable<SceneInitialization> {
-    return this.generatorService.generateScene(this.metaInformation.roomType, this.metaInformation.seed)
-      .pipe(map(initialScene => {
-        for (let x = 0; x < initialScene.width; x++) {
-          for (let y = 0; y < initialScene.height; y++) {
-            if (!initialScene.tiles.find(tile => tile.x === x && tile.y === y)) {
-              initialScene.tiles.push({
-                x,
-                y,
-                native: this.nativeService.getTile(`default${RoomTypeEnum[this.metaInformation.roomType]}`)
-              } as TileInitialization);
-            }
+    this.adjournScene();
+    return this.synchronizationService.loadGame()
+    .pipe(map(response => {
+      if (response.success) {
+        this.metaInformation = response.result.metaInformation;
+        this.registerMetaInformationChange();
+        this.sceneSegments = {};
+        this.sceneChanged = false;
+        this.pushNewSceneSegments(response.result.sceneSegments);
+        this.scene = new Scene(this.sceneSegments[response.result.player.level],
+          response.result.player,
+          response.result.metaInformation,
+          response.result.unsettledActors,
+          this.nativeService);
+        this.scene.subscribe(action => {
+          this.sceneChanged = true;
+          if (action.important) {
+            this.currentActionsBanch.push({
+              id: action.animation,
+              extraIdentifier: action.extraIdentifier,
+              actorId: action.actor ? action.actor.id : undefined,
+              x: action.x,
+              y: action.y
+            } as EngineAction);
           }
-        }
-        return initialScene;
-      }));
-  }*/
-    // this.scene = new Scene(sceneSegment)
+          if (!this.scene.playerAlive && this.metaInformation.gameState !== GameStateEnum.Defeat) {
+            this.changeState(GameStateEnum.Defeat);
+          }
+        });
+        return this.scene.snapshot;
+      } else {
+        return null;
+        // TODO Error
+      }
+    }));
   }
 
   pushNewSceneSegments(sceneSegmentsForInsert: SceneSegmentSavedData[]) {
@@ -175,21 +172,26 @@ export class SceneService {
   synchronization() {
     if (this.sceneChanged) {
       this.scene.saveAllSegments();
-      // TODO Sync
-     /* this.sceneChanged = false;
+      this.metaInformation.turn = this.scene.currentTurn;
+      this.metaInformation.incrementor = this.scene.currentIdIncrement;
+      this.sceneChanged = false;
       this.lastActionsBanch.push(...this.currentActionsBanch);
       this.currentActionsBanch.length = 0;
-      this.synchronizationService.sendSynchronizationInfo(this.sceneService.getSceneSavedData(),
-                                                          this.metaInformation, this.lastActionsBanch)
+      this.synchronizationService.sendSynchronizationInfo(
+        Object.values(this.sceneSegments).filter(x => x.changed).map(x => x.sceneSegmentSavedData),
+        this.metaInformation,
+        {
+          actor: this.scene.playerSavedData,
+          level: this.scene.playerSegmentId
+        } as PlayerSavedData)
         .subscribe(result => {
           if (result.success) {
             this.lastActionsBanch = [];
-            this.sceneService.pushUnsettledActors(result.result.scene.unsettledActors);
-            // TODO register changes
+            this.scene.pushUnsettledActors(result.result.unsettledActors);
           } else {
-            // TODO ExitGame
+            // TODO Error handling
           }
-        });*/
+        });
     }
 
   }

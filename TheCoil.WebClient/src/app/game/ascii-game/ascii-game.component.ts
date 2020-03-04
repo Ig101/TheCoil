@@ -361,7 +361,6 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
       snapshotTile.backgroundColor = tile.backgroundColor;
       snapshotTile.tags = tile.tags;
       snapshotTile.passable = tile.passable;
-      snapshotTile.levelLink = tile.levelLink;
     }
     for (const deletedActor of changes.deletedActors) {
       const snapshotTile = this.gameStateService.scene.tiles[deletedActor.x][deletedActor.y];

@@ -54,7 +54,7 @@ export class Tile implements IReactiveObject {
             x: this.x,
             y: this.y,
             nativeId: this.native.id,
-            objects: this.objects.map(x => x.savedData)
+            objects: this.objects.filter(x => x.id !== this.parent.playerId).map(x => x.savedData)
         };
     }
 

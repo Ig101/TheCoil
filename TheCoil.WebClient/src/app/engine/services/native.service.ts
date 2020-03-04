@@ -26,9 +26,7 @@ export class NativeService {
   private actorTags: { [tag: string]: ActionTag<Actor>; };
   private tileTags: { [tag: string]: Tag<Tile>; };
 
-  constructor(
-    private webCommunicationService: WebCommunicationService
-  ) { }
+  constructor( ) { }
 
   loadNatives(): Observable<ExternalResponse<any>> {
     if (!this.loaded) {

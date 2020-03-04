@@ -22,7 +22,7 @@ export class SynchronizationService {
     private readonly webCommunicationService: WebCommunicationService
   ) { }
 
-  sendSynchronizationInfo(scenes: { [level: number]: SceneSegmentSavedData }, metaInformation: MetaInformation,
+  sendSynchronizationInfo(scenes: SceneSegmentSavedData[], metaInformation: MetaInformation,
                           player: PlayerSavedData): Observable<ExternalResponse<GameStateSavedData>> {
     console.groupCollapsed('sceneSynchronization');
     console.log(scenes),
@@ -44,25 +44,14 @@ export class SynchronizationService {
       success: true,
       result: {
         needRefresh: false,
-        sceneSegments: {
-          0: {
+        sceneSegments: [
+          {
             seed: 0,
             roomType: RoomTypeEnum.Demo,
             difficulty: 0,
             id: 0,
             nextId: 1,
             actors: [
-              {
-                player: true,
-                nativeId: 'player',
-                name: 'harry',
-                durability: 100,
-                energy: 100,
-                remainedTurnTime: 0,
-                x: 46,
-                y: 25,
-                id: 1
-              } as ActorSavedData,
               {
                 player: false,
                 nativeId: 'dummy',
@@ -76,10 +65,9 @@ export class SynchronizationService {
             ],
             tiles: []
           } as SceneSegmentSavedData
-        },
+        ],
         player: {
           level: 0,
-          shift: 'coil',
           actor: {
             nativeId: 'player',
             name: 'harry',

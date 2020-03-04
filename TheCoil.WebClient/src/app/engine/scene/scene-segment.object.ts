@@ -21,10 +21,14 @@ export class SceneSegment {
   changedTilesPosition: { x: number; y: number }[];
   random: Random;
 
+  latestTurn: number;
+
   nextSegment: SceneSegment;
   nextId?: number;
   previousSegment: SceneSegment;
   previousId?: number;
+
+  changed = false;
 
   get sceneSegmentSavedData(): SceneSegmentSavedData {
     const actors: ActorSavedData[] = [];
@@ -49,7 +53,7 @@ export class SceneSegment {
   constructor(
     tiles: TileStorage[][],
     random: Random,
-    savedData: SceneSegmentSavedData
+    savedData: SceneSegmentSavedData,
   ) {
     this.nextId = savedData.nextId;
     this.tiles = tiles;
@@ -95,7 +99,8 @@ export class SceneSegment {
     }
   }
 
-  saveData(tilePositions: { x: number; y: number; }[], tiles: Tile[][]) {
+  saveData(turn: number, tilePositions: { x: number; y: number; }[], tiles: Tile[][]) {
+    this.latestTurn = turn;
     for (const tilePosition of tilePositions) {
       const tile = tiles[tilePosition.x][tilePosition.y];
       const savedData = tile.savedData;

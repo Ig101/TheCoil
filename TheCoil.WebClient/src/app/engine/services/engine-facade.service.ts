@@ -7,6 +7,7 @@ import { SceneSnapshot } from '../models/scene/scene-snapshot.model';
 import { EngineActionResponse } from '../models/engine-action-response.model';
 import { NativeService } from './native.service';
 import { switchMap } from 'rxjs/operators';
+import { MetaInformation } from '../models/meta-information.model';
 
 @Injectable()
 export class EngineFacadeService {
@@ -53,6 +54,10 @@ export class EngineFacadeService {
       x,
       y
     }]);
+  }
+
+  subscribeOnMetaInformationChange(next: (value: MetaInformation) => void) {
+    return this.sceneService.subscribeOnMeta(next);
   }
 
   subscribeOnActionsResult(next: (value: EngineActionResponse) => void, unsubscription?: (value: unknown) => void) {

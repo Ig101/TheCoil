@@ -51,6 +51,22 @@ export class Scene {
     readonly width: number;
     readonly height: number;
 
+    get currentIdIncrement() {
+        return this.idIncrementor;
+    }
+
+    get currentTurn() {
+        return this.turn;
+    }
+
+    get playerSavedData() {
+        return this.player.savedData;
+    }
+
+    get playerSegmentId() {
+        return this.segments[this.currentSegment].sceneSegment.id;
+    }
+
     get playerId() {
         return this.player.id;
     }
@@ -226,14 +242,14 @@ export class Scene {
     saveAllSegments() {
         for (const segment of this.segments) {
             if (segment.sceneSegment) {
-                segment.sceneSegment.saveData(segment.segmentTiles, this.tiles);
+                segment.sceneSegment.saveData(this.turn, segment.segmentTiles, this.tiles);
             }
         }
     }
 
     // Technic
     unloadSegment(segment: SceneSegmentInformation) {
-        segment.sceneSegment.saveData(segment.segmentTiles, this.tiles);
+        segment.sceneSegment.saveData(this.turn, segment.segmentTiles, this.tiles);
         segment.sceneSegment = undefined;
         for (const tilePosition of segment.segmentTiles) {
             segment.sceneSegment.tiles[tilePosition.x][tilePosition.y] = undefined;
