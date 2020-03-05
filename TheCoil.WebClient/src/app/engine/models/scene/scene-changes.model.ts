@@ -6,4 +6,6 @@ export interface SceneChanges {
     changedActors: ActorSnapshot[];
     deletedActors: {id: number, x: number, y: number}[];
     changedTiles: TileSnapshot[];
+    replacedTiles: TileSnapshot[];
+    removedTiles: {x: number, y: number}[];
 }

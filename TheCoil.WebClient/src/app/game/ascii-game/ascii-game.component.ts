@@ -310,6 +310,12 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
   }
 
   processNewAction(response: EngineActionResponse) {
+    for (const tile of response.changes.replacedTiles) {
+      this.gameStateService.scene.tiles[tile.x][tile.y] = tile;
+    }
+    for (const tile of response.changes.removedTiles) {
+      this.gameStateService.scene.tiles[tile.x][tile.y] = undefined;
+    }
     this.animationsQueue.push(...this.asciiAnimationsRegistryService.getAnimations(response));
     if (this.firstAnimation) {
       this.firstAnimation = false;

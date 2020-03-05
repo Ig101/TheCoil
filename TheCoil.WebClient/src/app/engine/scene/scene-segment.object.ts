@@ -103,10 +103,12 @@ export class SceneSegment {
     this.latestTurn = turn;
     for (const tilePosition of tilePositions) {
       const tile = tiles[tilePosition.x][tilePosition.y];
-      const savedData = tile.savedData;
-      this.tiles[tilePosition.x][tilePosition.y] = savedData;
-      if (tile.changed && !this.changedTilesPosition.find(t => t.x === tilePosition.x && t.y === tilePosition.y)) {
-        this.changedTilesPosition.push(tilePosition);
+      if (tile) {
+        const savedData = tile.savedData;
+        this.tiles[tilePosition.x][tilePosition.y] = savedData;
+        if (tile.changed && !this.changedTilesPosition.find(t => t.x === tilePosition.x && t.y === tilePosition.y)) {
+          this.changedTilesPosition.push(tilePosition);
+        }
       }
     }
   }

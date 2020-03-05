@@ -22,9 +22,9 @@ export class GeneratorService {
     for (let x = 0; x < width; x++) {
       tiles[x] = [];
     }
-    tiles[0][50] = {
+    tiles[0][25] = {
       x: 0,
-      y: 50,
+      y: 25,
       nativeId: 'stoneWall',
       changed: true,
       objects: []
@@ -36,23 +36,24 @@ export class GeneratorService {
       changed: true,
       objects: []
     } as TileStorage;
-    tiles[100][50] = {
-      x: 100,
-      y: 50,
+    tiles[49][25] = {
+      x: 49,
+      y: 25,
       nativeId: 'stoneWall',
       changed: true,
       objects: []
     } as TileStorage;
-    tiles[100][0] = {
-      x: 100,
+    tiles[49][0] = {
+      x: 49,
       y: 0,
       nativeId: 'stoneWall',
       changed: true,
       objects: []
     } as TileStorage;
-    for (let x = 20; x < 80; x++) {
-      for (let y = 10; y < 40; y++) {
-        if (x === 20 || x === 79 || y === 10 || y === 39) {
+    for (let x = 2; x <= 47; x++) {
+      for (let y = 2; y <= 23; y++) {
+        if (x === 2 || x === 47 || y === 2 || y === 23 ||
+          ((x === 20 || x === 29) && y >= 10 && y <= 15) || ((y === 10 || y === 15) && x >= 20 && x <= 29)) {
           tiles[x][y] = {
             x,
             y,
@@ -60,11 +61,11 @@ export class GeneratorService {
             changed: true,
             objects: []
           } as TileStorage;
-        } else {
+        } else if (x > 29 || x < 20 || y < 10 || y > 15) {
           tiles[x][y] = {
             x,
             y,
-            nativeId: 'stoneFloor',
+            nativeId: difficulty === 2 ? 'sandFloor' : difficulty === 1 ? 'grassFloor' : 'stoneFloor',
             changed: true,
             objects: []
           } as TileStorage;

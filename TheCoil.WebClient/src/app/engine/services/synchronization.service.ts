@@ -49,42 +49,69 @@ export class SynchronizationService {
             seed: 0,
             roomType: RoomTypeEnum.Demo,
             difficulty: 0,
-            id: 0,
-            nextId: 1,
+            id: 1,
+            nextId: 2,
+            actors: [],
+            tiles: []
+          } as SceneSegmentSavedData,
+          {
+            seed: 0,
+            roomType: RoomTypeEnum.Demo,
+            difficulty: 1,
+            id: 2,
+            nextId: 3,
             actors: [
               {
-                player: false,
                 nativeId: 'dummy',
                 durability: 20,
                 energy: 100,
                 remainedTurnTime: 0,
-                x: 49,
-                y: 25,
+                x: 10,
+                y: 6,
                 id: 2
+              } as ActorSavedData
+            ],
+            tiles: []
+          } as SceneSegmentSavedData,
+          {
+            seed: 0,
+            roomType: RoomTypeEnum.Demo,
+            difficulty: 2,
+            id: 3,
+            nextId: 1,
+            actors: [
+              {
+                nativeId: 'dummy',
+                durability: 20,
+                energy: 100,
+                remainedTurnTime: 0,
+                x: 10,
+                y: 6,
+                id: 3
               } as ActorSavedData
             ],
             tiles: []
           } as SceneSegmentSavedData
         ],
         player: {
-          level: 0,
+          level: 1,
           actor: {
             nativeId: 'player',
             name: 'harry',
             durability: 100,
             energy: 100,
             remainedTurnTime: 0,
-            x: 46,
-            y: 25,
+            x: 40,
+            y: 6,
             id: 1
           }
         } as PlayerSavedData,
         unsettledActors: [],
         metaInformation: {
           session: 'GGGG',
-          incrementor: 3,
-          width: 101,
-          height: 51,
+          incrementor: 4,
+          width: 50,
+          height: 26,
           gameState: GameStateEnum.Pending,
           turn: 0
         }

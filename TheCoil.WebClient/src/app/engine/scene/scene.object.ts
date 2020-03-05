@@ -22,7 +22,7 @@ import { SceneSegmentInformation } from '../models/scene/scene-segment-informati
 import { MetaInformation } from '../models/meta-information.model';
 export class Scene {
 
-    private segmentsCount = 8;
+    private segmentsCount = 32;
 
     private responseSubject = new Subject<EngineActionResponse>();
 
@@ -32,6 +32,8 @@ export class Scene {
     private sessionChangedActors: Actor[] = [];
     private sessionDeletedActors: {id: number, x: number, y: number}[] = [];
     private sessionChangedTiles: Tile[] = [];
+    private sessionReplacedTiles: Tile[] = [];
+    private sessionRemovedTiles: {x: number, y: number}[] = [];
 
     private corpsesPool: Actor[] = [];
 
@@ -93,29 +95,55 @@ export class Scene {
         unsettledActors: UnsettledActorSavedData[],
         private nativeService: NativeService
     ) {
-        const tileNumbers: { x: number; y: number; }[] = [];
+        const tileNumbers: { x: number; y: number; angle: number}[] = [];
+        this.turn = meta.turn;
+        this.width = meta.width;
+        this.height = meta.height;
+        this.tiles = new Array(meta.width);
         for (let x = 0; x < meta.width; x++) {
-            this.tiles[x] = [];
+            this.tiles[x] = new Array(meta.height);
             for (let y = 0; y < meta.height; y++) {
+                let angle = Math.atan2(y - this.height / 2, x - this.width / 2) + Math.PI;
+                if (angle >= Math.PI * 2) {
+                    angle -= Math.PI * 2;
+                }
+                if (angle < 0) {
+                    angle += Math.PI * 2;
+                }
                 tileNumbers.push({
                     x,
-                    y
+                    y,
+                    angle
                 });
             }
         }
         const playerAngle = Math.atan2(playerData.actor.y - this.height / 2, playerData.actor.x - this.width / 2) + Math.PI;
-        const playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        let playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        if (playerSegment >= this.segmentsCount) {
+            playerSegment -= this.segmentsCount;
+        }
+        if (playerSegment < 0) {
+            playerSegment += this.segmentsCount;
+        }
         let emptySegment = playerSegment + this.segmentsCount / 2;
         if (emptySegment >= this.segmentsCount) {
             emptySegment -= this.segmentsCount;
         }
+        let start = -6;
+        let end = -6;
         for (let i = 0; i < this.segmentsCount; i++) {
-            const start = i * Math.PI * 2 / this.segmentsCount;
-            const end = (i + 1) * Math.PI * 2 / this.segmentsCount;
+            start = end;
+            end = (i + 1) * Math.PI * 2 / this.segmentsCount;
+            if (i === this.segmentsCount - 1) {
+                end += 6;
+            }
             const segment = {
-                segmentTiles: tileNumbers.filter(tile => {
-                    const angle = Math.atan2(tile.y - this.height / 2, tile.x - this.width / 2) + Math.PI;
-                    return angle >= start && angle < end;
+                segmentTiles: tileNumbers
+                .filter(tile => {
+                    return tile.angle >= start && tile.angle < end;
+                })
+                .map(tile => {
+                    return {x: tile.x, y: tile.y};
                 })
             } as SceneSegmentInformation;
             const level = emptySegment > playerSegment && i > emptySegment ? (sceneSegment.previousSegment || sceneSegment) :
@@ -123,15 +151,15 @@ export class Scene {
             i !== emptySegment ? sceneSegment : undefined;
             this.segments.push(segment);
             this.loadSegment(segment, level);
+            this.sessionReplacedTiles.length = 0;
+            this.sessionRemovedTiles.length = 0;
         }
+        const player = this.createActor(nativeService.getActor(playerData.actor.nativeId), playerData.actor.x,
+            playerData.actor.y, playerData.actor.name, playerData.actor.id);
+        player.durability = playerData.actor.durability;
+        player.energy = playerData.actor.energy;
+        this.player = player;
         this.currentSegment = playerSegment;
-        this.turn = meta.turn;
-        this.width = meta.width;
-        this.height = meta.height;
-        this.tiles = new Array(this.width);
-        for (let x = 0; x < this.width; x++) {
-            this.tiles[x] = new Array(this.height);
-        }
         this.idIncrementor = meta.incrementor;
         this.pushUnsettledActors(unsettledActors);
     }
@@ -220,24 +248,53 @@ export class Scene {
 
     registerPlayerPositionChange() {
         const playerAngle = Math.atan2(this.player.y - this.height / 2, this.player.x - this.width / 2) + Math.PI;
-        const playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        let playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
+        if (playerSegment >= this.segmentsCount) {
+            playerSegment -= this.segmentsCount;
+        }
+        if (playerSegment < 0) {
+            playerSegment += this.segmentsCount;
+        }
         let difference = this.currentSegment - playerSegment;
+        if (difference === -7) {
+            difference = 1;
+        }
+        if (difference === 7) {
+            difference = -1;
+        }
         while (difference !== 0) {
-            const sceneSegment = this.segments[playerSegment].sceneSegment;
-            let newSegment = playerSegment + this.segmentsCount / 2;
+            if (difference > 0) {
+                this.currentSegment--;
+                if (this.currentSegment < 0) {
+                    this.currentSegment += this.segmentsCount;
+                }
+            } else {
+                this.currentSegment++;
+                if (this.currentSegment >= this.segmentsCount) {
+                    this.currentSegment += this.segmentsCount;
+                }
+            }
+            const sceneSegment = this.segments[this.currentSegment].sceneSegment;
+            let emptySegment = this.currentSegment + this.segmentsCount / 2;
+            if (emptySegment >= this.segmentsCount) {
+                emptySegment -= this.segmentsCount;
+            }
+            let newSegment = emptySegment;
+            if (difference > 0) {
+                newSegment++;
+                difference--;
+            } else {
+                newSegment--;
+                difference++;
+            }
+            if (newSegment < 0) {
+                newSegment += this.segmentsCount;
+            }
             if (newSegment >= this.segmentsCount) {
                 newSegment -= this.segmentsCount;
             }
-            let emptySegment = newSegment;
-            if (difference > 0) {
-                emptySegment++;
-                difference--;
-            } else {
-                emptySegment--;
-                difference++;
-            }
-            const level = emptySegment > playerSegment && newSegment > emptySegment ? (sceneSegment.previousSegment || sceneSegment) :
-                emptySegment < playerSegment && newSegment < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
+            const level = newSegment > this.currentSegment && emptySegment > newSegment ? (sceneSegment.previousSegment || sceneSegment) :
+                newSegment < this.currentSegment && emptySegment < newSegment ? (sceneSegment.nextSegment || sceneSegment) :
                 sceneSegment;
             this.loadSegment(this.segments[newSegment], level);
             this.unloadSegment(this.segments[emptySegment]);
@@ -257,24 +314,33 @@ export class Scene {
         segment.sceneSegment.saveData(this.turn, segment.segmentTiles, this.tiles);
         segment.sceneSegment = undefined;
         for (const tilePosition of segment.segmentTiles) {
-            segment.sceneSegment.tiles[tilePosition.x][tilePosition.y] = undefined;
+            this.tiles[tilePosition.x][tilePosition.y] = undefined;
+            this.sessionRemovedTiles.push({x: tilePosition.x, y: tilePosition.y});
         }
     }
-
     loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {
         segment.sceneSegment = sceneSegment;
-        for (const tilePosition of segment.segmentTiles) {
-            const levelTile = sceneSegment.tiles[tilePosition.x][tilePosition.y];
-            this.tiles[tilePosition.x][tilePosition.y] =
-                new Tile(this, this.nativeService.getTile(levelTile.nativeId),
-                    tilePosition.x,
-                    tilePosition.y,
-                    sceneSegment.id);
-            for (const actor of levelTile.objects) {
-                const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId), actor.x, actor.y, actor.name, actor.id);
-                sceneActor.durability = actor.durability;
-                sceneActor.energy = actor.energy;
-                sceneActor.remainedTurnTime = actor.remainedTurnTime;
+        if (sceneSegment) {
+            for (const tilePosition of segment.segmentTiles) {
+                const levelTile = sceneSegment.tiles[tilePosition.x][tilePosition.y];
+                if (levelTile) {
+                    const newTile = new Tile(this, this.nativeService.getTile(levelTile.nativeId),
+                        tilePosition.x,
+                        tilePosition.y,
+                        sceneSegment.id);
+                    this.tiles[tilePosition.x][tilePosition.y] = newTile;
+                    for (const actor of levelTile.objects) {
+                        const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId),
+                            actor.x, actor.y, actor.name, actor.id);
+                        sceneActor.durability = actor.durability;
+                        sceneActor.energy = actor.energy;
+                        sceneActor.remainedTurnTime = actor.remainedTurnTime;
+                    }
+                    this.sessionReplacedTiles.push(newTile);
+                } else {
+                    this.tiles[tilePosition.x][tilePosition.y] = undefined;
+                    this.sessionRemovedTiles.push({x: tilePosition.x, y: tilePosition.y});
+                }
             }
         }
     }
@@ -376,11 +442,15 @@ export class Scene {
             turn: this.turn,
             changedActors: this.sessionChangedActors.map(x => x.snapshot),
             deletedActors: this.sessionDeletedActors,
-            changedTiles: this.sessionChangedTiles.map(x => x.lightSnapshot)
-        };
+            changedTiles: this.sessionChangedTiles.map(x => x.lightSnapshot),
+            replacedTiles: this.sessionReplacedTiles.map(x => x.snapshot),
+            removedTiles: this.sessionRemovedTiles
+        } as SceneChanges;
         this.sessionChangedActors.length = 0;
         this.sessionDeletedActors = [];
         this.sessionChangedTiles.length = 0;
+        this.sessionReplacedTiles.length = 0;
+        this.sessionRemovedTiles = [];
         return result;
     }
 }

@@ -112,6 +112,34 @@ export class NativeService {
         passable: true,
         viewable: true
       },
+      grassFloor: {
+        id: 'grassFloor',
+        name: $localize`:@@game.tile.grassFloor:Grass floor`,
+        sprite: {
+          character: '=',
+          description: '-',
+          color: {r: 0, g: 25, b: 0, a: 1}
+        },
+        backgroundColor: {r: 0, g: 60, b: 0},
+        bright: false,
+        tags: [],
+        passable: true,
+        viewable: true
+      },
+      sandFloor: {
+        id: 'sandFloor',
+        name: $localize`:@@game.tile.sandFloor:Sand floor`,
+        sprite: {
+          character: '.',
+          description: '-',
+          color: {r: 244, g: 164, b: 96, a: 1}
+        },
+        backgroundColor: {r: 40, g: 30, b: 20},
+        bright: false,
+        tags: [],
+        passable: true,
+        viewable: true
+      },
     };
   }
 
