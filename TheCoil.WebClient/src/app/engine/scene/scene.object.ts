@@ -146,11 +146,20 @@ export class Scene {
                     return {x: tile.x, y: tile.y};
                 })
             } as SceneSegmentInformation;
-            const level = emptySegment > playerSegment && i > emptySegment ? (sceneSegment.previousSegment || sceneSegment) :
-            emptySegment < playerSegment && i < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
-            i !== emptySegment ? sceneSegment : undefined;
+            let level: SceneSegment;
+            let prevousLoop = false;
+            let nextLoop = false;
+            if (emptySegment > playerSegment && i > emptySegment) {
+                level = sceneSegment.previousSegment || sceneSegment;
+                prevousLoop = !sceneSegment.previousSegment;
+            } else if (emptySegment < playerSegment && i < emptySegment) {
+                level = sceneSegment.nextSegment || sceneSegment;
+                nextLoop = !sceneSegment.nextSegment;
+            } else if (i !== emptySegment) {
+                level = sceneSegment;
+            }
             this.segments.push(segment);
-            this.loadSegment(segment, level);
+            this.loadSegment(segment, level, prevousLoop, nextLoop);
             this.sessionReplacedTiles.length = 0;
             this.sessionRemovedTiles.length = 0;
         }
@@ -279,7 +288,7 @@ export class Scene {
                     this.currentSegment -= this.segmentsCount;
                 }
             }
-            const sceneSegment = this.segments[this.currentSegment].sceneSegment;
+            const sceneSegment = this.segments[this.currentSegment];
             let emptySegment = this.currentSegment + this.segmentsCount / 2;
             if (emptySegment >= this.segmentsCount) {
                 emptySegment -= this.segmentsCount;
@@ -298,12 +307,28 @@ export class Scene {
             if (newSegment >= this.segmentsCount) {
                 newSegment -= this.segmentsCount;
             }
-            const level = emptySegment > this.currentSegment && newSegment > emptySegment ?
-                (sceneSegment.previousSegment || sceneSegment) :
-                emptySegment < this.currentSegment && newSegment < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
-                sceneSegment;
+            let level: SceneSegment;
+            let prevousLoop = false;
+            let nextLoop = false;
+            if (emptySegment > this.currentSegment && newSegment > emptySegment) {
+                if (sceneSegment.nextLoop) {
+                    level = sceneSegment.sceneSegment;
+                } else {
+                    level = sceneSegment.sceneSegment.previousSegment || sceneSegment.sceneSegment;
+                    prevousLoop = !sceneSegment.sceneSegment.previousSegment;
+                }
+            } else if (emptySegment < this.currentSegment && newSegment < emptySegment) {
+                if (sceneSegment.previousLoop) {
+                    level = sceneSegment.sceneSegment;
+                } else {
+                    level = sceneSegment.sceneSegment.nextSegment || sceneSegment.sceneSegment;
+                    nextLoop = !sceneSegment.sceneSegment.nextSegment;
+                }
+            } else {
+                level = sceneSegment.sceneSegment;
+            }
             this.unloadSegment(this.segments[emptySegment]);
-            this.loadSegment(this.segments[newSegment], level);
+            this.loadSegment(this.segments[newSegment], level, prevousLoop, nextLoop);
         }
     }
 
@@ -319,6 +344,8 @@ export class Scene {
     unloadSegment(segment: SceneSegmentInformation) {
         segment.sceneSegment.saveData(this.turn, segment.segmentTiles, this.tiles);
         segment.sceneSegment = undefined;
+        segment.nextLoop = false;
+        segment.previousLoop = false;
         for (const tilePosition of segment.segmentTiles) {
             const tile = this.tiles[tilePosition.x][tilePosition.y];
             if (tile) {
@@ -329,9 +356,11 @@ export class Scene {
             }
         }
     }
-    loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {
+    loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment, previousLoop: boolean, nextLoop: boolean) {
         const num = this.segments.findIndex(x => x === segment);
         segment.sceneSegment = sceneSegment;
+        segment.previousLoop = previousLoop;
+        segment.nextLoop = nextLoop;
         if (sceneSegment) {
             for (const tilePosition of segment.segmentTiles) {
                 const levelTile = sceneSegment.tiles[tilePosition.x][tilePosition.y];
