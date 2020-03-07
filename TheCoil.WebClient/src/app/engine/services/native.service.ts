@@ -90,7 +90,7 @@ export class NativeService {
         sprite: {
           character: '#',
           description: '-',
-          color: {r: 200, g: 200, b: 200, a: 1}
+          color: {r: 220, g: 220, b: 220, a: 0.8}
         },
         backgroundColor: {r: 30, g: 30, b: 30},
         bright: false,
@@ -116,11 +116,11 @@ export class NativeService {
         id: 'grassFloor',
         name: $localize`:@@game.tile.grassFloor:Grass floor`,
         sprite: {
-          character: '=',
+          character: '-',
           description: '-',
-          color: {r: 0, g: 250, b: 0, a: 1}
+          color: {r: 0, g: 250, b: 0, a: 0.8}
         },
-        backgroundColor: {r: 0, g: 50, b: 0},
+        backgroundColor: {r: 0, g: 35, b: 0},
         bright: false,
         tags: [],
         passable: true,
@@ -132,9 +132,9 @@ export class NativeService {
         sprite: {
           character: '.',
           description: '-',
-          color: {r: 244, g: 164, b: 96, a: 1}
+          color: {r: 244, g: 164, b: 96, a: 0.8}
         },
-        backgroundColor: {r: 40, g: 30, b: 20},
+        backgroundColor: {r: 30, g: 20, b: 10},
         bright: false,
         tags: [],
         passable: true,

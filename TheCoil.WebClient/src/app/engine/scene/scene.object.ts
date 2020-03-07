@@ -324,7 +324,6 @@ export class Scene {
         segment.sceneSegment = undefined;
         for (const tilePosition of segment.segmentTiles) {
             this.tiles[tilePosition.x][tilePosition.y] = undefined;
-            this.sessionRemovedTiles.push({x: tilePosition.x, y: tilePosition.y});
         }
     }
     loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {

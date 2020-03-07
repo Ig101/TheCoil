@@ -99,6 +99,7 @@ export class SceneService {
             this.changeState(GameStateEnum.Defeat);
           }
         });
+        this.startSynchronizationTimer();
         return this.scene.snapshot;
       } else {
         return null;
@@ -197,6 +198,7 @@ export class SceneService {
   }
 
   private startSynchronizationTimer() {
+    this.stopSynchronizationTimer();
     this.timer = setInterval(this.timedSynchronization, this.synchronizationTimer, this);
   }
 

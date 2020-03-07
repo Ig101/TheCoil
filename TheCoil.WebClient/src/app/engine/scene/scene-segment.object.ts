@@ -34,7 +34,9 @@ export class SceneSegment {
     const actors: ActorSavedData[] = [];
     for (const xTiles of this.tiles) {
       for (const tile of xTiles) {
-        actors.push(...tile.objects);
+        if (tile) {
+          actors.push(...tile.objects);
+        }
       }
     }
     return {
@@ -101,6 +103,7 @@ export class SceneSegment {
 
   saveData(turn: number, tilePositions: { x: number; y: number; }[], tiles: Tile[][]) {
     this.latestTurn = turn;
+    this.changed = true;
     for (const tilePosition of tilePositions) {
       const tile = tiles[tilePosition.x][tilePosition.y];
       if (tile) {
