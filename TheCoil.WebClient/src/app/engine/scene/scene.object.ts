@@ -267,7 +267,6 @@ export class Scene {
             differenceForComparison = temporalDifference;
             difference = this.currentSegment - this.segmentsCount - playerSegment;
         }
-        let emptySegment: number;
         while (difference !== 0) {
             if (difference > 0) {
                 this.currentSegment--;
@@ -281,7 +280,7 @@ export class Scene {
                 }
             }
             const sceneSegment = this.segments[this.currentSegment].sceneSegment;
-            emptySegment = this.currentSegment + this.segmentsCount / 2;
+            let emptySegment = this.currentSegment + this.segmentsCount / 2;
             if (emptySegment >= this.segmentsCount) {
                 emptySegment -= this.segmentsCount;
             }
@@ -303,10 +302,8 @@ export class Scene {
                 (sceneSegment.previousSegment || sceneSegment) :
                 emptySegment < this.currentSegment && newSegment < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
                 sceneSegment;
-            this.loadSegment(this.segments[newSegment], level);
-        }
-        if (emptySegment !== undefined) {
             this.unloadSegment(this.segments[emptySegment]);
+            this.loadSegment(this.segments[newSegment], level);
         }
     }
 
