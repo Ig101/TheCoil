@@ -256,12 +256,18 @@ export class Scene {
             playerSegment += this.segmentsCount;
         }
         let difference = this.currentSegment - playerSegment;
-        if (difference === -7) {
-            difference = 1;
+        let differenceForComparison = Math.abs(this.currentSegment - playerSegment);
+        let temporalDifference = Math.abs(this.currentSegment + this.segmentsCount - playerSegment);
+        if (temporalDifference < differenceForComparison) {
+            differenceForComparison = temporalDifference;
+            difference = this.currentSegment + this.segmentsCount - playerSegment;
         }
-        if (difference === 7) {
-            difference = -1;
+        temporalDifference = Math.abs(this.currentSegment - this.segmentsCount - playerSegment);
+        if (temporalDifference < differenceForComparison) {
+            differenceForComparison = temporalDifference;
+            difference = this.currentSegment - this.segmentsCount - playerSegment;
         }
+        let emptySegment: number;
         while (difference !== 0) {
             if (difference > 0) {
                 this.currentSegment--;
@@ -271,11 +277,11 @@ export class Scene {
             } else {
                 this.currentSegment++;
                 if (this.currentSegment >= this.segmentsCount) {
-                    this.currentSegment += this.segmentsCount;
+                    this.currentSegment -= this.segmentsCount;
                 }
             }
             const sceneSegment = this.segments[this.currentSegment].sceneSegment;
-            let emptySegment = this.currentSegment + this.segmentsCount / 2;
+            emptySegment = this.currentSegment + this.segmentsCount / 2;
             if (emptySegment >= this.segmentsCount) {
                 emptySegment -= this.segmentsCount;
             }
@@ -293,10 +299,13 @@ export class Scene {
             if (newSegment >= this.segmentsCount) {
                 newSegment -= this.segmentsCount;
             }
-            const level = newSegment > this.currentSegment && emptySegment > newSegment ? (sceneSegment.previousSegment || sceneSegment) :
-                newSegment < this.currentSegment && emptySegment < newSegment ? (sceneSegment.nextSegment || sceneSegment) :
+            const level = emptySegment > this.currentSegment && newSegment > emptySegment ?
+                (sceneSegment.previousSegment || sceneSegment) :
+                emptySegment < this.currentSegment && newSegment < emptySegment ? (sceneSegment.nextSegment || sceneSegment) :
                 sceneSegment;
             this.loadSegment(this.segments[newSegment], level);
+        }
+        if (emptySegment !== undefined) {
             this.unloadSegment(this.segments[emptySegment]);
         }
     }
@@ -319,6 +328,7 @@ export class Scene {
         }
     }
     loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {
+        const num = this.segments.findIndex(x => x === segment);
         segment.sceneSegment = sceneSegment;
         if (sceneSegment) {
             for (const tilePosition of segment.segmentTiles) {

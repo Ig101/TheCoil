@@ -118,9 +118,9 @@ export class NativeService {
         sprite: {
           character: '=',
           description: '-',
-          color: {r: 0, g: 25, b: 0, a: 1}
+          color: {r: 0, g: 250, b: 0, a: 1}
         },
-        backgroundColor: {r: 0, g: 60, b: 0},
+        backgroundColor: {r: 0, g: 50, b: 0},
         bright: false,
         tags: [],
         passable: true,

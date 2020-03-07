@@ -4,8 +4,8 @@ import { Tile } from '../../scene/tile.object';
 export interface TileNative {
     id: string;
     name: string;
-    sprite?: SpriteNative;
-    backgroundColor?: {r: number, g: number, b: number};
+    sprite: SpriteNative;
+    backgroundColor: {r: number, g: number, b: number};
     bright: boolean;
     tags: Tag<Tile>[];
     passable: boolean;

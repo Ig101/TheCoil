@@ -17,6 +17,7 @@ import { EnginePlayerActionFull } from '../../models/engine-player-action-full.m
 import { removeFromArray } from 'src/app/helpers/extensions/array.extension';
 import { ReactionMessageLevelEnum } from '../../models/enums/reaction-message-level.enum';
 import { VisualizationSnapshot } from '../../models/scene/abstract/visualization-snapshot.model';
+import { Visualization } from '../abstract/visualization.object';
 
 export class Actor implements IActiveObject {
 
@@ -30,6 +31,7 @@ export class Actor implements IActiveObject {
     name: string;
 
     readonly native: ActorNative;
+    readonly visualization: Visualization;
 
     dead = false;
 
@@ -51,7 +53,7 @@ export class Actor implements IActiveObject {
             y: this.y,
             name: this.name,
             weight: this.calculatedWeight,
-            sprite: this.native.sprite as VisualizationSnapshot,
+            sprite: this.visualization.snapshot,
             speedModificator: this.calculatedSpeedModification,
             maxDurability: this.calculatedMaxDurability,
             maxEnergy: this.calculatedMaxEnergy,
@@ -92,6 +94,7 @@ export class Actor implements IActiveObject {
         this.calculatedMaxEnergy = this.native.maxEnergy;
         this.calculatedSpeedModification = this.native.speedModificator;
         this.calculatedTags = this.native.tags.sort((a, b) => a.priority - b.priority);
+        this.visualization = new Visualization(native.sprite);
 
         this.durability = this.calculatedMaxDurability;
         this.energy = this.calculatedMaxEnergy;

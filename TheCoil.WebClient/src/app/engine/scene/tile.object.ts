@@ -9,6 +9,7 @@ import { ActionValidationResult } from './models/action-validation-result.model'
 import { ReactionResult } from './models/reaction-result.model';
 import { VisualizationSnapshot } from '../models/scene/abstract/visualization-snapshot.model';
 import { TileStorage } from '../models/scene/tile-storage.model';
+import { Visualization } from './abstract/visualization.object';
 
 export class Tile implements IReactiveObject {
 
@@ -20,12 +21,13 @@ export class Tile implements IReactiveObject {
     readonly x: number;
     readonly y: number;
     readonly native: TileNative;
+    readonly visualization: Visualization;
 
     get snapshot(): TileSnapshot {
         return {
             x: this.x,
             y: this.y,
-            sprite: this.native.sprite ? this.native.sprite as VisualizationSnapshot : undefined,
+            sprite: this.visualization.snapshot,
             name: this.native.name,
             backgroundColor: this.native.backgroundColor,
             bright: this.native.bright,
@@ -40,7 +42,7 @@ export class Tile implements IReactiveObject {
         return {
             x: this.x,
             y: this.y,
-            sprite: this.native.sprite ? this.native.sprite as VisualizationSnapshot : undefined,
+            sprite: this.visualization.snapshot,
             name: this.native.name,
             backgroundColor: this.native.backgroundColor,
             bright: this.native.bright,
@@ -65,6 +67,7 @@ export class Tile implements IReactiveObject {
         this.native = tile;
         this.objects = [];
         this.segmentId = segmentId;
+        this.visualization = new Visualization(tile.sprite);
     }
 
     react(reaction: string, initiator: Actor, time: number, strength?: number) {

@@ -293,20 +293,24 @@ export class AsciiGameComponent implements OnInit, OnDestroy {
     this.contextMenu = undefined;
     this.mouseBlocked = false;
     if (action) {
+      // const time = performance.now();
       this.firstAnimation = true;
       this.engineFacadeService.sendActions([action]);
       this.recalculateMouseMove(this.mouseState.realX, this.mouseState.realY);
       this.animationsLoaded = true;
+      // console.log(performance.now() - time);
     } else {
       this.blocked = false;
     }
   }
 
   doSmartAction(x: number, y: number) {
+    // const time = performance.now();
     this.blocked = true;
     this.firstAnimation = true;
     this.engineFacadeService.sendSmartAction(x, y);
     this.animationsLoaded = true;
+    // console.log(performance.now() - time);
   }
 
   processNewAction(response: EngineActionResponse) {
