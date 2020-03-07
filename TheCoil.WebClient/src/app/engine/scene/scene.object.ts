@@ -320,7 +320,13 @@ export class Scene {
         segment.sceneSegment.saveData(this.turn, segment.segmentTiles, this.tiles);
         segment.sceneSegment = undefined;
         for (const tilePosition of segment.segmentTiles) {
-            this.tiles[tilePosition.x][tilePosition.y] = undefined;
+            const tile = this.tiles[tilePosition.x][tilePosition.y];
+            if (tile) {
+                for (const actor of tile.objects) {
+                    removeFromArray(this.aiActors, actor);
+                }
+                this.tiles[tilePosition.x][tilePosition.y] = undefined;
+            }
         }
     }
     loadSegment(segment: SceneSegmentInformation, sceneSegment: SceneSegment) {
