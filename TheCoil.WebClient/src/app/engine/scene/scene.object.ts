@@ -308,27 +308,29 @@ export class Scene {
                 newSegment -= this.segmentsCount;
             }
             let level: SceneSegment;
-            let prevousLoop = false;
+            let previousLoop = false;
             let nextLoop = false;
             if (emptySegment > this.currentSegment && newSegment > emptySegment) {
                 if (sceneSegment.nextLoop) {
                     level = sceneSegment.sceneSegment;
+                    nextLoop = true;
                 } else {
                     level = sceneSegment.sceneSegment.previousSegment || sceneSegment.sceneSegment;
-                    prevousLoop = !sceneSegment.sceneSegment.previousSegment;
                 }
+                previousLoop = !sceneSegment.sceneSegment.previousSegment;
             } else if (emptySegment < this.currentSegment && newSegment < emptySegment) {
                 if (sceneSegment.previousLoop) {
                     level = sceneSegment.sceneSegment;
+                    previousLoop = true;
                 } else {
                     level = sceneSegment.sceneSegment.nextSegment || sceneSegment.sceneSegment;
-                    nextLoop = !sceneSegment.sceneSegment.nextSegment;
                 }
+                nextLoop = !sceneSegment.sceneSegment.nextSegment;
             } else {
                 level = sceneSegment.sceneSegment;
             }
             this.unloadSegment(this.segments[emptySegment]);
-            this.loadSegment(this.segments[newSegment], level, prevousLoop, nextLoop);
+            this.loadSegment(this.segments[newSegment], level, previousLoop, nextLoop);
         }
     }
 
