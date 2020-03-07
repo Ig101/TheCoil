@@ -65,7 +65,7 @@ export class GeneratorService {
           tiles[x][y] = {
             x,
             y,
-            nativeId: difficulty === 2 ? 'sandFloor' : difficulty === 1 ? 'grassFloor' : 'stoneFloor',
+            nativeId: difficulty === 2 ? 'sand' : difficulty === 1 ? 'grass' : 'stone',
             changed: true,
             objects: []
           } as TileStorage;

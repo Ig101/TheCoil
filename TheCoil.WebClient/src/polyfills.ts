@@ -86,7 +86,7 @@ import { loadTranslations } from '@angular/localize';
   'game.reaction.alert': '{$name} издает звуки тревоги.',
   'game.reaction.explode': '{$name} взрывается.',
   // Tiles
-  'game.tile.stoneFloor': 'Каменный пол',
+  'game.tile.stone': 'Каменный пол',
   'game.tile.stoneWall': 'Каменная стена',
   // Actors
   'game.actor.dummy': 'Манекен'

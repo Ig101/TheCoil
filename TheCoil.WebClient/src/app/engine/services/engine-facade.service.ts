@@ -18,18 +18,12 @@ export class EngineFacadeService {
   ) { }
 
   loadGame(newLoad: boolean = false) {
-    return this.nativeService.loadNatives()
-      .pipe(switchMap(result => {
-        if (result.success) {
-          if (newLoad || !this.sceneService.sceneLoaded) {
-            return this.sceneService.setupScene();
-          } else {
-            return of(this.sceneService.getSceneSnapshot());
-          }
-        } else {
-          return of(undefined as SceneSnapshot);
-        }
-      }));
+    this.nativeService.loadNatives();
+    if (newLoad || !this.sceneService.sceneLoaded) {
+      return this.sceneService.setupScene();
+    } else {
+      return of(this.sceneService.getSceneSnapshot());
+    }
   }
 
   validateAndGetAction(action: EnginePlayerAction) {

@@ -78,7 +78,6 @@ export class SynchronizationService {
             roomType: RoomTypeEnum.Demo,
             difficulty: 2,
             id: 3,
-            nextId: 1,
             actors: [
               {
                 nativeId: 'dummy',

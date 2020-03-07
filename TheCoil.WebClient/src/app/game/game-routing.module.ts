@@ -7,7 +7,7 @@ import { UserResolverService } from '../shared/resolvers/user-resolver.service';
 
 const routes: Routes = [
   {path: 'ascii', loadChildren: () => import('./ascii-game/ascii-game.module').then(x => x.AsciiGameModule),
-    resolve: { scene: GameResolverService, AsciiGameResolverService, user: UserResolverService } },
+    resolve: { scene: GameResolverService, AsciiGameResolverService } },
   {path: '**', redirectTo: 'ascii'}
 ];
 

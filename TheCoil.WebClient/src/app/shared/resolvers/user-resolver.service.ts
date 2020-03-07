@@ -13,11 +13,9 @@ export class UserResolverService implements Resolve<ActiveUser> {
     ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): ActiveUser | Observable<ActiveUser> | Promise<ActiveUser> {
-    /*
     return this.userService.getActiveUser()
       .pipe(map(result => {
         return result.result;
-      }));*/
-      return undefined;
+      }));
   }
 }

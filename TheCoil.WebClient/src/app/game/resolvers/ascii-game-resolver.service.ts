@@ -12,12 +12,7 @@ export class AsciiGameResolverService implements Resolve<any> {
     ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): any | Observable<any> | Promise<any> {
-    return this.asciiAnimationsRegistryService.loadAnimations()
-      .pipe(tap(result => {
-        if (!result) {
-          // TODO Redirect to error
-        }
-      }));
+    this.asciiAnimationsRegistryService.loadAnimations();
   }
 
 }

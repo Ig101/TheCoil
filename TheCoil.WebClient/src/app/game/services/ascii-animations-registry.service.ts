@@ -10,6 +10,7 @@ import { fillingAnimationStrategy } from '../ascii-game/animation-definitions/fi
 import { flashAnimationStrategy } from '../ascii-game/animation-definitions/flash.strategy';
 import { throwingAnimationStrategy } from '../ascii-game/animation-definitions/throwing.strategy';
 import { ColorBlendingEnum } from '../ascii-game/models/enums/color-blending.enum';
+import { getAsciiAnimationDeclarationsRegistry } from '../ascii-game/natives/ascii-animation-declarations-registry';
 
 @Injectable()
 export class AsciiAnimationsRegistryService {
@@ -29,17 +30,8 @@ export class AsciiAnimationsRegistryService {
       flash: flashAnimationStrategy,
       throwing: throwingAnimationStrategy
     };
-    this.declarations = {
-      explosion: {
-        calculationStrategy: this.strategies.filling,
-        character: '*',
-        firstColor: {r: 255, g: 155, b: 0, a: 1},
-        secondColor: {r: 255, g: 0, b: 0, a: 1},
-        colorBlending: ColorBlendingEnum.Gradient,
-        progression: 0.4,
-      }
-    };
-    return of(this.declarations);
+    this.declarations = getAsciiAnimationDeclarationsRegistry(this.strategies);
+    return this.declarations;
   }
 
   getAnimations(response: EngineActionResponse): AnimationItem[] {

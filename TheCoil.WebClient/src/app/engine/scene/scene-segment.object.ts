@@ -21,7 +21,7 @@ export class SceneSegment {
   changedTilesPosition: { x: number; y: number }[];
   random: Random;
 
-  latestTurn: number;
+  lastSaveTurn: number;
 
   nextSegment: SceneSegment;
   nextId?: number;
@@ -40,6 +40,7 @@ export class SceneSegment {
       }
     }
     return {
+      lastSaveTurn: this.lastSaveTurn,
       seed: this.seed,
       roomType: this.roomType,
       difficulty: this.difficulty,
@@ -57,6 +58,7 @@ export class SceneSegment {
     random: Random,
     savedData: SceneSegmentSavedData,
   ) {
+    this.lastSaveTurn = savedData.lastSaveTurn;
     this.nextId = savedData.nextId;
     this.tiles = tiles;
     this.random = random;
@@ -102,7 +104,7 @@ export class SceneSegment {
   }
 
   saveData(turn: number, tilePositions: { x: number; y: number; }[], tiles: Tile[][]) {
-    this.latestTurn = turn;
+    this.lastSaveTurn = turn;
     this.changed = true;
     for (const tilePosition of tilePositions) {
       const tile = tiles[tilePosition.x][tilePosition.y];

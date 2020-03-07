@@ -6,6 +6,7 @@ export interface SceneSegmentSavedData {
   seed: number;
   roomType: RoomTypeEnum;
   difficulty: number;
+  lastSaveTurn: number;
   actors: ActorSavedData[];
   tiles: TileSavedData[];
   id: number;
