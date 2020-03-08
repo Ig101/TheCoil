@@ -17,11 +17,15 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
 {
     public class SendGameSynchronizationInfoCommand : IRequest<GameStateDto>
     {
-        public MetaInformationDto MetaInformation { get; set; }
+        public Guid GameId { get; set; }
+
+        public string Session { get; set; }
+
+        public MetaInformationForUpdateDto MetaInformation { get; set; }
 
         public PlayerDto Player { get; set; }
 
-        public IEnumerable<SceneSegmentDto> SceneSegments { get; set; }
+        public IEnumerable<SceneSegmentForUpdateDto> SceneSegments { get; set; }
 
         public string UserName { get; set; }
 
@@ -41,7 +45,7 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
             public async Task<GameStateDto> Handle(SendGameSynchronizationInfoCommand request, CancellationToken cancellationToken)
             {
                 var check = await _gameContext.GameMeta.GetOneAsync(
-                    x => x.Id == request.MetaInformation.GameId && x.Session == request.MetaInformation.Session && x.UserName == request.UserName,
+                    x => x.Id == request.GameId && x.Session == request.Session && x.UserName == request.UserName,
                     x => (Guid?)x.Id,
                     cancellationToken);
                 if (check == null)
@@ -70,7 +74,7 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
                         Energy = playerActor.Energy,
                         RemainedTurnTime = playerActor.RemainedTurnTime
                     });
-                _gameContext.GameMeta.Update(x => x.Id == request.MetaInformation.GameId, update);
+                _gameContext.GameMeta.Update(x => x.Id == request.GameId, update);
                 foreach (var segment in request.SceneSegments)
                 {
                     var sceneUpdate = new UpdateDefinitionBuilder<SceneSegment>()
@@ -94,7 +98,7 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
                             Y = tile.Y,
                             NativeId = tile.NativeId
                         }));
-                    _gameContext.SceneSegments.Update(x => x.GameId == request.MetaInformation.GameId && x.SceneId == segment.Id, sceneUpdate);
+                    _gameContext.SceneSegments.Update(x => x.GameId == request.GameId && x.SceneId == segment.Id, sceneUpdate);
                 }
 
                 var random = new Random();
@@ -104,12 +108,12 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
                 {
                     // NextLevel
                     var segment = await _gameContext.SceneSegments.GetOneAsync(
-                        x => request.MetaInformation.GameId == x.GameId && x.SceneId == currentPlayerScene.NextId, cancellationToken);
+                        x => request.GameId == x.GameId && x.SceneId == currentPlayerScene.NextId, cancellationToken);
                     if (segment == null)
                     {
                         segment = await _mediator.Send(new GenerateNewSegmentCommand()
                         {
-                            GameId = request.MetaInformation.GameId,
+                            GameId = request.GameId,
                             SceneId = currentPlayerScene.NextId.Value,
                             Seed = random.Next()
                         });
@@ -126,12 +130,12 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
                 {
                     // PreviousLevel
                     var segment = await _gameContext.SceneSegments.GetOneAsync(
-                        x => request.MetaInformation.GameId == x.GameId && x.NextSceneId == currentPlayerScene.Id, cancellationToken);
+                        x => request.GameId == x.GameId && x.NextSceneId == currentPlayerScene.Id, cancellationToken);
                     if (segment == null)
                     {
                         segment = await _mediator.Send(new GenerateNewSegmentCommand()
                         {
-                            GameId = request.MetaInformation.GameId,
+                            GameId = request.GameId,
                             SceneId = currentPlayerScene.NextId.Value,
                             NextScene = true,
                             Seed = random.Next()
