@@ -93,7 +93,7 @@ export class SynchronizationService {
           } as SceneSegmentSavedData
         ],
         player: {
-          level: 1,
+          scene: 1,
           actor: {
             nativeId: 'player',
             name: 'harry',

@@ -1,4 +1,5 @@
 export enum GameStateEnum {
   Pending,
-  Defeat
+  Defeat,
+  Victory
 }

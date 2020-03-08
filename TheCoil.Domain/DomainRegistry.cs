@@ -6,6 +6,7 @@ using TheCoil.Domain.Email;
 using TheCoil.Domain.Game;
 using TheCoil.Domain.Identity;
 using TheCoil.Domain.Identity.Entities;
+using TheCoil.Domain.Registry;
 
 namespace TheCoil.Domain
 {
@@ -41,6 +42,7 @@ namespace TheCoil.Domain
             });
             services.AddSingleton<MongoConnection>();
             services.AddTransient<GameContext>();
+            services.AddTransient<RegistryContext>();
             services.AddTransient<EmailSender>();
             return services;
         }

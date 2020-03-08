@@ -79,7 +79,7 @@ export class SceneService {
         this.sceneSegments = {};
         this.sceneChanged = false;
         this.pushNewSceneSegments(response.result.sceneSegments);
-        this.scene = new Scene(this.sceneSegments[response.result.player.level],
+        this.scene = new Scene(this.sceneSegments[response.result.player.scene],
           response.result.player,
           response.result.metaInformation,
           response.result.unsettledActors,
@@ -183,7 +183,7 @@ export class SceneService {
         this.metaInformation,
         {
           actor: this.scene.playerSavedData,
-          level: this.scene.playerSegmentId
+          scene: this.scene.playerSegmentId
         } as PlayerSavedData)
         .subscribe(result => {
           if (result.success) {

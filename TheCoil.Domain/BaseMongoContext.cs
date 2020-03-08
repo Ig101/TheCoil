@@ -18,24 +18,27 @@ namespace TheCoil.Domain
 
         public async Task ApplyChangesAsync(CancellationToken token = default)
         {
-            using var session = _connection.StartSession();
-            session.StartTransaction();
-            try
+            if (_operations.Count > 0)
             {
-                var item = _operations.Dequeue();
-                while (item != null)
+                using var session = _connection.StartSession();
+                session.StartTransaction();
+                try
                 {
-                    await item.ProcessAsync(session, token);
-                    item = _operations.Dequeue();
-                }
+                    var item = _operations.Dequeue();
+                    while (item != null)
+                    {
+                        await item.ProcessAsync(session, token);
+                        item = _operations.Dequeue();
+                    }
 
-                await session.CommitTransactionAsync(token);
-                _operations.Clear();
-            }
-            catch
-            {
-                await session.AbortTransactionAsync(token);
-                throw;
+                    await session.CommitTransactionAsync(token);
+                    _operations.Clear();
+                }
+                catch
+                {
+                    await session.AbortTransactionAsync(token);
+                    throw;
+                }
             }
         }
 

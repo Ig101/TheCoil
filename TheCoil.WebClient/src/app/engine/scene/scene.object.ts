@@ -165,8 +165,15 @@ export class Scene {
         }
         const player = this.createActor(nativeService.getActor(playerData.actor.nativeId), playerData.actor.x,
             playerData.actor.y, playerData.actor.name, playerData.actor.id);
-        player.durability = playerData.actor.durability;
-        player.energy = playerData.actor.energy;
+        if (playerData.actor.durability || playerData.actor.durability === 0) {
+            player.durability = playerData.actor.durability;
+        }
+        if (playerData.actor.energy || playerData.actor.energy === 0) {
+            player.energy = playerData.actor.energy;
+        }
+        if (playerData.actor.remainedTurnTime || playerData.actor.remainedTurnTime === 0) {
+            player.remainedTurnTime = playerData.actor.remainedTurnTime;
+        }
         this.player = player;
         this.currentSegment = playerSegment;
         this.idIncrementor = meta.incrementor;
@@ -203,9 +210,6 @@ export class Scene {
     // ChangesRegistration
     pushUnsettledActors(actors: UnsettledActorSavedData[]) {
         for (const actor of actors) {
-            if (actor.player) {
-
-            }
             // TODO SetupUnsettledActors
         }
     }
@@ -375,9 +379,15 @@ export class Scene {
                     for (const actor of levelTile.objects) {
                         const sceneActor = this.createActor(this.nativeService.getActor(actor.nativeId),
                             actor.x, actor.y, actor.name, actor.id);
-                        sceneActor.durability = actor.durability;
-                        sceneActor.energy = actor.energy;
-                        sceneActor.remainedTurnTime = actor.remainedTurnTime;
+                        if (actor.durability || actor.durability === 0) {
+                            sceneActor.durability = actor.durability;
+                        }
+                        if (actor.energy || actor.energy === 0) {
+                            sceneActor.energy = actor.energy;
+                        }
+                        if (actor.remainedTurnTime || actor.remainedTurnTime === 0) {
+                            sceneActor.remainedTurnTime = actor.remainedTurnTime;
+                        }
                     }
                     this.sessionReplacedTiles.push(newTile);
                 } else {
