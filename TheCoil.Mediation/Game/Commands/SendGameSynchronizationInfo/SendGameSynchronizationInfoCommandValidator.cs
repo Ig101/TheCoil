@@ -7,12 +7,12 @@ namespace TheCoil.Mediation.Game.Commands.SendGameSynchronizationInfo
     {
         public SendGameSynchronizationInfoCommandValidator()
         {
+            RuleFor(x => x.GameId).NotNull();
+            RuleFor(x => x.Session).NotEmpty();
             RuleFor(x => x.MetaInformation).ChildRules(child =>
             {
-                child.RuleFor(x => x.GameId).NotNull();
                 child.RuleFor(x => x.GameState).NotNull();
                 child.RuleFor(x => x.Incrementor).NotNull();
-                child.RuleFor(x => x.Session).NotNull();
                 child.RuleFor(x => x.Turn).NotNull();
             });
             RuleFor(x => x.Player).ChildRules(child =>
