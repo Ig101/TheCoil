@@ -53,6 +53,8 @@ export class Scene {
     readonly width: number;
     readonly height: number;
 
+    public sceneSegmentChanged = false;
+
     get currentIdIncrement() {
         return this.idIncrementor;
     }
@@ -260,6 +262,7 @@ export class Scene {
     }
 
     registerPlayerPositionChange() {
+        const initialPlayerSegment = this.segments[this.currentSegment].sceneSegment;
         const playerAngle = Math.atan2(this.player.y - this.height / 2, this.player.x - this.width / 2) + Math.PI;
         let playerSegment = Math.floor(playerAngle * this.segmentsCount / 2 / Math.PI);
         if (playerSegment >= this.segmentsCount) {
@@ -335,6 +338,12 @@ export class Scene {
             }
             this.unloadSegment(this.segments[emptySegment]);
             this.loadSegment(this.segments[newSegment], level, previousLoop, nextLoop);
+        }
+        const resultPlayerSegment = this.segments[this.currentSegment];
+        if (initialPlayerSegment !== resultPlayerSegment.sceneSegment &&
+            ((resultPlayerSegment.sceneSegment.nextId && !resultPlayerSegment.sceneSegment.nextSegment) ||
+            (!resultPlayerSegment.sceneSegment.previousSegment))) {
+            this.sceneSegmentChanged = true;
         }
     }
 

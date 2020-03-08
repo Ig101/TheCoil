@@ -49,7 +49,7 @@ export class SceneSegment {
         return this.tiles[tile.x][tile.y];
       }),
       id: this.id,
-      nextId: this.nextId
+      nextId: this.nextId,
     };
   }
 

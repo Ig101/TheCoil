@@ -26,8 +26,6 @@ export class SceneService {
 
   private readonly synchronizationTimer = 20000;
   private timer;
-  private currentActionsBanch: EngineAction[] = [];
-  private lastActionsBanch: EngineAction[] = [];
   private sceneChanged = false;
 
   private metaInformation: MetaInformation;
@@ -65,6 +63,7 @@ export class SceneService {
       this.scene.unsubscribe();
       this.unsubscribeSubject.next();
       this.synchronization();
+      this.stopSynchronizationTimer();
       this.scene = null;
     }
   }
@@ -86,14 +85,9 @@ export class SceneService {
           this.nativeService);
         this.scene.subscribe(action => {
           this.sceneChanged = true;
-          if (action.important) {
-            this.currentActionsBanch.push({
-              id: action.animation,
-              extraIdentifier: action.extraIdentifier,
-              actorId: action.actor ? action.actor.id : undefined,
-              x: action.x,
-              y: action.y
-            } as EngineAction);
+          if (this.scene.sceneSegmentChanged) {
+            this.scene.sceneSegmentChanged = false;
+            this.forcedSynchronization();
           }
           if (!this.scene.playerAlive && this.metaInformation.gameState !== GameStateEnum.Defeat) {
             this.changeState(GameStateEnum.Defeat);
@@ -158,7 +152,7 @@ export class SceneService {
 
   changeState(state: GameStateEnum) {
     this.metaInformation.gameState = state;
-    this.synchronization();
+    this.forcedSynchronization();
     this.registerMetaInformationChange();
   }
 
@@ -176,8 +170,6 @@ export class SceneService {
       this.metaInformation.turn = this.scene.currentTurn;
       this.metaInformation.incrementor = this.scene.currentIdIncrement;
       this.sceneChanged = false;
-      this.lastActionsBanch.push(...this.currentActionsBanch);
-      this.currentActionsBanch.length = 0;
       this.synchronizationService.sendSynchronizationInfo(
         Object.values(this.sceneSegments).filter(x => x.changed).map(x => x.sceneSegmentSavedData),
         this.metaInformation,
@@ -187,14 +179,17 @@ export class SceneService {
         } as PlayerSavedData)
         .subscribe(result => {
           if (result.success) {
-            this.lastActionsBanch = [];
             this.scene.pushUnsettledActors(result.result.unsettledActors);
           } else {
             // TODO Error handling
           }
         });
     }
+  }
 
+  forcedSynchronization() {
+    this.startSynchronizationTimer();
+    this.synchronization();
   }
 
   private startSynchronizationTimer() {
