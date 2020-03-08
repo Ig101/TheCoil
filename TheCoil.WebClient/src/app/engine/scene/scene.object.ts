@@ -320,7 +320,6 @@ export class Scene {
             if (emptySegment > this.currentSegment && newSegment > emptySegment) {
                 if (sceneSegment.nextLoop) {
                     level = sceneSegment.sceneSegment;
-                    nextLoop = true;
                 } else {
                     level = sceneSegment.sceneSegment.previousSegment || sceneSegment.sceneSegment;
                 }
@@ -328,13 +327,18 @@ export class Scene {
             } else if (emptySegment < this.currentSegment && newSegment < emptySegment) {
                 if (sceneSegment.previousLoop) {
                     level = sceneSegment.sceneSegment;
-                    previousLoop = true;
                 } else {
                     level = sceneSegment.sceneSegment.nextSegment || sceneSegment.sceneSegment;
                 }
                 nextLoop = !sceneSegment.sceneSegment.nextSegment;
             } else {
                 level = sceneSegment.sceneSegment;
+                if (sceneSegment.previousLoop) {
+                    previousLoop = true;
+                }
+                if (sceneSegment.nextLoop) {
+                    nextLoop = true;
+                }
             }
             this.unloadSegment(this.segments[emptySegment]);
             this.loadSegment(this.segments[newSegment], level, previousLoop, nextLoop);
