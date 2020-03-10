@@ -17,5 +17,4 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => this.userManagementService.loadingEnd());
   }
-
 }

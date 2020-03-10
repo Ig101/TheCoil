@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { controlRequiredSilentValidator } from 'src/app/shared/validators/control-required-silent.validator';
 import { WebCommunicationService } from 'src/app/shared/services/web-communication.service';
@@ -51,6 +51,9 @@ export class SignInComponent implements OnInit {
   }
 
   signIn() {
+    if (this.userManagementService.loading) {
+      return;
+    }
     const errors = this.form.appErrors;
     if (errors.length > 0) {
       this.form.controls.password.setValue('');

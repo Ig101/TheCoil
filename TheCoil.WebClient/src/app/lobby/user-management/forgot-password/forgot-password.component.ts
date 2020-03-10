@@ -47,6 +47,9 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   forgotPassword() {
+    if (this.userManagementService.loading) {
+      return;
+    }
     const errors = this.form.appErrors;
     if (errors.length > 0) {
       this.userManagementService.loadingError(errors);

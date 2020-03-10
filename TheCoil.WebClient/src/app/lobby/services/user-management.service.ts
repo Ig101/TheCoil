@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class UserManagementService {
 
   loadingInternal = false;
-  errors: string[];
+  errors = new BehaviorSubject<string[]>(undefined);
 
   passwordWasChanged = false;
   emailWasConfirmed = false;
@@ -35,25 +36,25 @@ export class UserManagementService {
     if (this.loadingInternal) {
       return;
     }
-    this.errors = undefined;
+    this.errors.next(undefined);
     this.loadingInternal = true;
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      this.errors = [$localize`:@@errors.timeout:Loading timeout. Try again after few time.`];
+      this.errors.next([$localize`:@@errors.timeout:Loading timeout. Try again after few time.`]);
     }, 240000);
   }
 
   loadingEnd(overcomeErrors: boolean = false) {
-    if (!this.loadingInternal || (!overcomeErrors && this.errors)) {
+    if (!this.loadingInternal || (!overcomeErrors && this.errors.value)) {
       return;
     }
-    this.errors = undefined;
+    this.errors.next(undefined);
     this.loadingInternal = false;
     clearTimeout(this.timer);
   }
 
   loadingError(errors: string[]) {
     this.loadingInternal = true;
-    this.errors = errors;
+    this.errors.next(errors);
   }
 }

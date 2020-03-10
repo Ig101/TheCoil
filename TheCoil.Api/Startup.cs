@@ -11,6 +11,7 @@ using TheCoil.Api.Filters;
 using TheCoil.Domain;
 using TheCoil.Domain.Email;
 using TheCoil.Domain.Game;
+using TheCoil.Domain.Registry;
 using TheCoil.Infrastructure;
 using TheCoil.Mediation;
 
@@ -55,6 +56,8 @@ namespace TheCoil.Api
                 Configuration.GetSection("MongoConnection"));
             services.Configure<MongoContextSettings<GameContext>>(
                 Configuration.GetSection("MongoConnection:Game"));
+            services.Configure<MongoContextSettings<RegistryContext>>(
+                Configuration.GetSection("MongoConnection:Registry"));
             services.Configure<EmailSenderSettings>(
                 Configuration.GetSection("SmtpServer"));
             services.RegisterDomainLayer($"{Configuration["MongoConnection:ServerName"]}/{Configuration["MongoConnection:Identity:DatabaseName"]}");
