@@ -4,7 +4,7 @@
     flex-direction: column;
   }
   button {
-    padding: 6px;
+    padding: 8px;
     width: 100%;
     height: 100%;
     background: none;
@@ -12,6 +12,7 @@
     outline: none;
     cursor: pointer;
     color: #fff;
+    transition: color 0.2s;
   }
   
   button:hover {
@@ -19,6 +20,6 @@
   }
 
   button:active {
-    color: #cc4;
+    color: #aa4;
   }
 }

@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { AppFormGroup } from 'src/app/shared/components/form-group/app-form-group';
 import { SignUpRequest } from '../../models/sign-up-request.model';
 import { UserService } from 'src/app/shared/services/user.service';
+import { ComponentSizeEnum } from 'src/app/shared/models/enum/component-size.enum';
 
 @Component({
   selector: 'app-sign-up',
@@ -23,6 +24,8 @@ import { UserService } from 'src/app/shared/services/user.service';
 export class SignUpComponent implements OnInit {
 
   form: AppFormGroup;
+
+  componentSizeEnum = ComponentSizeEnum;
 
   constructor(
     private formBuilder: FormBuilder,

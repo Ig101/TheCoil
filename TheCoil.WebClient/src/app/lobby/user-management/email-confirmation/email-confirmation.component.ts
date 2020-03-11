@@ -4,6 +4,7 @@ import { UserManagementService } from '../../services/user-management.service';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/shared/services/user.service';
 import { EmailRequest } from '../../models/email-request.model';
+import { ComponentSizeEnum } from 'src/app/shared/models/enum/component-size.enum';
 
 @Component({
   selector: 'app-email-confirmation',
@@ -11,6 +12,8 @@ import { EmailRequest } from '../../models/email-request.model';
   styleUrls: ['./email-confirmation.component.scss']
 })
 export class EmailConfirmationComponent implements OnInit, OnDestroy {
+
+  componentSizeEnum = ComponentSizeEnum;
 
   get time() {
     return this.userManagementService.emailTime;

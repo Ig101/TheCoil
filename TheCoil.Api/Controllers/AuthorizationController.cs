@@ -26,7 +26,7 @@ namespace TheCoil.Api.Controllers
             return NoContent();
         }
 
-        [HttpPost("signout")]
+        [HttpDelete("signout")]
         public IActionResult SignOut()
         {
             Response.Cookies.Delete("Authorization");

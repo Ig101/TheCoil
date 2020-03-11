@@ -7,15 +7,15 @@ using TheCoil.Infrastructure.Models.ErrorHandling;
 
 namespace TheCoil.Mediation.Users.Commands.ChangePassword
 {
-    public class ChangePasswordCommand : IRequest
+    public class ChangePasswordAuthorizedCommand : IRequest
     {
-        public string UserId { get; set; }
+        public string UserName { get; set; }
 
-        public string Code { get; set; }
+        public string CurrentPassword { get; set; }
 
         public string Password { get; set; }
 
-        private class Handler : IRequestHandler<ChangePasswordCommand>
+        private class Handler : IRequestHandler<ChangePasswordAuthorizedCommand>
         {
             private readonly IdentityUserManager _userManager;
 
@@ -24,9 +24,9 @@ namespace TheCoil.Mediation.Users.Commands.ChangePassword
                 _userManager = userManager;
             }
 
-            public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(ChangePasswordAuthorizedCommand request, CancellationToken cancellationToken)
             {
-                var user = await _userManager.FindByIdAsync(request.UserId);
+                var user = await _userManager.FindByNameAsync(request.UserName);
                 if (user == null)
                 {
                     throw new ValidationErrorsException()
@@ -42,7 +42,7 @@ namespace TheCoil.Mediation.Users.Commands.ChangePassword
                     };
                 }
 
-                var result = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
+                var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.Password);
                 if (!result.Succeeded)
                 {
                     throw new ValidationErrorsException()

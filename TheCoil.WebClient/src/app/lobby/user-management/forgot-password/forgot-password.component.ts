@@ -7,6 +7,7 @@ import { UserManagementService } from '../../services/user-management.service';
 import { Router } from '@angular/router';
 import { EmailRequest } from '../../models/email-request.model';
 import { UserService } from 'src/app/shared/services/user.service';
+import { ComponentSizeEnum } from 'src/app/shared/models/enum/component-size.enum';
 
 @Component({
   selector: 'app-forgot-password',
@@ -16,6 +17,8 @@ import { UserService } from 'src/app/shared/services/user.service';
 export class ForgotPasswordComponent implements OnInit {
 
   form: AppFormGroup;
+
+  componentSizeEnum = ComponentSizeEnum;
 
   sent = false;
 

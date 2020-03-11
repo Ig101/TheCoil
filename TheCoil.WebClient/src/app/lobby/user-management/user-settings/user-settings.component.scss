@@ -1,0 +1,22 @@
+:host {
+  @import '../../lobby.module.scss';
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    .form {
+      border: 2px solid #fff;
+      border-left: none;
+      border-right: none;
+    }
+
+    .first-form {
+      border-top: none;
+    }
+
+    .last-form {
+      border-bottom: none;
+    }
+  }
+
+}

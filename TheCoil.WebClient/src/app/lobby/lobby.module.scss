@@ -47,6 +47,11 @@
 .form {
   display: flex;
   flex-direction: column;
+  color: white;
+}
+
+.full-screen-form {
+  min-height: 585px;
 }
 
 p {

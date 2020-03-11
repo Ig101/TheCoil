@@ -1,0 +1,26 @@
+<div class="form full-screen-form">
+  <p class="form-text title-font">{{userName}}</p>
+  <p class="uid form-text article-font extra">{{userUniqueId}}</p>
+  <div class="filler"></div>
+  <button *ngIf="savedGame" class="saved" (click)="loadGame()">
+    <div class="row">
+      <div class="text-font-inactive overflow">Harry</div><div class="text-font-inactive right-text">1lv</div>
+    </div>
+    <div class="row">
+      <div class="filler"></div>
+      <span class="text-font-inactive">Continue</span>
+    </div>
+  </button>
+  <button class="saved" (click)="newGame()">
+    <div class="row">
+      <div class="text-font-inactive overflow">Empty</div>
+    </div>
+    <div class="row">
+      <div class="filler"></div>
+      <span class="text-font-inactive">New game</span>
+    </div>
+  </button>
+  <div class="filler"></div>
+  <app-button class="form-info form-button" type="button" [size]="componentSizeEnum.Small" (buttonClick)="toUserSettings()">Settings</app-button>
+  <app-button class="form-info form-button" type="button" [size]="componentSizeEnum.Small" (buttonClick)="logOff()">Sign out</app-button>
+</div>

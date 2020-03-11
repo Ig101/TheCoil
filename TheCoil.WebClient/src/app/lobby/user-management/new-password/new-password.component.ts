@@ -10,6 +10,8 @@ import { passwordUppercaseValidator } from 'src/app/shared/validators/password-u
 import { controlMinLengthValidator } from 'src/app/shared/validators/control-min-length.validator';
 import { confirmPasswordValidator } from 'src/app/shared/validators/confirm-password.validator';
 import { ChangePasswordRequest } from '../../models/change-password-request.model';
+import { UserService } from 'src/app/shared/services/user.service';
+import { ComponentSizeEnum } from 'src/app/shared/models/enum/component-size.enum';
 
 @Component({
   selector: 'app-new-password',
@@ -22,10 +24,13 @@ export class NewPasswordComponent implements OnInit {
   code: string;
   id: string;
 
+  componentSizeEnum = ComponentSizeEnum;
+
   constructor(
     private formBuilder: FormBuilder,
     private webCommunicationService: WebCommunicationService,
     private userManagementService: UserManagementService,
+    private userService: UserService,
     private router: Router,
     activatedRoute: ActivatedRoute
   ) {
@@ -66,6 +71,7 @@ export class NewPasswordComponent implements OnInit {
       })
       .subscribe(result => {
         if (result.success) {
+          this.userService.user = undefined;
           this.userManagementService.passwordWasChanged = true;
           this.router.navigate(['lobby/signin']);
         } else {

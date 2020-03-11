@@ -1,0 +1,61 @@
+:host {
+  @import '../../lobby.module.scss';
+
+  p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .uid {
+    margin-top: 0px;
+  }
+
+  .extra {
+    margin-left: 4px;
+    color: #ccc;
+  }
+
+  .saved {
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    margin: 2px 32px;
+    padding: 16px 8px;
+    border: 2px solid #fff;
+    color: #fff;
+    border-left: none;
+    border-right: none;
+    .overflow {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding-bottom: 8px;
+    }
+    .right-text {
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+    transition: color 0.2s, border-color 0.2s, padding 0.2s, margin 0.2s;
+  }
+
+  .saved:hover {
+    color: #ff4;
+    outline: none;
+    border-color: #ff4;
+    margin: 2px 16px;
+    padding: 16px 24px;
+  }
+
+  .saved:focus {
+    outline: none;
+    margin: 2px 16px;
+    padding: 16px 24px;
+  }
+
+  .saved:active {
+    color: #aa4;
+    outline: none;
+    border-color: #aa4;
+  }
+}

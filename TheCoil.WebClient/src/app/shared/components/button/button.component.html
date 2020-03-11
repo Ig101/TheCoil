@@ -1,4 +1,9 @@
-<div><button appFocusRemover class="text-font-inactive" #button [type]="type" (focus)="focused=true" (mouseenter)="entered=true" (blur)="focused=false" (mouseleave)="entered=false" (click)="click()">
+<div><button appFocusRemover [ngClass]="{
+    'text-font-inactive': size === componentSizeEnum.Medium,
+    'article-font-inactive': size === componentSizeEnum.Small,
+    'title-font-inactive': size === componentSizeEnum.Large
+  }" 
+  #button [type]="type" (focus)="focused=true" (mouseenter)="entered=true" (blur)="focused=false" (mouseleave)="entered=false" (click)="click()">
   <span [hidden]="focused || entered">&lt; </span>
   <span [hidden]="!(focused || entered)">&gt; </span>
   <ng-content></ng-content>

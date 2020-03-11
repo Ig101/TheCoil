@@ -1,1 +1,12 @@
-<p>user-settings works!</p>
+<div class="container full-screen-form">
+  <form class="text-font form first-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+    <app-text-input class="form-text form-info" formControlName="currentPassword" type="password" [validations]="passwordForm.controls.currentPassword.errors">Current password:</app-text-input>
+    <app-text-input class="form-text form-info" formControlName="password" type="password" [validations]="passwordForm.controls.password.errors" (textChange)="passwordForm.controls.confirmPassword.updateValueAndValidity()">New password:</app-text-input>
+    <app-text-input class="form-text form-info" formControlName="confirmPassword" type="password" [validations]="passwordForm.controls.confirmPassword.errors">Confirm password:</app-text-input>
+    <p></p>
+    <app-button class="form-info form-button" type="submit">Change password</app-button>
+    <p></p>
+  </form>
+  <div class="filler"></div>
+  <app-button class="form-info form-button" type="button" [size]="componentSizeEnum.Small" (buttonClick)="toLobby()">Back</app-button>
+</div>
