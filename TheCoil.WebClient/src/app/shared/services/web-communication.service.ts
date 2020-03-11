@@ -20,7 +20,7 @@ export class WebCommunicationService {
       return of({
         success: false,
         statusCode: result.status,
-        errors: result.error ? [result.error.title] : []
+        errors: result.error && result.error.title ? [result.error.title] : ['Unexpected error. Try again later...']
       } as ExternalResponse<T>);
     }
   }
