@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2"/>
     <PackageReference Include="MongoDB.Bson" Version="2.10.2"/>
     <PackageReference Include="Mongo.Migration" Version="3.0.73"/>
-    <PackageReference Include="MongoDB.Driver" Version="2.10.2"/>
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0"/>
     <PackageReference Include="AspNetCore.Identity.Mongo" Version="6.3.5"/>
     <PackageReference Include="MailKit" Version="2.5.1"/>
   </ItemGroup>
